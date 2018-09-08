@@ -1,5 +1,5 @@
-from .ply.lex import lex
-from .ply.lex import TOKEN
+import ply.lex as lex
+from ply.lex import TOKEN
 
 
 class Coolex:
