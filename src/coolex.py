@@ -95,7 +95,7 @@ class Coolex:
             # Literals
             "LPAREN", "RPAREN", "LBRACE", "RBRACE", "COLON", "COMMA", "DOT", "SEMICOLON", "AT",
             # Operators
-            "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "EQ", "LT", "LTEQ", "ASSIGN", "INT_COMP", "NOT",
+            "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "EQ", "LT", "LTEQ", "ASSIGN", "INT_COMP",  # "NOT",
             # Special Operators
             "ARROW"
         )
@@ -125,7 +125,8 @@ class Coolex:
             "of": "OF",
             "self": "SELF",
             "then": "THEN",
-            "while": "WHILE"
+            "while": "WHILE",
+            "not": "NOT"  # This should be in the operator tokens, but i didn't find a clean way to include it there
         }
 
     # Ignore rule for single line comments
@@ -153,6 +154,13 @@ class Coolex:
     t_ASSIGN = r'\<\-'  # <-
     # t_NOT = r'not'  # not
     t_ARROW = r'\=\>'  # =>
+
+    # @TOKEN(r"not")
+    # def t_NOT(self, token):
+    #     """
+    #     This rule is needed so not is not recognized as an identifier
+    #     """
+    #     return token
 
     @TOKEN(r"(true|false)")
     def t_BOOLEAN(self, token):
