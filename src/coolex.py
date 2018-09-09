@@ -2,11 +2,53 @@ import ply.lex as lex
 from ply.lex import TOKEN
 
 
+# ############################################ TOKENS ##################################################
+
+tokens_collection = (
+    # Identifiers
+    "ID", "TYPE",
+    # Primitive Types
+    "INTEGER", "STRING", "BOOLEAN",
+    # Literals
+    "LPAREN", "RPAREN", "LBRACE", "RBRACE", "COLON", "COMMA", "DOT", "SEMICOLON", "AT",
+    # Operators
+    "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "EQ", "LT", "LTEQ", "ASSIGN", "INT_COMP",  # "NOT",
+    # Special Operators
+    "ARROW"
+)
+
+cool_reserved = {
+    "case": "CASE",
+    "class": "CLASS",
+    "else": "ELSE",
+    "esac": "ESAC",
+    "if": "IF",
+    "fi": "FI",
+    "in": "IN",
+    "inherits": "INHERITS",
+    "isvoid": "ISVOID",
+    "let": "LET",
+    "loop": "LOOP",
+    "pool": "POOL",
+    "new": "NEW",
+    "of": "OF",
+    "self": "SELF",
+    "then": "THEN",
+    "while": "WHILE",
+    "not": "NOT"  # This should be in the operator tokens, but i didn't find a clean way to include it there
+}
+
+tokens = tokens_collection + tuple(cool_reserved.values())
+
+
+# ######################################### LEXER OBJECT ###############################################
 class Coolex:
     def __init__(self):
+        # Expose the reserved map and tokens tuple to the class scope for ply.lex
+        self.reserved = cool_reserved.keys()  # ply reserved keywords map
+        self.tokens = tokens_collection + tuple(cool_reserved.values())  # ply tokens collection
+
         self.lexer = None  # ply lexer instance
-        self.tokens = ()  # ply tokens collection
-        self.reserved = {}  # ply reserved keywords map
         self.last_token = None  # last returned token
 
     # ###################################### ITERATION PROTOCOL ############################################
@@ -25,10 +67,6 @@ class Coolex:
 
     # ############################################## API ###################################################
     def build(self, **kwargs):
-        # Expose the reserved map and tokens tuple to the class scope for ply.lex
-        self.reserved = self.cool_reserved.keys()
-        self.tokens = self.tokens_collection + tuple(self.cool_reserved.values())
-
         # Build internal ply.lex instance
         self.lexer = lex.lex(module=self, **kwargs)
 
@@ -80,55 +118,6 @@ class Coolex:
 
     # ######################################################################################################
     # ######################################## COOL DEFINITION #############################################
-
-    @property
-    def tokens_collection(self):
-        """
-        COOL Syntax Tokens.
-        :return: Tuple.
-        """
-        return (
-            # Identifiers
-            "ID", "TYPE",
-            # Primitive Types
-            "INTEGER", "STRING", "BOOLEAN",
-            # Literals
-            "LPAREN", "RPAREN", "LBRACE", "RBRACE", "COLON", "COMMA", "DOT", "SEMICOLON", "AT",
-            # Operators
-            "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "EQ", "LT", "LTEQ", "ASSIGN", "INT_COMP",  # "NOT",
-            # Special Operators
-            "ARROW"
-        )
-
-    @property
-    def cool_reserved(self):
-        """
-        Map of COOL keywords.
-        :return: dict.
-        """
-
-        # Maybe SELF_TYPE should also be here
-        return {
-            "case": "CASE",
-            "class": "CLASS",
-            "else": "ELSE",
-            "esac": "ESAC",
-            "if": "IF",
-            "fi": "FI",
-            "in": "IN",
-            "inherits": "INHERITS",
-            "isvoid": "ISVOID",
-            "let": "LET",
-            "loop": "LOOP",
-            "pool": "POOL",
-            "new": "NEW",
-            "of": "OF",
-            "self": "SELF",
-            "then": "THEN",
-            "while": "WHILE",
-            "not": "NOT"  # This should be in the operator tokens, but i didn't find a clean way to include it there
-        }
-
     # Ignore rule for single line comments
     t_ignore_SINGLE_LINE_COMMENT = r"\-\-[^\n]*"
 
@@ -183,7 +172,7 @@ class Coolex:
         """
         The Type Token Rule.
         """
-        token.type = self.cool_reserved.get(token.value, 'TYPE')
+        token.type = cool_reserved.get(token.value, 'TYPE')
         return token
 
     @TOKEN(r"[a-z_][a-zA-Z_0-9]*")
@@ -192,7 +181,7 @@ class Coolex:
         The Identifier Token Rule.
         """
         # Check for cool_reserved words
-        token.type = self.cool_reserved.get(token.value, 'ID')
+        token.type = cool_reserved.get(token.value, 'ID')
         return token
 
     @TOKEN(r"\n+")
