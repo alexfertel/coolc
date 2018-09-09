@@ -3,6 +3,8 @@ import cooljack
 
 
 def main():
+    # TODO: Read input files, check they have .cl extension
+    # TODO: Setup pipeline: coolex => coolast => semantic visitor => cool-cil visitor => cil-mips generator
     pass
 
 
