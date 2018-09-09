@@ -38,7 +38,7 @@ cool_reserved = {
     "not": "NOT"  # This should be in the operator tokens, but i didn't find a clean way to include it there
 }
 
-tokens = tokens_collection + tuple(cool_reserved.keys())
+tokens = tokens_collection + tuple(cool_reserved.values())
 
 
 # ######################################### LEXER OBJECT ###############################################
