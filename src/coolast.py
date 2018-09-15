@@ -1,7 +1,7 @@
 # ############################## BASE AST NODES CLASSES ##############################
 
 
-class AST:
+class Node:
     def __init__(self):
         pass
 
@@ -22,13 +22,13 @@ class AST:
 # ############################## PROGRAM, TYPE AND OBJECT ##############################
 
 
-class Program(AST):
+class Program(Node):
     def __init__(self, classes):
         super(Program, self).__init__()
         self.classes = classes
 
 
-class Class(AST):
+class Class(Node):
     def __init__(self, name, parent, features):
         super(Class, self).__init__()
         self.name = name
@@ -36,7 +36,7 @@ class Class(AST):
         self.features = features
 
 
-class ClassFeature(AST):
+class ClassFeature(Node):
     def __init__(self):
         super(ClassFeature, self).__init__()
 
@@ -65,7 +65,7 @@ class FormalParameter(ClassFeature):
         self.param_type = param_type
 
 
-class Object(AST):
+class Object(Node):
     def __init__(self, name):
         super(Object, self).__init__()
         self.name = name
@@ -79,7 +79,7 @@ class Self(Object):
 # ############################## CONSTANTS ##############################
 
 
-class Constant(AST):
+class Constant(Node):
     def __init__(self):
         super(Constant, self).__init__()
 
@@ -105,7 +105,7 @@ class Boolean(Constant):
 # ############################## EXPRESSIONS ##############################
 
 
-class Expr(AST):
+class Expr(Node):
     def __init__(self):
         super(Expr, self).__init__()
 
@@ -183,7 +183,7 @@ class Case(Expr):
         self.actions = actions
 
 
-class Action(AST):
+class Action(Node):
     def __init__(self, name, action_type, body):
         super(Action, self).__init__()
         self.name = name
