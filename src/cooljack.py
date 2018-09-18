@@ -367,7 +367,7 @@ class CoolJack:
 
     def build(self, **kwargs):
         # Obviously needs a lexer
-        lexer = Coolex()
+        lexer = Coolex() if not self.lexer else self.lexer
         lexer.build()
 
         # Build yacc parser

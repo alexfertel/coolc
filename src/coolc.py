@@ -5,7 +5,6 @@ import cooljack
 
 def main():
     # TODO: Setup pipeline: coolex => cooljack => semantic visitor => cool-cil visitor => cil-mips generator
-    # TODO: Should be a Pipeline! Right now, cooljack also does lexing!?!? 
     
     # Get all .cl files
     programs = sys.argv[1:]
@@ -37,7 +36,7 @@ def main():
         print(token)
 
     # Parsing
-    parser = cooljack.CoolJack()
+    parser = cooljack.CoolJack(lexer=lexer)
     parser.build()
     parse_result = parser.parse(cool_program_code)
     print(parse_result)
