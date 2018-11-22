@@ -5,13 +5,13 @@ import cooljack
 
 def main():
     # TODO: Setup pipeline: coolex => cooljack => semantic visitor => cool-cil visitor => cil-mips generator
-    
+
     # Get all .cl files
     programs = sys.argv[1:]
 
     # Initialize the master program source code string.
     cool_program_code = ""
-    
+
     # Check all programs have the *.cl extension.
     for program in programs:
         if not str(program).endswith(".cl"):
@@ -41,8 +41,6 @@ def main():
     parse_result = parser.parse(cool_program_code)
     print(parse_result)
 
-
-    
 
 if __name__ == '__main__':
     main()
