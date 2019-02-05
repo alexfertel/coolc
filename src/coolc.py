@@ -1,10 +1,12 @@
 import sys
 import coolex
 import cooljack
+import cooltypes
 
 
 def main():
     # TODO: Setup pipeline: coolex => cooljack => semantic visitor => cool-cil visitor => cil-mips generator
+    # coolex => cooljack => cooltypes => semantic visitor => cool-cil visitor => cil-mips generator
 
     # Get all .cl files
     programs = sys.argv[1:]
@@ -38,8 +40,23 @@ def main():
     # Parsing
     parser = cooljack.CoolJack(lexer=lexer)
     parser.build()
-    parse_result = parser.parse(cool_program_code)
-    print(parse_result)
+    ast = parser.parse(cool_program_code)
+    print(ast)
+
+    # Install Types
+    ast_with_builtins = cooltypes.TypesVisitor.add_builtins(ast)
+
+    # Semantic Analysis
+    types_discoverer = cooltypes.TypesVisitor()
+
+    types_validity = types_discoverer.visit(ast_with_builtins)
+
+    if not types_validity:
+        print("Something went wrong when discovering types!")
+        # TODO: Print errors. We should put as a visitor parameter 'errors'. Something resembling miniCool
+        exit()
+    else:
+        print("Correctly visited all types, no semantic problems with this pass!")
 
 
 if __name__ == '__main__':

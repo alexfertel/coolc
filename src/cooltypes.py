@@ -24,10 +24,10 @@ class TypesVisitor:
 
         assert root is not None, 'TypesVisitor.add_builtins received None arg.'
         assert isinstance(root, ast.Program), f'TypesVisitor.add_builtins expected arg to be of type ast.Program, ' \
-                                              f'but got {type(root) instead.}'
+                                              f'but got {type(root)} instead.'
 
         # Object Class
-        object_class = ast.Class(name="Obejct", parent=None, features=[
+        object_class = ast.Class(name="Object", parent=None, features=[
             # Abort method: halts the program.
             ast.ClassMethod(name="abort", formal_params=[], return_type="Object", body=None),
 
@@ -119,9 +119,10 @@ class TypesVisitor:
         # Check if class is defined only once
         if node.name in self.types.keys():
             # or node.name in reserved.keys(): I think this gets fixed in lexing.
+            # TODO: Check the above!
             return 0
 
-        self.current_class['name'] = self.node.name.value  # Visiting this class's features
+        self.current_class['name'] = node.name  # Visiting this class's features
 
         # Check if features of this class are defined only once
         unique = 1
@@ -129,7 +130,7 @@ class TypesVisitor:
             unique &= self.visit(feature)
 
         # Add this classname to the defined types
-        self.types[node.name.value] = node
+        self.types[node.name] = node
         return unique
 
     @visitor.when(ast.ClassMethod)
