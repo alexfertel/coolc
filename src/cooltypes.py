@@ -8,6 +8,9 @@ import visitor as visitor
 class TypesVisitor:
     def __init__(self):
         self.types = {}  # Type Name => AST.Class instance
+        self.clear()
+
+    def clear(self):
         self.current_class = {
             'name': '',
             'method_names': set(),
@@ -104,22 +107,26 @@ class TypesVisitor:
         return ast.Program(classes=all_classes)
 
     @visitor.on('node')
-    def visit(self, node):
+    def visit(self, node, errors):
         pass
 
     @visitor.when(ast.Program)
-    def visit(self, node: ast.Program):
+    def visit(self, node: ast.Program, errors):
         valid = 1
         for class_declaration in node.classes:
-            valid &= self.visit(class_declaration)
+            valid &= self.visit(class_declaration, errors)
         return valid
 
     @visitor.when(ast.Class)
-    def visit(self, node: ast.Class):
+    def visit(self, node: ast.Class, errors):
+        # Each time we start analysing a new class we have to clear the current_class dict
+        self.clear()
+
         # Check if class is defined only once
         if node.name in self.types.keys():
             # or node.name in reserved.keys(): I think this gets fixed in lexing.
             # TODO: Check the above!
+            errors.append(f'Class with name {node.name} is defined more than once!')
             return 0
 
         self.current_class['name'] = node.name  # Visiting this class's features
@@ -127,25 +134,29 @@ class TypesVisitor:
         # Check if features of this class are defined only once
         unique = 1
         for feature in node.features:
-            unique &= self.visit(feature)
+            unique &= self.visit(feature, errors)
 
         # Add this classname to the defined types
         self.types[node.name] = node
         return unique
 
     @visitor.when(ast.ClassMethod)
-    def visit(self, node: ast.ClassMethod):
+    def visit(self, node: ast.ClassMethod, errors):
         class_methods = self.current_class['method_names']
+        # Check if method is defined in the current class only once
         if node.name in class_methods:
+            errors.append(f'Method {node.name} is defined more than once in class {self.current_class["name"] }!')
             return 0
 
         class_methods.add(node.name)
         return 1
 
     @visitor.when(ast.ClassAttribute)
-    def visit(self, node: ast.ClassAttribute):
+    def visit(self, node: ast.ClassAttribute, errors):
         class_attr = self.current_class['attr_names']
+        # Check if attribute is defined in the current class only once
         if node.name in class_attr:
+            errors.append(f'Attribute {node.name} is defined more than once in class {self.current_class["name"] }!')
             return 0
 
         class_attr.add(node.name)

@@ -49,11 +49,13 @@ def main():
     # Semantic Analysis
     types_discoverer = cooltypes.TypesVisitor()
 
-    types_validity = types_discoverer.visit(ast_with_builtins)
+    errors = []
+    types_validity = types_discoverer.visit(ast_with_builtins, errors)
 
     if not types_validity:
         print("Something went wrong when discovering types!")
-        # TODO: Print errors. We should put as a visitor parameter 'errors'. Something resembling miniCool
+        for item in errors:
+            print(item)
         exit()
     else:
         print("Correctly visited all types, no semantic problems with this pass!")
