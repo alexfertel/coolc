@@ -1,5 +1,5 @@
 import coolast as ast
-import visitor as visitor
+import visitor
 
 
 # from .coolex import cool_reserved as reserved

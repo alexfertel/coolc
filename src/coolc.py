@@ -41,7 +41,7 @@ def main():
     parser = cooljack.CoolJack(lexer=lexer)
     parser.build()
     ast = parser.parse(cool_program_code)
-    print(ast)
+    print(ast.clsname)
 
     # Install Types
     ast_with_builtins = cooltypes.TypesVisitor.add_builtins(ast)
