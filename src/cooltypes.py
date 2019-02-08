@@ -8,6 +8,7 @@ import visitor
 class TypesVisitor:
     def __init__(self):
         self.types = {}  # Type Name => AST.Class instance
+        self.has_main = 0  # Helper to check main method of Main class existence.
         self.clear()
 
     def clear(self):
@@ -42,7 +43,7 @@ class TypesVisitor:
         ])
 
         # IO Class
-        io_class = ast.Class(name="IO", parent="Object", features=[
+        io_class = ast.Class(name="IO", parent=object_class.name, features=[
             # in_int: reads an integer from stdio
             ast.ClassMethod(name="in_int", formal_params=[], return_type="Int", body=None),
 
@@ -113,9 +114,21 @@ class TypesVisitor:
     @visitor.when(ast.Program)
     def visit(self, node: ast.Program, errors):
         valid = 1
-        for class_declaration in node.classes:
-            valid &= self.visit(class_declaration, errors)
-        return valid
+        for klass in node.classes:
+            valid &= self.visit(klass, errors)
+
+        # Program must have a Main class declared
+        valid &= 'Main' in self.types.keys()
+        if not valid:
+            errors.append("This program does not have a <Main> class, every Cool program must!")
+            return valid
+
+        # Main class must have a 'main' method without formal params
+        if not self.has_main:
+            errors.append("The <Main> class does not have a 'main' method!")
+
+        # TODO: when checking formal parameters, the main method mustn't have any.
+        return valid & self.has_main
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class, errors):
@@ -126,7 +139,7 @@ class TypesVisitor:
         if node.name in self.types.keys():
             # or node.name in reserved.keys(): I think this gets fixed in lexing.
             # TODO: Check the above!
-            errors.append(f'Class with name {node.name} is defined more than once!')
+            errors.append(f'Class with name <{node.name}> is defined more than once!')
             return 0
 
         self.current_class['name'] = node.name  # Visiting this class's features
@@ -145,10 +158,15 @@ class TypesVisitor:
         class_methods = self.current_class['method_names']
         # Check if method is defined in the current class only once
         if node.name in class_methods:
-            errors.append(f'Method {node.name} is defined more than once in class {self.current_class["name"] }!')
+            errors.append(f"Method '{node.name}' is defined more than once in class <{self.current_class['name']}>!")
             return 0
 
         class_methods.add(node.name)
+
+        # If this conditions are met, a 'Main' class with a 'main' method is present
+        if node.name == 'main' and self.current_class['name'] == 'Main':
+            self.has_main = 1
+
         return 1
 
     @visitor.when(ast.ClassAttribute)
@@ -156,7 +174,7 @@ class TypesVisitor:
         class_attr = self.current_class['attr_names']
         # Check if attribute is defined in the current class only once
         if node.name in class_attr:
-            errors.append(f'Attribute {node.name} is defined more than once in class {self.current_class["name"] }!')
+            errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.current_class['name']}>!")
             return 0
 
         class_attr.add(node.name)

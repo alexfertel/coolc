@@ -12,7 +12,8 @@ for line in fileinput.input('coolast.py'):
         name = klass.split('(')[0] if '(' in klass else klass.split(':')[0]
         names.append(name)
 
-generated = 'import visitor\n\n\n'
+generated = 'import coolast as ast\n'
+generated += 'import visitor\n\n\n'
 generated += 'class GenericVisitor:\n' if len(sys.argv) == 1 else f'class {sys.argv[1]}Visitor:\n'
 generated += "\t@visitor.on('node')\n"
 generated += "\tdef visit(self, node, tabs):\n"

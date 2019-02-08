@@ -1,7 +1,8 @@
+import coolast as ast
 import visitor
 
 
-class papelitoVisitor:
+class GenericVisitor:
 	@visitor.on('node')
 	def visit(self, node, tabs):
 		pass
