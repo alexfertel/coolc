@@ -357,8 +357,7 @@ class CoolJack:
         if parse is None:
             print("Error! Unexpected end of input!")
         else:
-            error = "Syntax error! Line: {}, position: {}, character: {}, type: {}".format(
-                parse.lineno, parse.lexpos, parse.value, parse.type)
+            error = f'Syntax error! Line: {parse.lineno}, position: {parse.lexpos}, character: {parse.value}, type: {parse.type}'
             self.error_list.append(error)
             self.parser.errok()
 
@@ -368,7 +367,7 @@ class CoolJack:
 
     def build(self, **kwargs):
         # Obviously needs a lexer
-        lexer = Coolex()
+        lexer = Coolex() if not self.lexer else self.lexer
         lexer.build()
 
         # Build yacc parser
