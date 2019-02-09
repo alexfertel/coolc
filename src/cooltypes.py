@@ -2,9 +2,6 @@ import coolast as ast
 import visitor
 
 
-# from .coolex import cool_reserved as reserved
-
-
 class TypesVisitor:
     def __init__(self):
         self.types = {}  # Type Name => AST.Class instance
@@ -137,8 +134,9 @@ class TypesVisitor:
 
         # Check if class is defined only once
         if node.name in self.types.keys():
-            # or node.name in reserved.keys(): I think this gets fixed in lexing.
+            # or node.name in reserved.keys(): I think this gets fixed in parsing.
             # TODO: Check the above!
+            # Update: Checked it with tests/misused_identifiers.cl. It happens while parsing.
             errors.append(f'Class with name <{node.name}> is defined more than once!')
             return 0
 

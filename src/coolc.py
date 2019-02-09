@@ -42,6 +42,12 @@ def main():
     parser = cooljack.CoolJack(lexer=lexer)
     parser.build()
     ast = parser.parse(cool_program_code)
+    if parser.error_list:
+        for error in parser.error_list:
+            print(error)
+        exit()
+    else:
+        print("Completed parsing!")
     print(ast.clsname)
 
     # Install Types
@@ -73,6 +79,7 @@ def main():
     if not valid:
         for error in errors:
             print(error)
+        exit()
     else:
         print("Type Inheritance Graph is semantically correct!")
 
