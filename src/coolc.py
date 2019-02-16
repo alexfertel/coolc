@@ -1,8 +1,9 @@
-import sys
 import coolex
 import cooljack
 import cooltypes
 import coolig
+import sys
+import utils
 
 
 def main():
@@ -15,10 +16,12 @@ def main():
     # Initialize the master program source code string.
     cool_program_code = ""
 
-    # Check all programs have the *.cl extension.
+    # Check that all programs have the *.cl extension.
     for program in programs:
         if not str(program).endswith(".cl"):
-            print("Cool program files must end with a \`.cl\` extension.\r\n")
+            error = "Cool program files must end with a \`.cl\` extension.\r\n"
+            print(utils.error_template())
+            print(error)
             exit(1)
 
     # Read all program source codes and store them in memory.
@@ -27,7 +30,10 @@ def main():
             with open(program, encoding="utf-8") as file:
                 cool_program_code += file.read()
         except (IOError, FileNotFoundError):
-            print(f'Error! File "{program}" was not found. Are you sure the file exists?')
+            error = f"(0,0) - CompilerError: File `{program}` was not found. Are you sure the file exists?"
+            # print(f'Error! File "{program}" was not found. Are you sure the file exists?')
+            print(utils.error_template())
+            print(error)
         except Exception:
             print("An unexpected error occurred!")
 
@@ -37,15 +43,23 @@ def main():
     lexer.input(cool_program_code)
     for token in lexer:
         print(token)
+    if lexer.error_list:
+        print(utils.error_template())
+        for error in lexer.error_list:
+            print(error)
+        exit(1)
+    else:
+        print("Completed parsing!")
 
     # Parsing
     parser = cooljack.CoolJack(lexer=lexer)
     parser.build()
     ast = parser.parse(cool_program_code)
     if parser.error_list:
+        print(utils.error_template())
         for error in parser.error_list:
             print(error)
-        exit()
+        exit(1)
     else:
         print("Completed parsing!")
     print(ast.clsname)
@@ -63,7 +77,7 @@ def main():
         print("Something went wrong when discovering types!")
         for error in errors:
             print(error)
-        exit()
+        exit(1)
     else:
         print("Correctly visited all types, no semantic problems with this pass!")
 
@@ -79,7 +93,7 @@ def main():
     if not valid:
         for error in errors:
             print(error)
-        exit()
+        exit(1)
     else:
         print("Type Inheritance Graph is semantically correct!")
 

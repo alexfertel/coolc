@@ -357,7 +357,9 @@ class CoolJack:
         if parse is None:
             print("Error! Unexpected end of input!")
         else:
-            error = f'Syntax error! Line: {parse.lineno}, position: {parse.lexpos}, character: {parse.value}, type: {parse.type}'
+            # error = f'Syntax error! Line: {parse.lineno}, position: {parse.lexpos}, character: {parse.value}, type: {parse.type}'
+            error = f"({parse.lineno},{parse.lexpos}) - SyntacticError: Syntax error! " \
+                    f"Character: {parse.value}, Type: {parse.type}"
             self.error_list.append(error)
             self.parser.errok()
 

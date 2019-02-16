@@ -50,6 +50,7 @@ class Coolex:
 
         self.lexer = None  # ply lexer instance
         self.last_token = None  # last returned token
+        self.error_list = []  # Lexing errors
 
     # ###################################### ITERATION PROTOCOL ############################################
 
@@ -258,8 +259,10 @@ class Coolex:
     t_STRING_ignore = ''
 
     # STRING error handler
-    def t_STRING_error(self, token):
-        print("Illegal character! Line: {0}, character: {1}".format(token.lineno, token.value[0]))
+    def t_STRING_error(self, token: TOKEN):
+        # print("Illegal character! Line: {0}, character: {1}".format(token.lineno, token.value[0]))
+        error = f"({token.lineno},{token.lexpos}) - LexicographicError: Illegal character!"
+        self.error_list.append(error)
         token.lexer.skip(1)
 
     # ################# #
@@ -291,7 +294,9 @@ class Coolex:
         """
         Error Handling and Reporting Rule.
         """
-        print("Illegal character! Line: {0}, character: {1}".format(token.lineno, token.value[0]))
+        # print("Illegal character! Line: {0}, character: {1}".format(token.lineno, token.value[0]))
+        error = f"({token.lineno},{token.lexpos}) - LexicographicError: Illegal character!"
+        self.error_list.append(error)
         token.lexer.skip(1)
 
     # ##################################### END OF LEXICAL ANALYSIS ########################################
