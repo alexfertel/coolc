@@ -31,7 +31,7 @@
 <formal>                  ::= ID : TYPE <- <expression>
                           |   ID : TYPE
 
-<expression>              ::= ID <- <expr>
+<expression>              ::= ID <- <expression>
                           |   <expression>.ID( <arguments_list_opt> )
                           |   <expression><at-type>.ID( <arguments_list_opt> )
                           |   <case>
@@ -40,7 +40,7 @@
                           |   <block_expression>
                           |   <let_expression>
                           |   new TYPE
-                          |   isvoid <expr>
+                          |   isvoid <expression>
                           |   <expression> + <expression>
                           |   <expression> - <expression>
                           |   <expression> * <expression>
@@ -66,7 +66,7 @@
 
 <case>                    ::= case <expression> of <actions> esac
 
-<action>                  ::= ID : TYPE => <expr>
+<action>                  ::= ID : TYPE => <expression>
 
 <actions>                 ::= <action>
                           |   <action> <actions>
