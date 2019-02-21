@@ -66,7 +66,7 @@
 
 <case>                    ::= case <expression> of <actions> esac
 
-<action>                  ::= ID : TYPE => <expression>
+<action>                  ::= ID : TYPE => <expression> ;
 
 <actions>                 ::= <action>
                           |   <action> <actions>
