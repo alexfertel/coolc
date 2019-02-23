@@ -12,6 +12,7 @@ class Cool2CilVisitor:
         self.instructions = []
         self.internal_count = 0
         self.internal_f_count = 0
+        self.internal_l_count = 0
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -27,6 +28,11 @@ class Cool2CilVisitor:
     #     self.internal_f_count += 1
     #     return fname
 
+    def define_internal_lname(self):
+        lname = f'{self.internal_l_count}_LABEL'
+        self.internal_l_count += 1
+        return lname
+
     def build_internal_vname(self, vname):
         vname = f'{self.internal_count}_{self.current_function_name}_{vname}'
         self.internal_count += 1
@@ -39,7 +45,7 @@ class Cool2CilVisitor:
     def register_local(self, vinfo):
         vinfo.name = self.build_internal_vname(vinfo.name)
         vinfo.vmholder = len(self.localvars)
-        local_node = cil.CILLocalNode(vinfo)
+        local_node = cil.CILLocal(vinfo)
         self.localvars.append(local_node)
         return vinfo
 
@@ -50,7 +56,7 @@ class Cool2CilVisitor:
 
     def register_data(self, value):
         vname = f'data_{len(self.dotdata)}'
-        data_node = cil.CILDataNode(vname, value)
+        data_node = cil.CILData(vname, value)
         self.dotdata.append(data_node)
         return data_node
 
@@ -69,12 +75,12 @@ class Cool2CilVisitor:
         self.current_function_name = 'main'
 
         vinfo = self.visit(node.expr)
-        # return_node = self.register_instruction(cil.CILReturnNode, vinfo)
-        self.register_instruction(cil.CILReturnNode, vinfo)
+        # return_node = self.register_instruction(cil.CILReturn, vinfo)
+        self.register_instruction(cil.CILReturn, vinfo)
 
-        dotcode = cil.CILFunctionNode(self.current_function_name, [], self.localvars, self.instructions)
+        dotcode = cil.CILFunction(self.current_function_name, [], self.localvars, self.instructions)
 
-        root = cil.CILProgramNode([], self.dotdata, [dotcode])
+        root = cil.CILProgram([], self.dotdata, [dotcode])
         return root
 
     @visitor.when(ast.Class)
@@ -125,6 +131,7 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILAllocate, vinfo, node.type)
         return vinfo
 
+    # TODO: Check this!
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid):
         vinfo = self.visit(node.expr)
@@ -134,7 +141,9 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment):
-        pass
+        source = self.visit(node.expr)
+        self.register_instruction(cil.CILAssign, node.instance.variable_info, source)
+        return node.instance.variable_info
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
@@ -157,16 +166,64 @@ class Cool2CilVisitor:
             self.visit(declaration)
         # vinfo = self.visit(node.expr)
         # internal = self.define_internal_local()
-        # vinfo = self.register_instruction(cil.CILAssignNode, internal, vinfo)
+        # vinfo = self.register_instruction(cil.CILAssign, internal, vinfo)
         return self.visit(node.expr)
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If):
-        pass
+        """
+        LOCAL predicate_vinfo;
+        LOCAL if_result;
 
+        predicate_vinfo = <node.predicate>;
+        if predicate_vinfo GOTO then_label;
+        if_result = <node.else_body>;
+        GOTO continue_label;
+        LABEL then_label;
+        if_result = <node.then_body>;
+        LABEL continue_label;
+        """
+        then_label = self.define_internal_lname()
+        continue_label = self.define_internal_lname()
+
+        predicate_vinfo = self.visit(node.predicate)
+        self.register_instruction(cil.CILGotoIf, predicate_vinfo, then_label)
+        self.visit(node.else_body)
+        self.register_instruction(cil.CILGoto, continue_label)
+        self.register_instruction(cil.CILLabel, then_label)
+        self.visit(node.then_body)
+        self.register_instruction(cil.CILLabel, continue_label)
+
+    # TODO: How do I return void??????? My head is spinning! Is it just a 0?
+    # TODO: I can optimize this code! Nevermind, the line I can save is spent somewhere else :(.
     @visitor.when(ast.WhileLoop)
     def visit(self, node: ast.WhileLoop):
-        pass
+        """
+        LOCAL predicate_vinfo;
+
+        LABEL while_label
+        predicate_vinfo = <node.predicate>;
+        if predicate_vinfo GOTO loop_label;
+        GOTO pool_label;
+        LABEL loop_label;
+        <node.body>;
+        GOTO while_label;
+        LABEL pool_label;
+        TODO: return void here!
+        """
+        while_label = self.define_internal_lname()
+        loop_label = self.define_internal_lname()
+        pool_label = self.define_internal_lname()
+
+        self.register_instruction(cil.CILLabel, while_label)
+        predicate_vinfo = self.visit(node.predicate)
+        self.register_instruction(cil.CILGotoIf, predicate_vinfo, loop_label)
+        self.register_instruction(cil.CILGoto, pool_label)
+        self.register_instruction(cil.CILLabel, loop_label)
+        self.visit(node.body)
+        self.register_instruction(cil.CILGoto, while_label)
+        self.register_instruction(cil.CILLabel, pool_label)
+        return 0  # void?????
 
     @visitor.when(ast.Case)
     def visit(self, node: ast.Case):
@@ -176,31 +233,26 @@ class Cool2CilVisitor:
     def visit(self, node: ast.Action):
         pass
 
-    @visitor.when(ast.UnaryOperation)
-    def visit(self, node: ast.UnaryOperation):
-        pass
-
     @visitor.when(ast.IntegerComplement)
     def visit(self, node: ast.IntegerComplement):
         vinfo = self.visit(node.expr)
         dest = self.define_internal_local()
-        self.register_instruction(cil.CILMinusNode, dest, 0, vinfo)
+        self.register_instruction(cil.CILMinus, dest, 0, vinfo)
         return dest
 
     @visitor.when(ast.BooleanComplement)
     def visit(self, node: ast.BooleanComplement):
-        pass
-
-    @visitor.when(ast.BinaryOperation)
-    def visit(self, node: ast.BinaryOperation):
-        pass
+        vinfo = self.visit(node.expr)
+        dest = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, dest, 1, vinfo)
+        return dest
 
     @visitor.when(ast.Addition)
     def visit(self, node: ast.Addition):
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILPlusNode, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILPlus, dest_vinfo, left_vinfo, right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Subtraction)
@@ -208,7 +260,7 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILPlusNode, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILMinus, dest_vinfo, left_vinfo, right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Multiplication)
@@ -216,7 +268,7 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILPlusNode, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILStar, dest_vinfo, left_vinfo, right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Division)
@@ -224,17 +276,31 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILPlusNode, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILDiv, dest_vinfo, left_vinfo, right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Equal)
     def visit(self, node: ast.Equal):
-        pass
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
 
+    # TODO: I can't tell if this needs more logic than Equals!
     @visitor.when(ast.LessThan)
     def visit(self, node: ast.LessThan):
-        pass
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
 
+    # TODO: I can't tell if this needs more logic than Equals!
     @visitor.when(ast.LessThanOrEqual)
     def visit(self, node: ast.LessThanOrEqual):
-        pass
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
