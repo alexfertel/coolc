@@ -4,7 +4,7 @@ import coolast as ast
 
 class Scope:
     def __init__(self, parent=None):
-        self.types = {} if parent != None else parent.types
+        self.__types = {} if parent != None else parent.types
         self.locals = []
         self.parent = parent
         self.children = []
@@ -40,9 +40,15 @@ class Scope:
     def get_local_variable_info(self, vname):
         return Scope.find_variable_info(vname, self)
 
-    def create_type(self, type_name, parent_class):
-        if self.types.get(type_name) == None:
-            type[type_name] = ast.Class(type_name, parent_class, [])
+    def get_types_dic(self):
+        return self.__types
+
+    def get_type(self, type_name):
+        return self.__types.get(type_name)
+
+    def create_type(self, type_name):
+        if self.__types.get(type_name) == None:
+            self.__types[type_name] = ast.Class(type_name)
             return 'Ok'
         else:
             return ('Duplicated class %s' %(type_name))

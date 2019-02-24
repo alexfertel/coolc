@@ -38,7 +38,7 @@ class Program(Node):
 
 
 class Class(Node):
-    def __init__(self, name, parent, features):
+    def __init__(self, name, parent=None, features=[]):
         super(Class, self).__init__()
         self.name = name
         self.parent = parent
