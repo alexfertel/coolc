@@ -1,8 +1,10 @@
 import itertools as itl
+import coolast as ast
 
 
 class Scope:
     def __init__(self, parent=None):
+        self.types = {} if parent != None else parent.types
         self.locals = []
         self.parent = parent
         self.children = []
@@ -37,6 +39,13 @@ class Scope:
 
     def get_local_variable_info(self, vname):
         return Scope.find_variable_info(vname, self)
+
+    def create_type(self, type_name, parent_class):
+        if self.types.get(type_name) == None:
+            type[type_name] = ast.Class(type_name, parent_class, [])
+            return 'Ok'
+        else:
+            return ('Duplicated class %s' %(type_name))
 
     @staticmethod
     def find_variable_info(vname, scope, top=None):
