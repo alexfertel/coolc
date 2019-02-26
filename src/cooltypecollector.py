@@ -9,9 +9,7 @@ class TypeCollectorVisitor:
 
     def __add_builtins(self):
         """
-        Initializes the COOL Builtin Classes: Object, IO, Int, Bool and String, and adds them to the Program AST node.
-        :param root: an AST.Program class instance, represents a COOL program AST.
-        :return: a new AST.Program class instance.
+        Create COOL Builtin Classes: Object, IO, Int, Bool and String.
         """
 
         # Object Class
