@@ -1,153 +1,306 @@
 import coolast as ast
+import cilast as cil
 import visitor
 
 
 class Cool2CilVisitor:
-	@visitor.on('node')
-	def visit(self, node):
-		pass
+    def __init__(self):
+        self.dotdata = []
+        self.current_function_name = ""
+        self.current_class_name = ""
+        self.localvars = []
+        self.instructions = []
+        self.internal_count = 0
+        self.internal_f_count = 0
+        self.internal_l_count = 0
 
-	@visitor.when(ast.Node)
-	def visit(self, node: ast.Node):
-		pass
+    # ======================================================================
+    # =[ UTILS ]============================================================
+    # ======================================================================
 
-	@visitor.when(ast.Program)
-	def visit(self, node: ast.Program):
-		pass
+    # def build_internal_fname(self):
+    #     fname = f'f{self.internal_f_count}'
+    #     self.internal_f_count += 1
+    #     return fname
 
-	@visitor.when(ast.Class)
-	def visit(self, node: ast.Class):
-		pass
+    # def build_internal_fname(self):
+    #     fname = f'f{self.internal_f_count}'
+    #     self.internal_f_count += 1
+    #     return fname
 
-	@visitor.when(ast.ClassFeature)
-	def visit(self, node: ast.ClassFeature):
-		pass
+    def define_internal_lname(self):
+        lname = f'{self.internal_l_count}_LABEL'
+        self.internal_l_count += 1
+        return lname
 
-	@visitor.when(ast.ClassMethod)
-	def visit(self, node: ast.ClassMethod):
-		pass
+    def build_internal_vname(self, vname):
+        vname = f'{self.internal_count}_{self.current_function_name}_{vname}'
+        self.internal_count += 1
+        return vname
 
-	@visitor.when(ast.ClassAttribute)
-	def visit(self, node: ast.ClassAttribute):
-		pass
+    def define_internal_local(self):
+        vinfo = VariableInfo('internal')
+        return self.register_local(vinfo)
 
-	@visitor.when(ast.FormalParameter)
-	def visit(self, node: ast.FormalParameter):
-		pass
+    def register_local(self, vinfo):
+        vinfo.name = self.build_internal_vname(vinfo.name)
+        vinfo.vmholder = len(self.localvars)
+        local_node = cil.CILLocal(vinfo)
+        self.localvars.append(local_node)
+        return vinfo
 
-	@visitor.when(ast.Object)
-	def visit(self, node: ast.Object):
-		pass
+    def register_instruction(self, instruction_type, *args):
+        instruction = instruction_type(*args)
+        self.instructions.append(instruction)
+        return instruction
 
-	@visitor.when(ast.Self)
-	def visit(self, node: ast.Self):
-		pass
+    def register_data(self, value):
+        vname = f'data_{len(self.dotdata)}'
+        data_node = cil.CILData(vname, value)
+        self.dotdata.append(data_node)
+        return data_node
 
-	@visitor.when(ast.Constant)
-	def visit(self, node: ast.Constant):
-		pass
+    # ======================================================================
 
-	@visitor.when(ast.Integer)
-	def visit(self, node: ast.Integer):
-		pass
+    # ======================================================================
+    # =[ VISIT ]============================================================
+    # ======================================================================
 
-	@visitor.when(ast.String)
-	def visit(self, node: ast.String):
-		pass
+    @visitor.on('node')
+    def visit(self, node):
+        pass
 
-	@visitor.when(ast.Boolean)
-	def visit(self, node: ast.Boolean):
-		pass
+    @visitor.when(ast.Program)
+    def visit(self, node: ast.Program):
+        self.current_function_name = 'main'
 
-	@visitor.when(ast.Expr)
-	def visit(self, node: ast.Expr):
-		pass
+        vinfo = self.visit(node.expr)
+        # return_node = self.register_instruction(cil.CILReturn, vinfo)
+        self.register_instruction(cil.CILReturn, vinfo)
 
-	@visitor.when(ast.NewObject)
-	def visit(self, node: ast.NewObject):
-		pass
+        dotcode = cil.CILFunction(self.current_function_name, [], self.localvars, self.instructions)
 
-	@visitor.when(ast.IsVoid)
-	def visit(self, node: ast.IsVoid):
-		pass
+        root = cil.CILProgram([], self.dotdata, [dotcode])
+        return root
 
-	@visitor.when(ast.Assignment)
-	def visit(self, node: ast.Assignment):
-		pass
+    @visitor.when(ast.Class)
+    def visit(self, node: ast.Class):
+        pass
 
-	@visitor.when(ast.Block)
-	def visit(self, node: ast.Block):
-		pass
+    @visitor.when(ast.ClassFeature)
+    def visit(self, node: ast.ClassFeature):
+        pass
 
-	@visitor.when(ast.DynamicDispatch)
-	def visit(self, node: ast.DynamicDispatch):
-		pass
+    @visitor.when(ast.ClassMethod)
+    def visit(self, node: ast.ClassMethod):
+        pass
 
-	@visitor.when(ast.StaticDispatch)
-	def visit(self, node: ast.StaticDispatch):
-		pass
+    @visitor.when(ast.ClassAttribute)
+    def visit(self, node: ast.ClassAttribute):
+        pass
 
-	@visitor.when(ast.Let)
-	def visit(self, node: ast.Let):
-		pass
+    @visitor.when(ast.FormalParameter)
+    def visit(self, node: ast.FormalParameter):
+        pass
 
-	@visitor.when(ast.If)
-	def visit(self, node: ast.If):
-		pass
+    @visitor.when(ast.Object)
+    def visit(self, node: ast.Object):
+        pass
 
-	@visitor.when(ast.WhileLoop)
-	def visit(self, node: ast.WhileLoop):
-		pass
+    @visitor.when(ast.Self)
+    def visit(self, node: ast.Self):
+        pass
 
-	@visitor.when(ast.Case)
-	def visit(self, node: ast.Case):
-		pass
+    @visitor.when(ast.Integer)
+    def visit(self, node: ast.Integer):
+        # return int(node.content)
+        return node.content
 
-	@visitor.when(ast.Action)
-	def visit(self, node: ast.Action):
-		pass
+    @visitor.when(ast.String)
+    def visit(self, node: ast.String):
+        # return str(node.content)
+        return node.content
 
-	@visitor.when(ast.UnaryOperation)
-	def visit(self, node: ast.UnaryOperation):
-		pass
+    @visitor.when(ast.Boolean)
+    def visit(self, node: ast.Boolean):
+        return node.content
 
-	@visitor.when(ast.IntegerComplement)
-	def visit(self, node: ast.IntegerComplement):
-		pass
+    @visitor.when(ast.NewObject)
+    def visit(self, node: ast.NewObject):
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, vinfo, node.type)
+        return vinfo
 
-	@visitor.when(ast.BooleanComplement)
-	def visit(self, node: ast.BooleanComplement):
-		pass
+    # TODO: Check this!
+    @visitor.when(ast.IsVoid)
+    def visit(self, node: ast.IsVoid):
+        vinfo = self.visit(node.expr)
+        dest_vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILTypeOf, dest_vinfo, vinfo)
+        return dest_vinfo
 
-	@visitor.when(ast.BinaryOperation)
-	def visit(self, node: ast.BinaryOperation):
-		pass
+    @visitor.when(ast.Assignment)
+    def visit(self, node: ast.Assignment):
+        source = self.visit(node.expr)
+        self.register_instruction(cil.CILAssign, node.instance.variable_info, source)
+        return node.instance.variable_info
 
-	@visitor.when(ast.Addition)
-	def visit(self, node: ast.Addition):
-		pass
+    @visitor.when(ast.Block)
+    def visit(self, node: ast.Block):
+        vinfo = 0
+        for expr in node.expr_list:
+            vinfo = self.visit(expr)
+        return vinfo
 
-	@visitor.when(ast.Subtraction)
-	def visit(self, node: ast.Subtraction):
-		pass
+    @visitor.when(ast.DynamicDispatch)
+    def visit(self, node: ast.DynamicDispatch):
+        pass
 
-	@visitor.when(ast.Multiplication)
-	def visit(self, node: ast.Multiplication):
-		pass
+    @visitor.when(ast.StaticDispatch)
+    def visit(self, node: ast.StaticDispatch):
+        pass
 
-	@visitor.when(ast.Division)
-	def visit(self, node: ast.Division):
-		pass
+    @visitor.when(ast.Let)
+    def visit(self, node: ast.Let):
+        for declaration in node.declaration_list:
+            self.visit(declaration)
+        # vinfo = self.visit(node.expr)
+        # internal = self.define_internal_local()
+        # vinfo = self.register_instruction(cil.CILAssign, internal, vinfo)
+        return self.visit(node.expr)
 
-	@visitor.when(ast.Equal)
-	def visit(self, node: ast.Equal):
-		pass
+    @visitor.when(ast.If)
+    def visit(self, node: ast.If):
+        """
+        LOCAL predicate_vinfo;
+        LOCAL if_result;
 
-	@visitor.when(ast.LessThan)
-	def visit(self, node: ast.LessThan):
-		pass
+        predicate_vinfo = <node.predicate>;
+        if predicate_vinfo GOTO then_label;
+        if_result = <node.else_body>;
+        GOTO continue_label;
+        LABEL then_label;
+        if_result = <node.then_body>;
+        LABEL continue_label;
+        """
+        then_label = self.define_internal_lname()
+        continue_label = self.define_internal_lname()
 
-	@visitor.when(ast.LessThanOrEqual)
-	def visit(self, node: ast.LessThanOrEqual):
-		pass
+        predicate_vinfo = self.visit(node.predicate)
+        self.register_instruction(cil.CILGotoIf, predicate_vinfo, then_label)
+        self.visit(node.else_body)
+        self.register_instruction(cil.CILGoto, continue_label)
+        self.register_instruction(cil.CILLabel, then_label)
+        self.visit(node.then_body)
+        self.register_instruction(cil.CILLabel, continue_label)
 
+    # TODO: How do I return void??????? My head is spinning! Is it just a 0?
+    # TODO: I can optimize this code! Nevermind, the line I can save is spent somewhere else :(.
+    @visitor.when(ast.WhileLoop)
+    def visit(self, node: ast.WhileLoop):
+        """
+        LOCAL predicate_vinfo;
+
+        LABEL while_label
+        predicate_vinfo = <node.predicate>;
+        if predicate_vinfo GOTO loop_label;
+        GOTO pool_label;
+        LABEL loop_label;
+        <node.body>;
+        GOTO while_label;
+        LABEL pool_label;
+        TODO: return void here!
+        """
+        while_label = self.define_internal_lname()
+        loop_label = self.define_internal_lname()
+        pool_label = self.define_internal_lname()
+
+        self.register_instruction(cil.CILLabel, while_label)
+        predicate_vinfo = self.visit(node.predicate)
+        self.register_instruction(cil.CILGotoIf, predicate_vinfo, loop_label)
+        self.register_instruction(cil.CILGoto, pool_label)
+        self.register_instruction(cil.CILLabel, loop_label)
+        self.visit(node.body)
+        self.register_instruction(cil.CILGoto, while_label)
+        self.register_instruction(cil.CILLabel, pool_label)
+        return 0  # void?????
+
+    @visitor.when(ast.Case)
+    def visit(self, node: ast.Case):
+        pass
+
+    @visitor.when(ast.Action)
+    def visit(self, node: ast.Action):
+        pass
+
+    @visitor.when(ast.IntegerComplement)
+    def visit(self, node: ast.IntegerComplement):
+        vinfo = self.visit(node.expr)
+        dest = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, dest, 0, vinfo)
+        return dest
+
+    @visitor.when(ast.BooleanComplement)
+    def visit(self, node: ast.BooleanComplement):
+        vinfo = self.visit(node.expr)
+        dest = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, dest, 1, vinfo)
+        return dest
+
+    @visitor.when(ast.Addition)
+    def visit(self, node: ast.Addition):
+        left_vinfo = self.visit(node.left)
+        right_vinfo = self.visit(node.right)
+        dest_vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILPlus, dest_vinfo, left_vinfo, right_vinfo)
+        return dest_vinfo
+
+    @visitor.when(ast.Subtraction)
+    def visit(self, node: ast.Subtraction):
+        left_vinfo = self.visit(node.left)
+        right_vinfo = self.visit(node.right)
+        dest_vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, dest_vinfo, left_vinfo, right_vinfo)
+        return dest_vinfo
+
+    @visitor.when(ast.Multiplication)
+    def visit(self, node: ast.Multiplication):
+        left_vinfo = self.visit(node.left)
+        right_vinfo = self.visit(node.right)
+        dest_vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILStar, dest_vinfo, left_vinfo, right_vinfo)
+        return dest_vinfo
+
+    @visitor.when(ast.Division)
+    def visit(self, node: ast.Division):
+        left_vinfo = self.visit(node.left)
+        right_vinfo = self.visit(node.right)
+        dest_vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILDiv, dest_vinfo, left_vinfo, right_vinfo)
+        return dest_vinfo
+
+    @visitor.when(ast.Equal)
+    def visit(self, node: ast.Equal):
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
+
+    # TODO: I can't tell if this needs more logic than Equals!
+    @visitor.when(ast.LessThan)
+    def visit(self, node: ast.LessThan):
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
+
+    # TODO: I can't tell if this needs more logic than Equals!
+    @visitor.when(ast.LessThanOrEqual)
+    def visit(self, node: ast.LessThanOrEqual):
+        first_vinfo = self.visit(node.first)
+        second_vinfo = self.visit(node.second)
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        return vinfo
