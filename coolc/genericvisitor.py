@@ -1,7 +1,8 @@
-import visitor
+from . import coolast as ast
+from . import visitor
 
 
-class SemanticVisitor:
+class GenericVisitor:
 	@visitor.on('node')
 	def visit(self, node, tabs):
 		pass

@@ -1,6 +1,6 @@
 # TODO: We should convert this from miniCool to Cool!
-import ast_hierarchy as ast
-import visitor
+from . import coolast as ast
+from . import visitor
 
 
 class PrintVisitor:

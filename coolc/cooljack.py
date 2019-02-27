@@ -1,6 +1,6 @@
-from coolex import tokens, Coolex
-import coolast as ast
-import ply.yacc as yacc
+from .coolex import tokens, Coolex
+from . import coolast as ast
+from .ply import yacc
 
 
 # noinspection PyMethodMayBeStatic

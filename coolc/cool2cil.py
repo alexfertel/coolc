@@ -1,6 +1,6 @@
-import coolast as ast
-import cilast as cil
-import visitor
+from . import coolast as ast
+from . import cilast as cil
+from . import visitor
 
 
 class Cool2CilVisitor:

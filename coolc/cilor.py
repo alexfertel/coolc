@@ -12,8 +12,8 @@ for line in fileinput.input('cilast.py'):
         name = klass.split('(')[0] if '(' in klass else klass.split(':')[0]
         names.append(name)
 
-generated = 'import cilast as ast\n'
-generated += 'import visitor\n\n\n'
+generated = 'from . import cilast as ast\n'
+generated += 'from . import visitor\n\n\n'
 generated += 'class GenericVisitor:\n' if len(sys.argv) == 1 else f'class {sys.argv[1]}Visitor:\n'
 generated += "\t@visitor.on('node')\n"
 generated += "\tdef visit(self, node):\n"

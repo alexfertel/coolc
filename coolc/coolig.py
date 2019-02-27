@@ -1,6 +1,6 @@
 from collections import defaultdict
-import coolast as ast
-import visitor
+from . import coolast as ast
+from . import visitor
 
 
 class InheritanceGraphVisitor:

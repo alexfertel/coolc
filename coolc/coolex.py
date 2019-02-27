@@ -1,5 +1,5 @@
-import ply.lex as lex
-from ply.lex import TOKEN
+from .ply import lex
+from .ply.lex import TOKEN
 
 
 # ############################################ TOKENS ##################################################

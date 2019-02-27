@@ -1,5 +1,5 @@
 import itertools as itl
-import coolast as ast
+from . import coolast as ast
 
 
 class Scope:

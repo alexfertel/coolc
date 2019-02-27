@@ -1,5 +1,5 @@
-import cil_hierarchy as cil
-import visitor
+from . import cilast as cil
+from . import visitor
 
 class CILWriterVisitor(object):
     def __init__(self):

@@ -1,5 +1,5 @@
-import coolast as ast
-import visitor
+from . import coolast as ast
+from . import visitor
 
 
 class Cil2MipsVisitor:
