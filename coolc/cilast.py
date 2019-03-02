@@ -11,6 +11,9 @@ class CILProgram(CILNode):
 
 class CILType(CILNode):
     def __init__(self, name, attributes, methods):
+        """
+        The ctor of a type must be its first method
+        """
         self.name = name
         self.attributes = attributes
         self.methods = methods

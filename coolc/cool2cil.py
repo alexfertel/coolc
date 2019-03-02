@@ -6,11 +6,23 @@ from .scope import VariableInfo
 
 class Cool2CilVisitor:
     def __init__(self):
+        # Handle current program
+        self.dottypes = []
         self.dotdata = []
+        self.dotcode = []
+
+        # Handle current function
         self.current_function_name = ""
-        self.current_class_name = ""
         self.localvars = []
         self.instructions = []
+
+        # Handle current class
+        self.current_class_name = ""
+        self.attributes = []
+        self.methods = []
+        self.ctor = []
+
+        # Handle internal names
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
@@ -55,11 +67,24 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
+    # def register_func(self, instructions):
+    #     func = func(*args)
+    #     self.dotcode.append(func)
+    #     return func
+
+    def register_type(self):
+        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
+        self.dottypes.append(ttype)
+        return ttype
+
     def register_data(self, value):
         vname = f'data_{len(self.dotdata)}'
         data_node = cil.CILData(vname, value)
         self.dotdata.append(data_node)
         return data_node
+
+    def generate_ctor(self, attributes):
+        return 0
 
     # ======================================================================
 
@@ -73,28 +98,56 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Program)
     def visit(self, node: ast.Program):
-        self.current_function_name = 'main'
+        """
+        Every program in cool has a `Main` class and a `main` method.
+        Every program in cil should have an `entrypoint` method which is to be run to start the program.
+        """
 
-        vinfo = self.visit(node.expr)
-        # return_node = self.register_instruction(cil.CILReturn, vinfo)
-        self.register_instruction(cil.CILReturn, vinfo)
+        root = cil.CILProgram(self.dottypes, self.dotdata, self.dotcode)
 
-        dotcode = cil.CILFunction(self.current_function_name, [], self.localvars, self.instructions)
+        # self.current_function_name = 'main'
 
-        root = cil.CILProgram([], self.dotdata, [dotcode])
-        return root
+        # vinfo = self.visit(node.expr)
+        # # return_node = self.register_instruction(cil.CILReturn, vinfo)
+        # self.register_instruction(cil.CILReturn, vinfo)
+
+        # dotcode = cil.CILFunction(self.current_function_name, [], self.localvars, self.instructions)
+
+        # root = cil.CILProgram([], self.dotdata, [dotcode])
+        # return root
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class):
-        pass
+        # Update current class name
+        self.current_class_name = node.name
 
-    @visitor.when(ast.ClassFeature)
-    def visit(self, node: ast.ClassFeature):
-        pass
+        # Empty old values
+        self.attributes.clear()
+        self.methods.clear()
+        self.ctor.clear()
+
+        # If this class inherits we have to update its attributes, methods and ctor: CIL types have them all.
+        if node.parent:
+            # TODO: Optimize this! Maybe use a dict?
+            for ttype in self.dottypes:
+                if ttype.name == node.parent:
+                    attributes.extend(ttype.attributes)
+                    methods.extend(ttype.methods[1:])
+
+                    self.ctor.extend(methods[0].instructions)  # this is the parent's constructor
+
+        self.visit(node.features)
+
+        self.methods.insert(0, ctor)  # Add constructors
+
+        ttype = self.register_type()
+        print(ttype)
+        return ttype
 
     @visitor.when(ast.ClassMethod)
     def visit(self, node: ast.ClassMethod):
-        pass
+        
+        
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):

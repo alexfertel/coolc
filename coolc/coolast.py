@@ -38,11 +38,11 @@ class Program(Node):
 
 
 class Class(Node):
-    def __init__(self, name, parent=None, features=[]):
+    def __init__(self, name, parent=None, features=None):
         super(Class, self).__init__()
         self.name = name
         self.parent = parent
-        self.features = features
+        self.features = features if features else []
 
     def to_tuple(self):
         return tuple([
@@ -330,6 +330,7 @@ class Let(Expr):
         return "{}(declaration_list={}, body={})".format(
             self.clsname, self.declaration_list, self.body)
 
+
 class Declaration(Expr):
     def __init__(self, identifier, ttype, expression):
         super(Declaration, self).__init__()
@@ -595,4 +596,3 @@ class LessThanOrEqual(BinaryOperation):
 
     def to_readable(self):
         return "{}(first={}, second={})".format(self.clsname, self.first, self.second)
-
