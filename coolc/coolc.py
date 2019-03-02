@@ -39,10 +39,16 @@ class Compiler:
             except Exception:
                 print("An unexpected error occurred!")
 
+        # Setup pipeline
+        self.steps = [
+                self.lexing,
+                self.parsing,
+                self.semantics
+            ]
+
     def compile(self):
-        self.lexing()
-        self.parsing()
-        self.semantics()
+        for step in self.steps:
+            step()
 
     def lexing(self):
         # Lexing
