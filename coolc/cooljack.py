@@ -258,37 +258,35 @@ class CoolJack:
 
     def p_expression_let(self, parse):
         """
-         expression : let_expression
+        expression : let_expression
         """
         parse[0] = parse[1]
 
-    def p_expression_let_simple(self, parse):
+    def p_let(self, parse):
         """
-        let_expression : LET ID COLON TYPE IN expression
-                       | nested_lets COMMA LET ID COLON TYPE
+        let_expression : LET declaration_list IN expression
         """
-        parse[0] = ast.Let(instance=parse[2], return_type=parse[4], init_expr=None, body=parse[6])
+        parse[0] = ast.Let(declaration_list=parse[2], body=parse[4])
 
-    def p_expression_let_initialized(self, parse):
+    def p_declaration_list(self, parse):
         """
-        let_expression : LET ID COLON TYPE ASSIGN expression IN expression
-                       | nested_lets COMMA LET ID COLON TYPE ASSIGN expression
+        declaration_list : declaration_list COMMA declaration
+                         | declaration
         """
-        parse[0] = ast.Let(instance=parse[2], return_type=parse[4], init_expr=parse[6], body=parse[8])
+        if len(parse) == 2:
+            parse[0] = (parse[1],)
+        else:
+            parse[0] = parse[1] + (parse[3],)
 
-    def p_inner_lets_simple(self, parse):
+    def p_declaration(self, parse):
         """
-        nested_lets : ID COLON TYPE IN expression
-                    | nested_lets COMMA ID COLON TYPE
+        declaration : ID COLON TYPE ASSIGN expression
+                    | ID COLON TYPE
         """
-        parse[0] = ast.Let(instance=parse[1], return_type=parse[3], init_expr=None, body=parse[5])
-
-    def p_inner_lets_initialized(self, parse):
-        """
-        nested_lets : ID COLON TYPE ASSIGN expression IN expression
-                    | nested_lets COMMA ID COLON TYPE ASSIGN expression
-        """
-        parse[0] = ast.Let(instance=parse[1], return_type=parse[3], init_expr=parse[5], body=parse[7])
+        if len(parse) == 6:
+            parse[0] = ast.Declaration(identifier=ast.Object(name=parse[1]), ttype=parse[3], expression=parse[5])
+        else:
+            parse[0] = ast.Declaration(identifier=ast.Object(name=parse[1]), ttype=parse[3], expression=None)
 
     # ######################### CASE EXPRESSION ########################################
 
@@ -358,8 +356,8 @@ class CoolJack:
             print("Error! Unexpected end of input!")
         else:
             # error = f'Syntax error! Line: {parse.lineno}, position: {parse.lexpos}, character: {parse.value}, type: {parse.type}'
-            error = f"({parse.lineno},{parse.lexpos}) - SyntacticError: Syntax error! " \
-                    f"Character: {parse.value}, Type: {parse.type}"
+            error = f"({parse.lineno},{parse.lexpos}) - SyntacticError: " \
+                    f"Parse -> '{parse.value}' Type -> '{parse.type}'"
             self.error_list.append(error)
             self.parser.errok()
 

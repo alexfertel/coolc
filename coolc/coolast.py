@@ -314,25 +314,40 @@ class StaticDispatch(Expr):
 
 
 class Let(Expr):
-    def __init__(self, instance, return_type, init_expr, body):
+    def __init__(self, declaration_list, body):
         super(Let, self).__init__()
-        self.instance = instance
-        self.return_type = return_type
-        self.init_expr = init_expr
+        self.declaration_list = declaration_list
         self.body = body
 
     def to_tuple(self):
         return tuple([
             ("class_name", self.clsname),
-            ("instance", self.instance),
-            ("return_type", self.return_type),
-            ("init_expr", self.init_expr),
+            ("declaration_list", self.declaration_list)
             ("body", self.body)
         ])
 
     def to_readable(self):
-        return "{}(instance={}, return_type={}, init_expr={}, body={})".format(
-            self.clsname, self.instance, self.return_type, self.init_expr, self.body)
+        return "{}(declaration_list={}, body={})".format(
+            self.clsname, self.declaration_list, self.body)
+
+class Declaration(Expr):
+    def __init__(self, identifier, ttype, expression):
+        super(Declaration, self).__init__()
+        self.identifier = identifier
+        self.ttype = ttype
+        self.expression = expression
+
+    def to_tuple(self):
+        return tuple([
+            ("class_name", self.clsname),
+            ("identifier", self.identifier),
+            ("ttype", self.ttype),
+            ("expression", self.expression)
+        ])
+
+    def to_readable(self):
+        return "{}(identifier={}, ttype={}, expression={})".format(
+            self.clsname, self.identifier, self.ttype, self.expression)
 
 
 class If(Expr):

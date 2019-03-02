@@ -1,6 +1,7 @@
-from . import coolast as ast
 from . import cilast as cil
+from . import coolast as ast
 from . import visitor
+from .scope import VariableInfo
 
 
 class Cool2CilVisitor:
