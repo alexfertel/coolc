@@ -1,2 +1,7 @@
-a = {'a':9}
-print(a.get('r'))
+class A:
+    pass
+
+a = A()
+
+if type(a) == A:
+    print('ok')

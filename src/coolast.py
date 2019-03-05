@@ -55,6 +55,22 @@ class Class(Node):
     def to_readable(self):
         return "{}(name='{}', parent={}, features={})".format(self.clsname, self.name, self.parent, self.features)
 
+    def get_method(self, name: str):
+        for feature in self.features:
+            if type(feature) == ClassMethod and feature.name == name:
+                return feature
+        if self.parent != None:
+            return self.parent.get_method(name)
+        return None
+
+    def get_attr(self, name: str):
+        for feature in self.features:
+            if type(feature) == ClassAttribute and feature.name == name:
+                return feature
+        if self.parent != None:
+            return self.parent.get_attr(name)
+        return None
+
 
 class ClassFeature(Node):
     def __init__(self):
