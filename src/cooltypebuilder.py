@@ -6,6 +6,8 @@ class TypeBuilderVisitor:
     def __init__(self, scope: Scope):
         self.__scope = scope
         self.__current_class = None
+        self.__has_main = 0
+        self.__bad_main = 0
 
     def __build_builtins(self):
         """
@@ -104,18 +106,19 @@ class TypeBuilderVisitor:
             errors.append("This program does not have a <Main> class, every Cool program must!")
             return valid
 
-        # # Main class must have a 'main' method without formal params
-        # valid &= 1 if self.__scope.get_type('Main').get_method('main') is not None\
-        #                 and self.__scope.get_type('Main').parent == None else 0
-        # if not valid:
-        #     errors.append("The <Main> class does not have a 'main' method!")
+        # Main class must have a 'main' method without formal params
+        if not self.__has_main:
+            errors.append("The <Main> class does not have a 'main' method!")
+            return 0
 
+        if self.__bad_main:
+            errors.append("The 'main' method has parameters!")
+            return 0
 
         return valid
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class, errors):
-        # Each time we start analysing a new class we have to clear the current_class dict
         self.__current_class = self.__scope.get_type(node.name)
 
         # Check if features of this class are defined only once
@@ -123,32 +126,33 @@ class TypeBuilderVisitor:
         for feature in node.features:
             unique &= self.visit(feature, errors)
 
-        # Add this classname to the defined types
-        self.types[node.name] = node
         return unique
 
     @visitor.when(ast.ClassMethod)
     def visit(self, node: ast.ClassMethod, errors):
         # Check if method is defined in the current class only once
         if self.__current_class.contain_method(node.name):
-            errors.append(f"Method '{node.name}' is defined more than once in class <{self.current_class['name']}>!")
+            errors.append(f"Method '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0
 
         self.__current_class.features.append(node)
 
         # If this conditions are met, a 'Main' class with a 'main' method is present
-        if node.name == 'main' and self.current_class['name'] == 'Main':
-            self.has_main = 1
+        if node.name == 'main' and self.__current_class.name == 'Main':
+            self.__has_main = 1
+
+            if len(node.formal_params) != 0:
+                self.__bad_main == 1
 
         return 1
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors):
-        class_attr = self.current_class['attr_names']
         # Check if attribute is defined in the current class only once
-        if node.name in class_attr:
-            errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.current_class['name']}>!")
+        if self.__current_class.get_method() is not None:
+            errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0
 
-        class_attr.add(node.name)
+        self.__current_class.features.append(node)
+
         return 1
