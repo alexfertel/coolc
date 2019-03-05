@@ -71,6 +71,12 @@ class Class(Node):
             return self.parent.get_attr(name)
         return None
 
+    def contain_method(self, name: str) -> bool:
+        for feature in self.features:
+            if type(feature) == ClassMethod and feature.name == name:
+                return True
+        return False
+
 
 class ClassFeature(Node):
     def __init__(self):
