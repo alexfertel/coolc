@@ -9,9 +9,7 @@ class TypeCollectorVisitor:
 
     def __add_builtins(self):
         """
-        Initializes the COOL Builtin Classes: Object, IO, Int, Bool and String, and adds them to the Program AST node.
-        :param root: an AST.Program class instance, represents a COOL program AST.
-        :return: a new AST.Program class instance.
+        Create COOL Builtin Classes: Object, IO, Int, Bool and String.
         """
 
         # Object Class
@@ -19,19 +17,19 @@ class TypeCollectorVisitor:
         if return_value != 'Ok': self.__errors.append(return_value)
 
         # IO Class
-        self.__scope.create_type('IO')
+        return_value = self.__scope.create_type('IO')
         if return_value != 'Ok': self.__errors.append(return_value)
 
         # Int Class
-        self.__scope.create_type('Int')
+        return_value = self.__scope.create_type('Int')
         if return_value != 'Ok': self.__errors.append(return_value)
 
         # Bool Class
-        self.__scope.create_type('Bool')
+        return_value = self.__scope.create_type('Bool')
         if return_value != 'Ok': self.__errors.append(return_value)
 
         # String Class
-        self.__scope.create_type('String')
+        return_value = self.__scope.create_type('String')
         if return_value != 'Ok': self.__errors.append(return_value)
 
     def get_errors(self):
@@ -47,7 +45,7 @@ class TypeCollectorVisitor:
         self.__add_builtins()
 
         for current_class in node.classes:
-            visit(current_class)
+            self.visit(current_class)
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class):
