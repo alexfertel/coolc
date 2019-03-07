@@ -1,6 +1,6 @@
-import coolast as ast
-import visitor
-from scope import Scope
+from . import coolast as ast
+from . import visitor
+from .scope import Scope
 
 class TypeBuilderVisitor:
     def __init__(self, scope: Scope):
