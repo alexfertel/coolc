@@ -1,3 +1,5 @@
+import copy
+
 from . import cilast as cil
 from . import coolast as ast
 from . import visitor
@@ -83,6 +85,27 @@ class Cool2CilVisitor:
         self.dotdata.append(data_node)
         return data_node
 
+    def get_type(self, name):
+        included = filter(lambda x: x.name == name, self.dottypes)
+        if included:
+            return list(included)[0]
+        return None
+
+    def call_ctor(self, ctor, instance):
+        # This updates all the SETATTR instructions of the ctor with the allocated instance,
+        # registers them in the instructions of the current method.
+        replicated = copy.deepcopy(ctor)
+
+        # Update instructions
+        for instruction in replicated:
+            if type(instruction) is cil.CILSetAttrib:
+                instruction.instance = instance
+        
+        # Register instructions after the ALLOCATE
+        self.instructions.extend(replicated)
+        return replicated
+
+
     # ======================================================================
 
     # ======================================================================
@@ -128,7 +151,7 @@ class Cool2CilVisitor:
         # I think this is always the result of an ALLOCATE!
         # So, actually, we don't need to write a PARAM-ARG duo.
         # We just paste all the code from the constructor where its called!
-        self.ctor
+        # self.ctor
 
         # If this class inherits we have to update its attributes, methods and ctor: CIL types have them all.
         if node.parent:
@@ -142,7 +165,9 @@ class Cool2CilVisitor:
 
         self.visit(node.features)
 
-        self.methods.insert(0, self.ctor)  # Add constructors
+        self.methods.insert(0, self.ctor)  # Add constructors as the first element of the methods
+        # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
+        # recurison depth exceeded, of course, does C# detects this at compile time?
 
         ttype = self.register_type()
         print(ttype)
@@ -162,6 +187,9 @@ class Cool2CilVisitor:
         if node.init_expr:
             vinfo = self.visit(node.init_expr)
             # Here should go using SETATTR to set the vinfo as the instance's attribute
+            self.register_instruction(cil.CILSetAttrib, "", node.name, vinfo)  # The instance is not known at this point
+            # So we have to make a call after the ALLOCATE to set the instance here, that's why the ctor receives
+            # the instance as an argument.
 
             self.ctor.extend(self.instructions)  # I gues we're not losing instructions cause we save them with this!
         else:  # Init with default of the type
@@ -171,9 +199,9 @@ class Cool2CilVisitor:
 
         # Not sure what to do with this. How to store the value of the attr in its address?
         # I think it should be something like this: Upon `new T`, we alloc a memory address,
-        # search for the constructor addres and then it sets the attributes like an array.
-        return_node = self.register_instruction(cil.CILReturn(vinfo))
-        self.ctor.append()
+        # search for the constructor address and then it sets the attributes like an array.
+        # return_node = self.register_instruction(cil.CILReturn(vinfo))  # I think we don't need this
+        # self.ctor.append()  # Nor this
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
@@ -205,7 +233,14 @@ class Cool2CilVisitor:
     def visit(self, node: ast.NewObject):
         vinfo = self.define_internal_local()
         self.register_instruction(cil.CILAllocate, vinfo, node.type)
-        # TODO: Call here `node.type` constructor
+        
+        # TODO: Make sure ALLOCATEs execute in order, i.e. when we run `new T`, the constructor of T
+        # is already discovered!
+        ttype = self.get_type(node.type)
+        ctor = ttype.methods[0] if ttype else None
+
+        self.call_ctor(ctor, vinfo)
+
         return vinfo
 
     # TODO: Check this!
