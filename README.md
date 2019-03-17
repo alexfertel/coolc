@@ -14,6 +14,14 @@ You can compile a `.cl` program with `coolc` using the [docker](http://docker.co
 
 There is a [Dockerfile](Dockerfile) in the project root which specifies how the coolc image is built.
 
+To build this image correctly just run:
+
+```bash
+$ chmod 755 main.py
+$ ./build.sh
+Image `alexfertel/coolc:latest` built successfully!
+```
+
 It just copies most of this project to a `/coolc` directory into the build, sets up 4 volumes and declares an entrypoint with default arguments (a `hello_world.cl`, which surprisingly is COOL's **Hello, World!**). For those who aren't versed in `docker`, this allows to do the following:
 
 ```bash
@@ -47,8 +55,59 @@ Hi!
 
 ## How it works
 
-`coolc` is based heavily in the **visitor** pattern, it makes lexing and parsing using [ply](link to ply), makes [X] *visits* to the *AST* (Abstract Syntax Tree) and finally compiles `CIL`'s structure (another **AST**) to `MIPS`.
+`coolc` is based heavily in the **visitor** pattern, it makes lexing and parsing using [ply](https://en.wikipedia.org/wiki/PLY_(Python_Lex-Yacc)), \[N\] *visits* to the *AST* (Abstract Syntax Tree) and finally compiles `CIL`'s structure (another **AST**) to `MIPS`.
 
 ## Structure
+
+The project is structured as follows:
+
+    coolc/
+    ├── mips/
+    ├── cil/
+    │    ├── ast/
+    │    └── code/
+    ├── cool/
+    │    ├── ast/
+    │    └── code/
+    ├── tests/
+    ├── coolc/
+    │    ├── ply/
+    │    │    ├── __init__.py
+    │    │    ├── lex.py
+    │    │    └── yacc.py
+    │    ├── __init__.py
+    │    ├── cil2mips.py
+    │    ├── cilast.py
+    │    ├── cilemitter.py
+    │    ├── cilor.py
+    │    ├── cool2cil.py
+    │    ├── coolast.py
+    │    ├── coolc.py
+    │    ├── coolex.py
+    │    ├── coolig.py
+    │    ├── cooljack.py
+    │    ├── coolor.py
+    │    ├── coolpainter.py
+    │    ├── coolsemantic.py
+    │    ├── cooltypebuilder.py
+    │    ├── cooltypecollector.py
+    │    ├── cooltypes.py
+    │    ├── coolutils.py
+    │    ├── genericvisitor.py
+    │    ├── parser.out
+    │    ├── parsetab.py
+    │    ├── scope.py
+    │    ├── test.py
+    │    └── visitor.py
+    ├── .dockerignore
+    ├── .gitignore
+    ├── build.sh
+    ├── Dockerfile
+    ├── grammar.md
+    ├── main.py
+    └── README.md
+
+The idea behind this structure is to use `coolc` just for the compiling phase you want. For example, lets say there's a `cil` *AST* you obtained from a `.cl` file, but couldn't properly emit the `mips` code for that *AST*,
+
 
 ## API

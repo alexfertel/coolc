@@ -2,7 +2,7 @@ from . import coolex
 from . import cooljack
 from . import cooltypes
 from . import coolig
-from . import utils
+from . import coolutils
 
 class Compiler:
     def __init__(self, *programs):
@@ -22,7 +22,7 @@ class Compiler:
         for program in programs:
             if not str(program).endswith(".cl"):
                 error = "Cool program files must end with a `.cl` extension.\r\n"
-                print(utils.error_template())
+                print(coolutils.error_template())
                 print(error)
                 exit(1)
 
@@ -34,7 +34,7 @@ class Compiler:
             except (IOError, FileNotFoundError):
                 error = f"(0,0) - CompilerError: File `{program}` was not found. Are you sure the file exists?"
                 # print(f'Error! File "{program}" was not found. Are you sure the file exists?')
-                print(utils.error_template())
+                print(coolutils.error_template())
                 print(error)
             except Exception:
                 print("An unexpected error occurred!")
@@ -58,7 +58,7 @@ class Compiler:
         for token in self.lexer:
             print(token)
         if self.lexer.error_list:
-            print(utils.error_template())
+            print(coolutils.error_template())
             for error in self.lexer.error_list:
                 print(error)
             exit(1)
@@ -71,7 +71,7 @@ class Compiler:
         self.parser.build()
         self.ast = self.parser.parse(self.cool_program_code)
         if self.parser.error_list:
-            print(utils.error_template())
+            print(coolutils.error_template())
             for error in self.parser.error_list:
                 print(error)
             exit(1)
