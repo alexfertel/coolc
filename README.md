@@ -88,7 +88,7 @@ The project is structured as follows:
     │    ├── cooljack.py
     │    ├── coolor.py
     │    ├── coolpainter.py
-    │    ├── coolsemantic.py
+    │    ├── coolsemantics.py
     │    ├── cooltypebuilder.py
     │    ├── cooltypecollector.py
     │    ├── cooltypes.py
@@ -107,7 +107,55 @@ The project is structured as follows:
     ├── main.py
     └── README.md
 
-The idea behind this structure is to use `coolc` just for the compiling phase you want. For example, lets say there's a `cil` *AST* you obtained from a `.cl` file, but couldn't properly emit the `mips` code for that *AST*,
+The idea behind this structure is to use `coolc` just for the compiling phase you want. For example, lets say there's a `cil` *AST* you obtained from a `.cl` file, but couldn't properly emit the `mips` code for that *AST*, you place that ast builder in the `cil/ast` folder as an executable script and use the `api` to emit the corresponding `mips` code.
 
+We will discuss only the most important files.
 
-## API
+* `main.py`
+
+    Entrypoint of the application and thus of the Dockerfile. It just runs compilation for the provided `.cl` files.
+
+* `grammar.md`
+
+    Grammar specification used for this compiler. It should be equivalent to **COOL**.
+
+* `coolc/coolc.py`
+
+    Exposes the `Compiler` class, which in turn exposes the *API* of this compiler.
+
+* `coolc/coolex.py`
+
+    Specifies the **lexing** rules for **COOL** using [ply](https://en.wikipedia.org/wiki/PLY_(Python_Lex-Yacc)).
+
+* `coolc/cooljack.py`
+
+    Specifies the **parsing** rules for **COOL** using [ply](https://en.wikipedia.org/wiki/PLY_(Python_Lex-Yacc)).
+
+* `*ast.py`
+
+    Corresponding definition of the *AST*s of **COOL** and **CIL**.
+
+* `*or.py`
+
+    Visitor generators for each corresponding *AST*s.
+
+* `coolc/coolig.py`
+
+    Inheritance Graph builder and checker.
+
+* `*types*.py`
+
+    Type-related semantic checking files.
+
+* `coolc/coolsemantics.py`
+
+    Semantic checking visitor.
+
+* `coolc/cool2cil.py`
+
+    Converts a **COOL** *AST* into a **CIL** *AST*.
+
+* `coolc/cil2mips.py`
+
+    Converts a **CIL** *AST* into **MIPS** code.
+
