@@ -24,13 +24,23 @@ class CILData(CILNode):
         self.vname = vname
         self.value = value
 
+# I don't think this is it...
+# class CILFunction(CILNode):
+#     def __init__(self, fname, params, localvars, instructions):
+#         self.fname = fname
+#         self.params = params
+#         self.localvars = localvars
+#         self.instructions = instructions
 
 class CILFunction(CILNode):
-    def __init__(self, fname, params, localvars, instructions):
+    def __init__(self, fname, instructions):
         self.fname = fname
-        self.params = params
-        self.localvars = localvars
         self.instructions = instructions
+
+class CILMethod(CILNode):
+    def __init__(self, mname, fname):
+        self.fname = fname
+        self.mname = mname
 
 
 class CILParam(CILNode):

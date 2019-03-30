@@ -270,7 +270,15 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        pass
+        args = []  # List of vinfos
+        for arg in node.arguments:
+            args.append(self.visit(arg))
+        
+        instance = self.visit(node.instance)  # This is going to be param `self`
+
+        # Map function to a CIL function
+        
+        
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
