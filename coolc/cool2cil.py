@@ -396,23 +396,21 @@ class Cool2CilVisitor:
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILEqual, vinfo, first_vinfo, second_vinfo)
         return vinfo
 
-    # TODO: I can't tell if this needs more logic than Equals!
     @visitor.when(ast.LessThan)
     def visit(self, node: ast.LessThan):
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILLessThan, vinfo, first_vinfo, second_vinfo)
         return vinfo
 
-    # TODO: I can't tell if this needs more logic than Equals!
     @visitor.when(ast.LessThanOrEqual)
     def visit(self, node: ast.LessThanOrEqual):
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILMinus, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILLessThanOrEqual, vinfo, first_vinfo, second_vinfo)
         return vinfo

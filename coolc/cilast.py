@@ -75,6 +75,20 @@ class CILStar(CILArithmetic):
 class CILDiv(CILArithmetic):
     pass
 
+class CILBoolean(CILInstruction):
+    def __init__(self, dest, left, right):
+        self.dest = dest
+        self.left = left
+        self.right = right
+
+class CILEqual(CILBoolean):
+    pass
+
+class CILLessThan(CILBoolean):
+    pass
+
+class CILLessThanOrEqual(CILBoolean):
+    pass
 
 class CILGetAttrib(CILInstruction):
     def __init__(self, dest, instance, attribute):

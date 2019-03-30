@@ -12,7 +12,7 @@ class Compiler:
         # TODO: Setup pipeline: coolex => cooljack => semantic visitor => cool-cil visitor => cil-mips generator
         # coolex => cooljack => cooltypes => coolig => semantic visitor => cool-cil visitor => cil-mips generator
 
-        # Initialize the master program source code string and initial properties.
+        # Initialize the source code string and initial properties of the master program.
         self.cool_program_code = ""
         self.lexer = None
         self.parser = None
