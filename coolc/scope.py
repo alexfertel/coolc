@@ -4,7 +4,7 @@ from . import coolast as ast
 
 class Scope:
     def __init__(self, parent=None):
-        self.__types = {} if parent != None else parent.types
+        self.__types = {} if parent is None else parent.types
         self.locals = []
         self.parent = parent
         self.children = []
