@@ -4,6 +4,7 @@ from . import cooltypes
 from . import coolig
 from . import utils
 from . import cooltypecollector
+from . import cooltypebuilder
 
 class Compiler:
     def __init__(self, *programs):
@@ -81,13 +82,8 @@ class Compiler:
         print(self.ast.clsname)
 
     def semantics(self):
-        print('####(Start)SEMANTIC####')
         type_collector = cooltypecollector.TypeCollectorVisitor()
-
-        print('(Start)Type collector....')
-        print('(Start)Visitor....')
-        type_collector_result = type_collector.visit(self.ast)
-        print('(End)Visitor....')
+        type_collector.visit(self.ast)
 
         errors = type_collector.get_errors()
 
@@ -99,14 +95,23 @@ class Compiler:
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
 
-        print('(End)Type collector.')
-        print(type_collector.get_scope().get_types_dic())
-        exit()
+        type_builder = cooltypebuilder.TypeBuilderVisitor(type_collector.get_scope())
+        type_builder.visit(self.ast)
 
-        # print(f'This program types are: {types_discoverer.types.keys()}')
+        errors = type_builder.get_errors()
 
-        # graph_handler = coolig.InheritanceGraphVisitor(types_discoverer.types.keys())
-        # graph = graph_handler.visit(ast_with_builtins)
+        if len(errors) > 0:
+            print("Something went wrong when building types!")
+            for error in errors:
+                print(error)
+            exit(1)
+        else:
+            print("Correctly builder all types, no semantic problems with this pass!")
+
+        print(f'This program types are: {type_builder.get_scope().get_types_dic().keys()}')
+
+        graph_handler = coolig.InheritanceGraphVisitor(type_builder.get_scope().get_types_dic().keys())
+        graph = graph_handler.visit(self.ast)
 
         print(f'Inheritance Graph: {graph}')
 

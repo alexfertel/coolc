@@ -1,7 +1,2 @@
-class A:
-    pass
-
-a = A()
-
-if type(a) == A:
-    print('ok')
+a = 3
+print('Hola %s es mi numero'% (a))
