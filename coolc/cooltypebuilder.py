@@ -8,6 +8,7 @@ class TypeBuilderVisitor:
         self.__current_class = None
         self.__has_main = 0
         self.__bad_main = 0
+        self.__errors = []
 
     def __build_builtins(self):
         """
@@ -32,6 +33,8 @@ class TypeBuilderVisitor:
                                                                         return_type="String",
                                                                         body=None))
 
+        # IO parent
+        self.__scope.get_type('IO').parent = 'Object'
 
         # IO features
 
@@ -56,18 +59,24 @@ class TypeBuilderVisitor:
                                                                         return_type="SELF_TYPE",
                                                                         body=None))
 
+        # Int parent
+        self.__scope.get_type('Int').parent = 'Object'
 
         # Int features
 
         # _val attribute: integer un-boxed value
         self.__scope.get_type('Int').features.append(ast.ClassAttribute(name="_val", attr_type="unboxed_int", init_expr=None))
 
+        # Bool parent
+        self.__scope.get_type('Bool').parent = 'Object'
 
         # Bool Class
 
         # _val attribute: boolean un-boxed value
         self.__scope.get_type('Bool').features.append(ast.ClassAttribute(name="_val", attr_type="unboxed_boolean", init_expr=None))
 
+        # String parent
+        self.__scope.get_type('String').parent = 'Object'
 
         # String Class
 
@@ -88,51 +97,63 @@ class TypeBuilderVisitor:
                                                                         return_type='String',
                                                                         body=None))
 
+    def get_errors(self):
+        return self.__errors
+
+    def get_scope(self):
+        return self.__scope
+
     @visitor.on('node')
     def visit(self, node, errors):
         pass
 
     @visitor.when(ast.Program)
-    def visit(self, node: ast.Program, errors):
+    def visit(self, node: ast.Program):
         self.__build_builtins()
 
         valid = 1
         for klass in node.classes:
-            valid &= self.visit(klass, errors)
+            valid &= self.visit(klass)
 
         # Program must have a Main class declared
         valid &= 1 if self.__scope.get_type('Main') is not None else 0
         if not valid:
-            errors.append("This program does not have a <Main> class, every Cool program must!")
+            self.__errors.append("This program does not have a <Main> class, every Cool program must!")
             return valid
 
         # Main class must have a 'main' method without formal params
         if not self.__has_main:
-            errors.append("The <Main> class does not have a 'main' method!")
+            self.__errors.append("The <Main> class does not have a 'main' method!")
             return 0
 
         if self.__bad_main:
-            errors.append("The 'main' method has parameters!")
+            self.__errors.append("The 'main' method has parameters!")
             return 0
 
         return valid
 
     @visitor.when(ast.Class)
-    def visit(self, node: ast.Class, errors):
+    def visit(self, node: ast.Class):
         self.__current_class = self.__scope.get_type(node.name)
+
+        # Check if parent class exist
+        if node.parent not in self.__scope.get_types_dic().keys():
+            self.__errors.append('Class %s doesn\'t exist.' % (node.parent))
+        else:
+            self.__current_class.parent = node.parent
 
         # Check if features of this class are defined only once
         unique = 1
         for feature in node.features:
-            unique &= self.visit(feature, errors)
+            unique &= self.visit(feature)
 
         return unique
 
     @visitor.when(ast.ClassMethod)
-    def visit(self, node: ast.ClassMethod, errors):
+    def visit(self, node: ast.ClassMethod):
         # Check if method is defined in the current class only once
         if self.__current_class.contain_method(node.name):
-            errors.append(f"Method '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
+            self.__errors.append(f"Method '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0
 
         self.__current_class.features.append(node)
@@ -147,10 +168,10 @@ class TypeBuilderVisitor:
         return 1
 
     @visitor.when(ast.ClassAttribute)
-    def visit(self, node: ast.ClassAttribute, errors):
+    def visit(self, node: ast.ClassAttribute):
         # Check if attribute is defined in the current class only once
         if self.__current_class.get_method() is not None:
-            errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
+            self.__errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0
 
         self.__current_class.features.append(node)
