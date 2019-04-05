@@ -1,0 +1,21 @@
+digraph southeast_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- board_size\nt$4 <- position\nt$5 <- columns\nt$3 <- t$4 + t$5\nt$1 <- t$2 < t$3\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\nt$0 <- \" \"\n"];
+ n1 -> n3 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$13 <- position\nt$14 <- 1\nt$11 <- t$13 + t$14\nt$12 <- columns\nt$9 <- t$11 / t$12\nt$10 <- columns\nt$7 <- t$9 * t$10\nt$15 <- position\nt$16 <- 1\nt$8 <- t$15 + t$16\nt$6 <- t$7 = t$8\n"];
+ n2 -> n5 [label="!t$6"];
+ n2 -> n4 [label="t$6"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+  n4 [label="(Node 4)\nthen branch\nt$0 <- \" \"\n"];
+ n4 -> n6 [label="true"];
+  n5 [label="(Node 5)\nelse branch\nt$18 <- position\nt$19 <- 1\nt$17 <- t$18 + t$19\n"];
+ n5 -> n7 [label="true"];
+  n6 [label="(Node 6)\nif-join\n"];
+ n6 -> n3 [label="true"];
+  n7 [label="(Node 7)\nfcall-pre to south\nt$0 <- self.south(t$17,)\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-post to south\n"];
+ n8 -> n6 [label="true"];
+}

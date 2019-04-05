@@ -1,0 +1,10 @@
+digraph or_post {
+  n0 [label="(Node 0)\nstart\nt$1 <- b1\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\nt$0 <- true\n"];
+ n1 -> n3 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$0 <- b2\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+}

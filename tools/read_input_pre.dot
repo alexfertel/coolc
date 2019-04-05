@@ -1,0 +1,30 @@
+digraph read_input_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- new Graph\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to in_string\nt$3 <- self.in_string()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to in_string\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nwhile-pred\nt$7 <- t$3\nt$8 <- \"\\\\n\"\nt$6 <- t$7 = t$8\nt$5 <- not t$6\nt$11 <- t$3\nt$12 <- \"\"\nt$10 <- t$11 = t$12\nt$9 <- not t$10\nt$13 <- boolop\n"];
+ n3 -> n6 [label="true"];
+  n4 [label="(Node 4)\nwhile-join\nt$2 <- Default_Object\nt$0 <- t$1\nt$0 <- return\n"];
+  n5 [label="(Node 5)\nwhile-body\nt$17 <- t$3\n"];
+ n5 -> n8 [label="true"];
+  n6 [label="(Node 6)\nfcall-pre to and\nt$4 <- t$13.and(t$5,t$9,)\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-post to and\n"];
+ n7 -> n4 [label="!t$4"];
+ n7 -> n5 [label="t$4"];
+  n8 [label="(Node 8)\nfcall-pre to parse_line\nt$16 <- self.parse_line(t$17,)\n"];
+ n8 -> n9 [label="true"];
+  n9 [label="(Node 9)\nfcall-post to parse_line\nt$18 <- t$1\n"];
+ n9 -> n10 [label="true"];
+  n10 [label="(Node 10)\nfcall-pre to add_vertice\nt$15 <- t$18.add_vertice(t$16,)\n"];
+ n10 -> n11 [label="true"];
+  n11 [label="(Node 11)\nfcall-post to add_vertice\n"];
+ n11 -> n12 [label="true"];
+  n12 [label="(Node 12)\nfcall-pre to in_string\nt$3 <- self.in_string()\n"];
+ n12 -> n13 [label="true"];
+  n13 [label="(Node 13)\nfcall-post to in_string\nt$14 <- t$3\n"];
+ n13 -> n3 [label="true"];
+}

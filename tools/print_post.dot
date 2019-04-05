@@ -1,0 +1,27 @@
+digraph print_post {
+  n0 [label="(Node 0)\nstart\nt$4 <- title\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to out_string\nt$5 <- self.out_string(\"title:      \",)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to out_string\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nfcall-pre to out_string\nt$3 <- t$5.out_string(t$4,)\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-post to out_string\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-pre to out_string\n_dead_ <- t$3.out_string(\"\\\\n\",)\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-post to out_string\nt$10 <- author\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-pre to out_string\nt$11 <- self.out_string(\"author:     \",)\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-post to out_string\n"];
+ n8 -> n9 [label="true"];
+  n9 [label="(Node 9)\nfcall-pre to out_string\nt$9 <- t$11.out_string(t$10,)\n"];
+ n9 -> n10 [label="true"];
+  n10 [label="(Node 10)\nfcall-post to out_string\n"];
+ n10 -> n11 [label="true"];
+  n11 [label="(Node 11)\nfcall-pre to out_string\n_dead_ <- t$9.out_string(\"\\\\n\",)\n"];
+ n11 -> n12 [label="true"];
+  n12 [label="(Node 12)\nfcall-post to out_string\nt$0 <- self\nt$0 <- return\n"];
+}

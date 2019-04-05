@@ -1,0 +1,16 @@
+parent_map
+7
+Board
+IO
+Bool
+Object
+CellularAutomaton
+Board
+IO
+Object
+Int
+Object
+Main
+CellularAutomaton
+String
+Object

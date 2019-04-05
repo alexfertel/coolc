@@ -1,0 +1,3 @@
+digraph print_list_pre {
+  n0 [label="(Node 0)\nstart\nt$0 <- true\nt$0 <- return\n"];
+}

@@ -1,0 +1,14 @@
+digraph north_pre {
+  n0 [label="(Node 0)\nstart\nt$4 <- position\nt$5 <- columns\nt$2 <- t$4 - t$5\nt$3 <- 0\nt$1 <- t$2 < t$3\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\nt$0 <- \" \"\n"];
+ n1 -> n3 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$7 <- position\nt$8 <- columns\nt$6 <- t$7 - t$8\n"];
+ n2 -> n4 [label="true"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+  n4 [label="(Node 4)\nfcall-pre to cell\nt$0 <- self.cell(t$6,)\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-post to cell\n"];
+ n5 -> n3 [label="true"];
+}

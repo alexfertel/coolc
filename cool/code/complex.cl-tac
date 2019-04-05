@@ -1,0 +1,10 @@
+comment start
+label Complex_init_0
+t$2 <- x
+t$3 <- a
+t$1 <- = t$2 t$3
+t$5 <- y
+t$6 <- b
+t$4 <- = t$5 t$6
+t$0 <- self
+return t$0

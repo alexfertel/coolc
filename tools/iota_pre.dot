@@ -1,0 +1,14 @@
+digraph iota_pre {
+  n0 [label="(Node 0)\nstart\nl <- new Nil\nt$1 <- l\nt$3 <- 0\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nwhile-pred\nt$5 <- t$3\nt$6 <- i\nt$4 <- t$5 < t$6\n"];
+ n1 -> n2 [label="!t$4"];
+ n1 -> n3 [label="t$4"];
+  n2 [label="(Node 2)\nwhile-join\nt$2 <- Default_Object\nt$0 <- l\nt$0 <- return\n"];
+  n3 [label="(Node 3)\nwhile-body\nt$9 <- t$3\nt$10 <- l\nt$11 <- new Cons\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-pre to init\nl <- t$11.init(t$9,t$10,)\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-post to init\nt$8 <- l\nt$12 <- t$3\nt$13 <- 1\nt$3 <- t$12 + t$13\nt$7 <- t$3\n"];
+ n5 -> n1 [label="true"];
+}

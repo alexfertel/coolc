@@ -1,0 +1,3 @@
+digraph reset_pre {
+  n0 [label="(Node 0)\nstart\nnextNum <- 0\nt$1 <- nextNum\nl <- new LambdaList\nt$2 <- l\nt$0 <- self\nt$0 <- return\n"];
+}

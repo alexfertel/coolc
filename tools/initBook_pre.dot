@@ -1,0 +1,3 @@
+digraph initBook_pre {
+  n0 [label="(Node 0)\nstart\ntitle <- title_p\nt$1 <- title\nauthor <- author_p\nt$2 <- author\nt$0 <- self\nt$0 <- return\n"];
+}

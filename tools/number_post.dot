@@ -1,0 +1,3 @@
+digraph number_post {
+  n0 [label="(Node 0)\nstart\nt$0 <- num\nt$0 <- return\n"];
+}

@@ -1,0 +1,30 @@
+digraph append_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- self\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to isNil\nt$1 <- t$2.isNil()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to isNil\n"];
+ n2 -> n4 [label="!t$1"];
+ n2 -> n3 [label="t$1"];
+  n3 [label="(Node 3)\nthen branch\nt$0 <- l\n"];
+ n3 -> n5 [label="true"];
+  n4 [label="(Node 4)\nelse branch\n"];
+ n4 -> n6 [label="true"];
+  n5 [label="(Node 5)\nif-join\nt$0 <- return\n"];
+  n6 [label="(Node 6)\nfcall-pre to head\nt$3 <- self.head()\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-post to head\nt$5 <- l\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-pre to tail\nt$6 <- self.tail()\n"];
+ n8 -> n9 [label="true"];
+  n9 [label="(Node 9)\nfcall-post to tail\n"];
+ n9 -> n10 [label="true"];
+  n10 [label="(Node 10)\nfcall-pre to append\nt$4 <- t$6.append(t$5,)\n"];
+ n10 -> n11 [label="true"];
+  n11 [label="(Node 11)\nfcall-post to append\n"];
+ n11 -> n12 [label="true"];
+  n12 [label="(Node 12)\nfcall-pre to cons\nt$0 <- t$4.cons(t$3,)\n"];
+ n12 -> n13 [label="true"];
+  n13 [label="(Node 13)\nfcall-post to cons\n"];
+ n13 -> n5 [label="true"];
+}

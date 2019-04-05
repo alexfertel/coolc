@@ -1,0 +1,7 @@
+comment start
+label Main_main_0
+t$1 <- int 1
+t$2 <- int 2
+t$3 <- int 3
+t$0 <- int 4
+return t$0

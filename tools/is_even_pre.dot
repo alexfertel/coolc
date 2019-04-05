@@ -1,0 +1,32 @@
+digraph is_even_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- num\nt$3 <- t$1\nt$4 <- 0\nt$2 <- t$3 < t$4\n"];
+ n0 -> n2 [label="!t$2"];
+ n0 -> n1 [label="t$2"];
+  n1 [label="(Node 1)\nthen branch\nt$6 <- t$1\nt$5 <- ~ t$6\n"];
+ n1 -> n4 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$8 <- 0\nt$9 <- t$1\nt$7 <- t$8 = t$9\n"];
+ n2 -> n7 [label="!t$7"];
+ n2 -> n6 [label="t$7"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+  n4 [label="(Node 4)\nfcall-pre to is_even\nt$0 <- self.is_even(t$5,)\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-post to is_even\n"];
+ n5 -> n3 [label="true"];
+  n6 [label="(Node 6)\nthen branch\nt$0 <- true\n"];
+ n6 -> n8 [label="true"];
+  n7 [label="(Node 7)\nelse branch\nt$11 <- 1\nt$12 <- t$1\nt$10 <- t$11 = t$12\n"];
+ n7 -> n10 [label="!t$10"];
+ n7 -> n9 [label="t$10"];
+  n8 [label="(Node 8)\nif-join\n"];
+ n8 -> n3 [label="true"];
+  n9 [label="(Node 9)\nthen branch\nt$0 <- false\n"];
+ n9 -> n11 [label="true"];
+  n10 [label="(Node 10)\nelse branch\nt$14 <- t$1\nt$15 <- 2\nt$13 <- t$14 - t$15\n"];
+ n10 -> n12 [label="true"];
+  n11 [label="(Node 11)\nif-join\n"];
+ n11 -> n8 [label="true"];
+  n12 [label="(Node 12)\nfcall-pre to is_even\nt$0 <- self.is_even(t$13,)\n"];
+ n12 -> n13 [label="true"];
+  n13 [label="(Node 13)\nfcall-post to is_even\n"];
+ n13 -> n11 [label="true"];
+}

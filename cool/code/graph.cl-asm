@@ -1,0 +1,4672 @@
+                        
+Bool..vtable:           
+                        constant string1
+                        constant Bool..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+BoolOp..vtable:         
+                        constant string2
+                        constant BoolOp..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant BoolOp.and
+                        constant BoolOp.or
+                        
+ECons..vtable:          
+                        constant string3
+                        constant ECons..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant ECons.isNil
+                        constant ECons.head
+                        constant ECons.tail
+                        constant EList.cons
+                        constant EList.append
+                        constant ECons.print
+                        constant ECons.init
+                        
+EList..vtable:          
+                        constant string4
+                        constant EList..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant EList.isNil
+                        constant EList.head
+                        constant EList.tail
+                        constant EList.cons
+                        constant EList.append
+                        constant EList.print
+                        
+Edge..vtable:           
+                        constant string5
+                        constant Edge..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant Edge.init
+                        constant Edge.print
+                        
+Graph..vtable:          
+                        constant string6
+                        constant Graph..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant Graph.add_vertice
+                        constant Graph.print_E
+                        constant Graph.print_V
+                        
+IO..vtable:             
+                        constant string7
+                        constant IO..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        
+Int..vtable:            
+                        constant string8
+                        constant Int..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+Main..vtable:           
+                        constant string9
+                        constant Main..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant Parse.read_input
+                        constant Parse.parse_line
+                        constant Parse.c2i
+                        constant Parse.a2i
+                        constant Parse.a2i_aux
+                        constant Main.main
+                        
+Object..vtable:         
+                        constant string10
+                        constant Object..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+Parse..vtable:          
+                        constant string11
+                        constant Parse..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant Parse.read_input
+                        constant Parse.parse_line
+                        constant Parse.c2i
+                        constant Parse.a2i
+                        constant Parse.a2i_aux
+                        
+String..vtable:         
+                        constant string12
+                        constant String..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant String.concat
+                        constant String.length
+                        constant String.substr
+                        
+VCons..vtable:          
+                        constant string13
+                        constant VCons..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant VCons.isNil
+                        constant VCons.head
+                        constant VCons.tail
+                        constant VList.cons
+                        constant VCons.print
+                        constant VCons.init
+                        
+VList..vtable:          
+                        constant string14
+                        constant VList..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant VList.isNil
+                        constant VList.head
+                        constant VList.tail
+                        constant VList.cons
+                        constant VList.print
+                        
+Vertice..vtable:        
+                        constant string15
+                        constant Vertice..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant Vertice.outgoing
+                        constant Vertice.number
+                        constant Vertice.init
+                        constant Vertice.add_out
+                        constant Vertice.print
+                        
+Bool..new:              
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 0
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- Bool..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+BoolOp..new:            
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 10
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- BoolOp..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+ECons..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 5
+                        alloc r0 r0
+                        
+                        li r2 <- 11
+                        st r0[0] <- r2
+                        li r2 <- 5
+                        st r0[1] <- r2
+                        la r2 <- ECons..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        li r1 <- 0
+                        st r0[4] <- r1
+                        
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+EList..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 12
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- EList..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Edge..new:              
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 6
+                        alloc r0 r0
+                        
+                        li r2 <- 13
+                        st r0[0] <- r2
+                        li r2 <- 6
+                        st r0[1] <- r2
+                        la r2 <- Edge..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[3] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[4] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[5] <- r1
+                        
+                        
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Graph..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 5
+                        alloc r0 r0
+                        
+                        li r2 <- 14
+                        st r0[0] <- r2
+                        li r2 <- 5
+                        st r0[1] <- r2
+                        la r2 <- Graph..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        li r1 <- 0
+                        st r0[4] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- VList..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[3] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- EList..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[4] <- r1
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO..new:                
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 15
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- IO..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Int..new:               
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 1
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- Int..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Main..new:              
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 6
+                        alloc r0 r0
+                        
+                        li r2 <- 16
+                        st r0[0] <- r2
+                        li r2 <- 6
+                        st r0[1] <- r2
+                        la r2 <- Main..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[4] <- r1
+                        
+                        li r1 <- 0
+                        st r0[5] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- BoolOp..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[3] <- r1
+                        
+                        
+                        
+                        push r0
+                        push fp
+                        push r0
+                        
+                        ld r2 <- r0[2]
+                        
+                        ld r2 <- r2[9]
+                        call r2
+                        pop fp
+                        pop r0
+                        st r0[5] <- r1
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object..new:            
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 17
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- Object..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Parse..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 5
+                        alloc r0 r0
+                        
+                        li r2 <- 18
+                        st r0[0] <- r2
+                        li r2 <- 5
+                        st r0[1] <- r2
+                        la r2 <- Parse..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[4] <- r1
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- BoolOp..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+String..new:            
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 3
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- String..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        la r1 <- the.empty.string
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+VCons..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 5
+                        alloc r0 r0
+                        
+                        li r2 <- 19
+                        st r0[0] <- r2
+                        li r2 <- 5
+                        st r0[1] <- r2
+                        la r2 <- VCons..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        li r1 <- 0
+                        st r0[4] <- r1
+                        
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+VList..new:             
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 20
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- VList..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Vertice..new:           
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 5
+                        alloc r0 r0
+                        
+                        li r2 <- 21
+                        st r0[0] <- r2
+                        li r2 <- 5
+                        st r0[1] <- r2
+                        la r2 <- Vertice..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[3] <- r1
+                        
+                        li r1 <- 0
+                        st r0[4] <- r1
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- EList..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st r0[4] <- r1
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.abort:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        la r1 <- string16
+                        syscall IO.out_string
+                        syscall exit
+Object.abort.end:       
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.copy:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        ld r2 <- r0[1]
+                        alloc r1 r2
+                        push r1
+l1:                     bz r2 l2
+                        ld r3 <- r0[0]
+                        st r1[0] <- r3
+                        li r3 <- 1
+                        add r0 <- r0 r3
+                        add r1 <- r1 r3
+                        li r3 <- 1
+                        sub r2 <- r2 r3
+                        jmp l1
+l2:                     
+                        pop r1
+Object.copy.end:        
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.type_name:       
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        
+                        ld r2 <- r0[2]
+                        
+                        ld r2 <- r2[0]
+                        st r1[3] <- r2
+Object.type_name.end:   
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+BoolOp.and:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+BoolOp.and.0:           
+                        
+                        ld r1 <- fp[3]
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 BoolOp.and.1
+                        jmp BoolOp.and.2
+BoolOp.and.1:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp BoolOp.and.3
+BoolOp.and.2:           
+                        
+                        la r1 <- false
+                        st fp[0] <- r1
+                        jmp BoolOp.and.3
+BoolOp.and.3:           
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp BoolOp.and.end
+BoolOp.and.end:         
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+BoolOp.or:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+BoolOp.or.0:            
+                        
+                        ld r1 <- fp[3]
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 BoolOp.or.1
+                        jmp BoolOp.or.2
+BoolOp.or.1:            
+                        
+                        la r1 <- true
+                        st fp[0] <- r1
+                        jmp BoolOp.or.3
+BoolOp.or.2:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp BoolOp.or.3
+BoolOp.or.3:            
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp BoolOp.or.end
+BoolOp.or.end:          
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+IO.in_int:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        syscall IO.in_int
+                        st r2[3] <- r1
+                        mov r1 <- r2
+IO.in_int.end:          
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO.in_string:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        syscall IO.in_string
+                        st r2[3] <- r1
+                        mov r1 <- r2
+IO.in_string.end:       
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO.out_int:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        ld r2 <- fp[2]
+                        ld r1 <- r2[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+IO.out_int.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+IO.out_string:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        ld r2 <- fp[2]
+                        ld r1 <- r2[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+IO.out_string.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+ECons.isNil:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+ECons.isNil.0:          
+                        
+                        la r1 <- false
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp ECons.isNil.end
+ECons.isNil.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+ECons.head:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+ECons.head.0:           
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp ECons.head.end
+ECons.head.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+ECons.tail:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+ECons.tail.0:           
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp ECons.tail.end
+ECons.tail.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+EList.cons:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 4
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+EList.cons.0:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[-2] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[-1] <- r1
+                        
+                        push fp
+                        push r0
+                        la r2 <- ECons..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[0] <- r1
+                        jmp EList.cons.1
+EList.cons.1:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l3
+                        la r1 <- string17
+                        syscall IO.out_string
+                        syscall exit
+l3:                     push r1
+                        
+                        call ECons.init
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.cons.2
+EList.cons.2:           
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.cons.end
+EList.cons.end:         
+                        pop ra
+                        li r2 <- 5
+                        add sp <- sp r2
+                        return
+                        
+EList.append:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 4
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+EList.append.0:         
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        jmp EList.append.1
+EList.append.1:         
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l4
+                        la r1 <- string18
+                        syscall IO.out_string
+                        syscall exit
+l4:                     push r1
+                        
+                        call ECons.isNil
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.append.2
+EList.append.2:         
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 EList.append.3
+                        jmp EList.append.4
+EList.append.3:         
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp EList.append.5
+EList.append.4:         
+                        jmp EList.append.6
+EList.append.5:         
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.append.end
+EList.append.6:         
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l5
+                        la r1 <- string19
+                        syscall IO.out_string
+                        syscall exit
+l5:                     push r1
+                        
+                        call ECons.head
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp EList.append.7
+EList.append.7:         
+                        
+                        ld r1 <- fp[2]
+                        st fp[-1] <- r1
+                        jmp EList.append.8
+EList.append.8:         
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l6
+                        la r1 <- string19
+                        syscall IO.out_string
+                        syscall exit
+l6:                     push r1
+                        
+                        call ECons.tail
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.append.9
+EList.append.9:         
+                        jmp EList.append.10
+EList.append.10:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l7
+                        la r1 <- string19
+                        syscall IO.out_string
+                        syscall exit
+l7:                     push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[13]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.append.11
+EList.append.11:        
+                        jmp EList.append.12
+EList.append.12:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l8
+                        la r1 <- string19
+                        syscall IO.out_string
+                        syscall exit
+l8:                     push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[12]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.append.13
+EList.append.13:        
+                        jmp EList.append.5
+EList.append.end:       
+                        pop ra
+                        li r2 <- 5
+                        add sp <- sp r2
+                        return
+                        
+ECons.print:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+ECons.print.0:          
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp ECons.print.1
+ECons.print.1:          
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l9
+                        la r1 <- string20
+                        syscall IO.out_string
+                        syscall exit
+l9:                     push r1
+                        
+                        call Edge.print
+                        pop fp
+                        pop r0
+                        jmp ECons.print.2
+ECons.print.2:          
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp ECons.print.3
+ECons.print.3:          
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l10
+                        la r1 <- string21
+                        syscall IO.out_string
+                        syscall exit
+l10:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[14]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp ECons.print.4
+ECons.print.4:          
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp ECons.print.end
+ECons.print.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+ECons.init:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+ECons.init.0:           
+                        
+                        ld r1 <- fp[3]
+                        st r0[3] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st r0[4] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp ECons.init.end
+ECons.init.end:         
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+EList.isNil:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+EList.isNil.0:          
+                        
+                        la r1 <- true
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.isNil.end
+EList.isNil.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+EList.head:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+EList.head.0:           
+                        jmp EList.head.1
+EList.head.1:           
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l11
+                        la r1 <- string22
+                        syscall IO.out_string
+                        syscall exit
+l11:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[2]
+                        call r2
+                        pop fp
+                        pop r0
+                        jmp EList.head.2
+EList.head.2:           
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.head.end
+EList.head.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+EList.tail:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+EList.tail.0:           
+                        jmp EList.tail.1
+EList.tail.1:           
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l12
+                        la r1 <- string23
+                        syscall IO.out_string
+                        syscall exit
+l12:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[2]
+                        call r2
+                        pop fp
+                        pop r0
+                        jmp EList.tail.2
+EList.tail.2:           
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.tail.end
+EList.tail.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+EList.print:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+EList.print.0:          
+                        jmp EList.print.1
+EList.print.1:          
+                        
+                        push r0
+                        push fp
+                        la r1 <- l13
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l14
+                        la r1 <- string24
+                        syscall IO.out_string
+                        syscall exit
+l14:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[8]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp EList.print.2
+EList.print.2:          
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp EList.print.end
+EList.print.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Edge.init:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Edge.init.0:            
+                        
+                        ld r1 <- fp[4]
+                        st r0[3] <- r1
+                        
+                        ld r1 <- fp[3]
+                        st r0[4] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st r0[5] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Edge.init.end
+Edge.init.end:          
+                        pop ra
+                        li r2 <- 5
+                        add sp <- sp r2
+                        return
+                        
+Edge.print:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Edge.print.0:           
+                        jmp Edge.print.1
+Edge.print.1:           
+                        
+                        la r1 <- l15
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+                        jmp Edge.print.2
+Edge.print.2:           
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp Edge.print.3
+Edge.print.3:           
+                        
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+                        jmp Edge.print.4
+Edge.print.4:           
+                        jmp Edge.print.5
+Edge.print.5:           
+                        
+                        la r1 <- l16
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+                        jmp Edge.print.6
+Edge.print.6:           
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp Edge.print.7
+Edge.print.7:           
+                        
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+                        jmp Edge.print.8
+Edge.print.8:           
+                        jmp Edge.print.9
+Edge.print.9:           
+                        
+                        la r1 <- l17
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+                        jmp Edge.print.10
+Edge.print.10:          
+                        
+                        ld r1 <- r0[5]
+                        st fp[0] <- r1
+                        jmp Edge.print.11
+Edge.print.11:          
+                        
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        jmp Edge.print.12
+Edge.print.12:          
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Edge.print.end
+Edge.print.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Graph.add_vertice:      
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 3
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Graph.add_vertice.0:    
+                        
+                        ld r1 <- r0[4]
+                        st fp[-1] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Graph.add_vertice.1
+Graph.add_vertice.1:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l18
+                        la r1 <- string25
+                        syscall IO.out_string
+                        syscall exit
+l18:                    push r1
+                        
+                        call Vertice.outgoing
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Graph.add_vertice.2
+Graph.add_vertice.2:    
+                        jmp Graph.add_vertice.3
+Graph.add_vertice.3:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l19
+                        la r1 <- string25
+                        syscall IO.out_string
+                        syscall exit
+l19:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[13]
+                        call r2
+                        pop fp
+                        pop r0
+                        st r0[4] <- r1
+                        jmp Graph.add_vertice.4
+Graph.add_vertice.4:    
+                        
+                        ld r1 <- fp[2]
+                        st fp[-1] <- r1
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp Graph.add_vertice.5
+Graph.add_vertice.5:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l20
+                        la r1 <- string26
+                        syscall IO.out_string
+                        syscall exit
+l20:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[12]
+                        call r2
+                        pop fp
+                        pop r0
+                        st r0[3] <- r1
+                        jmp Graph.add_vertice.6
+Graph.add_vertice.6:    
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Graph.add_vertice.end
+Graph.add_vertice.end:  
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+Graph.print_E:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+Graph.print_E.0:        
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp Graph.print_E.1
+Graph.print_E.1:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l21
+                        la r1 <- string27
+                        syscall IO.out_string
+                        syscall exit
+l21:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[14]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Graph.print_E.2
+Graph.print_E.2:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Graph.print_E.end
+Graph.print_E.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Graph.print_V:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+Graph.print_V.0:        
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp Graph.print_V.1
+Graph.print_V.1:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l22
+                        la r1 <- string28
+                        syscall IO.out_string
+                        syscall exit
+l22:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[13]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Graph.print_V.2
+Graph.print_V.2:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Graph.print_V.end
+Graph.print_V.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Parse.read_input:       
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 6
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Parse.read_input.0:     
+                        
+                        push fp
+                        push r0
+                        la r2 <- Graph..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[-1] <- r1
+                        jmp Parse.read_input.1
+Parse.read_input.1:     
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l23
+                        la r1 <- string29
+                        syscall IO.out_string
+                        syscall exit
+l23:                    push r1
+                        
+                        call IO.in_string
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.read_input.2
+Parse.read_input.2:     
+                        jmp Parse.read_input.3
+Parse.read_input.3:     
+                        
+                        ld r1 <- fp[0]
+                        st fp[-2] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        la r1 <- l13
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        
+                        ld r2 <- fp[-2]
+                        ld r2 <- r2[3]
+                        li r1 <- 1
+                        sub r1 <- r1 r2
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Bool..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[-2] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        la r1 <- l24
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        
+                        ld r2 <- fp[-2]
+                        ld r2 <- r2[3]
+                        li r1 <- 1
+                        sub r1 <- r1 r2
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Bool..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-3] <- r1
+                        
+                        ld r1 <- r0[3]
+                        st fp[-2] <- r1
+                        jmp Parse.read_input.6
+Parse.read_input.4:     
+                        
+                        ld r1 <- fp[-1]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.read_input.end
+Parse.read_input.5:     
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.read_input.8
+Parse.read_input.6:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        ld r1 <- fp[-2]
+                        bnz r1 l25
+                        la r1 <- string30
+                        syscall IO.out_string
+                        syscall exit
+l25:                    push r1
+                        
+                        call BoolOp.and
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.read_input.7
+Parse.read_input.7:     
+                        ld r1 <- fp[-2]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.read_input.5
+                        jmp Parse.read_input.4
+Parse.read_input.8:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l26
+                        la r1 <- string31
+                        syscall IO.out_string
+                        syscall exit
+l26:                    push r1
+                        
+                        call Parse.parse_line
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.read_input.9
+Parse.read_input.9:     
+                        
+                        ld r1 <- fp[-1]
+                        st fp[0] <- r1
+                        jmp Parse.read_input.10
+Parse.read_input.10:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l27
+                        la r1 <- string31
+                        syscall IO.out_string
+                        syscall exit
+l27:                    push r1
+                        
+                        call Graph.add_vertice
+                        pop fp
+                        pop r0
+                        jmp Parse.read_input.11
+Parse.read_input.11:    
+                        jmp Parse.read_input.12
+Parse.read_input.12:    
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l28
+                        la r1 <- string32
+                        syscall IO.out_string
+                        syscall exit
+l28:                    push r1
+                        
+                        call IO.in_string
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.read_input.13
+Parse.read_input.13:    
+                        jmp Parse.read_input.3
+Parse.read_input.end:   
+                        pop ra
+                        li r2 <- 6
+                        add sp <- sp r2
+                        return
+                        
+Parse.parse_line:       
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 6
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Parse.parse_line.0:     
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.parse_line.1
+Parse.parse_line.1:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l29
+                        la r1 <- string33
+                        syscall IO.out_string
+                        syscall exit
+l29:                    push r1
+                        
+                        call Parse.a2i
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.2
+Parse.parse_line.2:     
+                        
+                        push fp
+                        push r0
+                        la r2 <- Vertice..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[0] <- r1
+                        jmp Parse.parse_line.3
+Parse.parse_line.3:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l30
+                        la r1 <- string33
+                        syscall IO.out_string
+                        syscall exit
+l30:                    push r1
+                        
+                        call Vertice.init
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.parse_line.4
+Parse.parse_line.4:     
+                        jmp Parse.parse_line.5
+Parse.parse_line.5:     
+                        
+                        ld r1 <- r0[4]
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.8
+Parse.parse_line.6:     
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.parse_line.end
+Parse.parse_line.7:     
+                        
+                        ld r1 <- r0[4]
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.10
+Parse.parse_line.8:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        bnz r1 l31
+                        la r1 <- string34
+                        syscall IO.out_string
+                        syscall exit
+l31:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.9
+Parse.parse_line.9:     
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        la r1 <- int0
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        
+                        ld r2 <- fp[-1]
+                        ld r2 <- r2[3]
+                        li r1 <- 1
+                        sub r1 <- r1 r2
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Bool..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-1] <- r1
+                        ld r1 <- fp[-1]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.parse_line.7
+                        jmp Parse.parse_line.6
+Parse.parse_line.10:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l32
+                        la r1 <- string35
+                        syscall IO.out_string
+                        syscall exit
+l32:                    push r1
+                        
+                        call Parse.a2i
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.parse_line.11
+Parse.parse_line.11:    
+                        
+                        ld r1 <- r0[4]
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.12
+Parse.parse_line.12:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l33
+                        la r1 <- string36
+                        syscall IO.out_string
+                        syscall exit
+l33:                    push r1
+                        
+                        call Parse.a2i
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.13
+Parse.parse_line.13:    
+                        
+                        ld r1 <- fp[0]
+                        st fp[-3] <- r1
+                        jmp Parse.parse_line.14
+Parse.parse_line.14:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-3]
+                        bnz r1 l34
+                        la r1 <- string37
+                        syscall IO.out_string
+                        syscall exit
+l34:                    push r1
+                        
+                        call Vertice.number
+                        pop fp
+                        pop r0
+                        st fp[-4] <- r1
+                        jmp Parse.parse_line.15
+Parse.parse_line.15:    
+                        
+                        ld r1 <- fp[-2]
+                        st fp[-3] <- r1
+                        
+                        ld r1 <- fp[-1]
+                        st fp[-2] <- r1
+                        
+                        push fp
+                        push r0
+                        la r2 <- Edge..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.16
+Parse.parse_line.16:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[-1]
+                        bnz r1 l35
+                        la r1 <- string37
+                        syscall IO.out_string
+                        syscall exit
+l35:                    push r1
+                        
+                        call Edge.init
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.parse_line.17
+Parse.parse_line.17:    
+                        
+                        ld r1 <- fp[0]
+                        st fp[-1] <- r1
+                        jmp Parse.parse_line.18
+Parse.parse_line.18:    
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[-1]
+                        bnz r1 l36
+                        la r1 <- string37
+                        syscall IO.out_string
+                        syscall exit
+l36:                    push r1
+                        
+                        call Vertice.add_out
+                        pop fp
+                        pop r0
+                        jmp Parse.parse_line.19
+Parse.parse_line.19:    
+                        jmp Parse.parse_line.5
+Parse.parse_line.end:   
+                        pop ra
+                        li r2 <- 7
+                        add sp <- sp r2
+                        return
+                        
+Parse.c2i:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Parse.c2i.0:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l37
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.1
+                        jmp Parse.c2i.2
+Parse.c2i.1:            
+                        
+                        la r1 <- int0
+                        st fp[0] <- r1
+                        jmp Parse.c2i.3
+Parse.c2i.2:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l38
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.4
+                        jmp Parse.c2i.5
+Parse.c2i.3:            
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.c2i.end
+Parse.c2i.4:            
+                        
+                        la r1 <- int1
+                        st fp[0] <- r1
+                        jmp Parse.c2i.6
+Parse.c2i.5:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l39
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.7
+                        jmp Parse.c2i.8
+Parse.c2i.6:            
+                        jmp Parse.c2i.3
+Parse.c2i.7:            
+                        
+                        la r1 <- int2
+                        st fp[0] <- r1
+                        jmp Parse.c2i.9
+Parse.c2i.8:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l40
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.10
+                        jmp Parse.c2i.11
+Parse.c2i.9:            
+                        jmp Parse.c2i.6
+Parse.c2i.10:           
+                        
+                        la r1 <- int3
+                        st fp[0] <- r1
+                        jmp Parse.c2i.12
+Parse.c2i.11:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l41
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.13
+                        jmp Parse.c2i.14
+Parse.c2i.12:           
+                        jmp Parse.c2i.9
+Parse.c2i.13:           
+                        
+                        la r1 <- int4
+                        st fp[0] <- r1
+                        jmp Parse.c2i.15
+Parse.c2i.14:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l42
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.16
+                        jmp Parse.c2i.17
+Parse.c2i.15:           
+                        jmp Parse.c2i.12
+Parse.c2i.16:           
+                        
+                        la r1 <- int5
+                        st fp[0] <- r1
+                        jmp Parse.c2i.18
+Parse.c2i.17:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l43
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.19
+                        jmp Parse.c2i.20
+Parse.c2i.18:           
+                        jmp Parse.c2i.15
+Parse.c2i.19:           
+                        
+                        la r1 <- int6
+                        st fp[0] <- r1
+                        jmp Parse.c2i.21
+Parse.c2i.20:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l44
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.22
+                        jmp Parse.c2i.23
+Parse.c2i.21:           
+                        jmp Parse.c2i.18
+Parse.c2i.22:           
+                        
+                        la r1 <- int7
+                        st fp[0] <- r1
+                        jmp Parse.c2i.24
+Parse.c2i.23:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l45
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.25
+                        jmp Parse.c2i.26
+Parse.c2i.24:           
+                        jmp Parse.c2i.21
+Parse.c2i.25:           
+                        
+                        la r1 <- int8
+                        st fp[0] <- r1
+                        jmp Parse.c2i.27
+Parse.c2i.26:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l46
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.c2i.28
+                        jmp Parse.c2i.29
+Parse.c2i.27:           
+                        jmp Parse.c2i.24
+Parse.c2i.28:           
+                        
+                        la r1 <- int9
+                        st fp[0] <- r1
+                        jmp Parse.c2i.30
+Parse.c2i.29:           
+                        jmp Parse.c2i.31
+Parse.c2i.30:           
+                        jmp Parse.c2i.27
+Parse.c2i.31:           
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l47
+                        la r1 <- string38
+                        syscall IO.out_string
+                        syscall exit
+l47:                    push r1
+                        
+                        call Object.abort
+                        pop fp
+                        pop r0
+                        jmp Parse.c2i.32
+Parse.c2i.32:           
+                        
+                        la r1 <- int0
+                        st fp[0] <- r1
+                        jmp Parse.c2i.30
+Parse.c2i.end:          
+                        pop ra
+                        li r2 <- 3
+                        add sp <- sp r2
+                        return
+                        
+Parse.a2i:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 3
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Parse.a2i.0:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.1
+Parse.a2i.1:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l48
+                        la r1 <- string39
+                        syscall IO.out_string
+                        syscall exit
+l48:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.2
+Parse.a2i.2:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- int0
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i.3
+                        jmp Parse.a2i.4
+Parse.a2i.3:            
+                        
+                        la r1 <- int0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.5
+Parse.a2i.4:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.6
+Parse.a2i.5:            
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.end
+Parse.a2i.6:            
+                        
+                        push r0
+                        push fp
+                        la r1 <- int0
+                        push r1
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l49
+                        la r1 <- string40
+                        syscall IO.out_string
+                        syscall exit
+l49:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.7
+Parse.a2i.7:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l50
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i.8
+                        jmp Parse.a2i.9
+Parse.a2i.8:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.11
+Parse.a2i.9:            
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.17
+Parse.a2i.10:           
+                        jmp Parse.a2i.5
+Parse.a2i.11:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l51
+                        la r1 <- string40
+                        syscall IO.out_string
+                        syscall exit
+l51:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.12
+Parse.a2i.12:           
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[-1] <- r1
+                        jmp Parse.a2i.13
+Parse.a2i.13:           
+                        
+                        push r0
+                        push fp
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[0]
+                        push r1
+                        ld r1 <- fp[-1]
+                        bnz r1 l52
+                        la r1 <- string40
+                        syscall IO.out_string
+                        syscall exit
+l52:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.14
+Parse.a2i.14:           
+                        jmp Parse.a2i.15
+Parse.a2i.15:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l53
+                        la r1 <- string40
+                        syscall IO.out_string
+                        syscall exit
+l53:                    push r1
+                        
+                        call Parse.a2i_aux
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.16
+Parse.a2i.16:           
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        li r1 <- 0
+                        sub r1 <- r1 r2
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        jmp Parse.a2i.10
+Parse.a2i.17:           
+                        
+                        push r0
+                        push fp
+                        la r1 <- int0
+                        push r1
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l54
+                        la r1 <- string41
+                        syscall IO.out_string
+                        syscall exit
+l54:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.18
+Parse.a2i.18:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        la r1 <- l55
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i.19
+                        jmp Parse.a2i.20
+Parse.a2i.19:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.22
+Parse.a2i.20:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.28
+Parse.a2i.21:           
+                        jmp Parse.a2i.10
+Parse.a2i.22:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l56
+                        la r1 <- string41
+                        syscall IO.out_string
+                        syscall exit
+l56:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.23
+Parse.a2i.23:           
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-1] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i.24
+Parse.a2i.24:           
+                        
+                        push r0
+                        push fp
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l57
+                        la r1 <- string41
+                        syscall IO.out_string
+                        syscall exit
+l57:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.25
+Parse.a2i.25:           
+                        jmp Parse.a2i.26
+Parse.a2i.26:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l58
+                        la r1 <- string41
+                        syscall IO.out_string
+                        syscall exit
+l58:                    push r1
+                        
+                        call Parse.a2i
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.27
+Parse.a2i.27:           
+                        jmp Parse.a2i.21
+Parse.a2i.28:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l59
+                        la r1 <- string42
+                        syscall IO.out_string
+                        syscall exit
+l59:                    push r1
+                        
+                        call Parse.a2i_aux
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Parse.a2i.29
+Parse.a2i.29:           
+                        jmp Parse.a2i.21
+Parse.a2i.end:          
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+Parse.a2i_aux:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 6
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Parse.a2i_aux.0:        
+                        
+                        la r1 <- int0
+                        st fp[-2] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.1
+Parse.a2i_aux.1:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l60
+                        la r1 <- string43
+                        syscall IO.out_string
+                        syscall exit
+l60:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        jmp Parse.a2i_aux.2
+Parse.a2i_aux.2:        
+                        
+                        la r1 <- int0
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.3
+Parse.a2i_aux.3:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[-1]
+                        st fp[-3] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        push r0
+                        call lt_handler
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        ld r1 <- fp[-3]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i_aux.5
+                        jmp Parse.a2i_aux.4
+Parse.a2i_aux.4:        
+                        
+                        ld r1 <- fp[-2]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.end
+Parse.a2i_aux.5:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.6
+Parse.a2i_aux.6:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[-3]
+                        bnz r1 l61
+                        la r1 <- string44
+                        syscall IO.out_string
+                        syscall exit
+l61:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.7
+Parse.a2i_aux.7:        
+                        
+                        ld r1 <- fp[-3]
+                        st fp[-4] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        la r1 <- l55
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-4] <- r1
+                        ld r1 <- fp[-4]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i_aux.8
+                        jmp Parse.a2i_aux.9
+Parse.a2i_aux.8:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[-3] <- r1
+                        
+                        ld r2 <- fp[-3]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        add r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.11
+Parse.a2i_aux.9:        
+                        
+                        ld r1 <- fp[-3]
+                        st fp[-3] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-3]
+                        push r1
+                        la r1 <- l16
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        ld r1 <- fp[-3]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i_aux.15
+                        jmp Parse.a2i_aux.16
+Parse.a2i_aux.10:       
+                        jmp Parse.a2i_aux.3
+Parse.a2i_aux.11:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-3]
+                        bnz r1 l62
+                        la r1 <- string45
+                        syscall IO.out_string
+                        syscall exit
+l62:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.12
+Parse.a2i_aux.12:       
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[-3]
+                        ld r2 <- r2[3]
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-3] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.13
+Parse.a2i_aux.13:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l63
+                        la r1 <- string45
+                        syscall IO.out_string
+                        syscall exit
+l63:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st r0[4] <- r1
+                        jmp Parse.a2i_aux.14
+Parse.a2i_aux.14:       
+                        
+                        ld r1 <- fp[-1]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.10
+Parse.a2i_aux.15:       
+                        
+                        ld r1 <- fp[0]
+                        st fp[-3] <- r1
+                        
+                        ld r2 <- fp[-3]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        add r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.18
+Parse.a2i_aux.16:       
+                        
+                        ld r1 <- fp[-2]
+                        st fp[-2] <- r1
+                        
+                        ld r2 <- fp[-2]
+                        ld r2 <- r2[3]
+                        la r1 <- int10
+                        ld r1 <- r1[3]
+                        mul r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[-3] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[-2] <- r1
+                        jmp Parse.a2i_aux.22
+Parse.a2i_aux.17:       
+                        jmp Parse.a2i_aux.10
+Parse.a2i_aux.18:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-3]
+                        bnz r1 l64
+                        la r1 <- string46
+                        syscall IO.out_string
+                        syscall exit
+l64:                    push r1
+                        
+                        call String.length
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        jmp Parse.a2i_aux.19
+Parse.a2i_aux.19:       
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[-3]
+                        ld r2 <- r2[3]
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        sub r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-3] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.20
+Parse.a2i_aux.20:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l65
+                        la r1 <- string46
+                        syscall IO.out_string
+                        syscall exit
+l65:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st r0[4] <- r1
+                        jmp Parse.a2i_aux.21
+Parse.a2i_aux.21:       
+                        
+                        ld r1 <- fp[-1]
+                        st fp[0] <- r1
+                        jmp Parse.a2i_aux.17
+Parse.a2i_aux.22:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-3]
+                        push r1
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[-2]
+                        bnz r1 l66
+                        la r1 <- string47
+                        syscall IO.out_string
+                        syscall exit
+l66:                    push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.a2i_aux.23
+Parse.a2i_aux.23:       
+                        jmp Parse.a2i_aux.24
+Parse.a2i_aux.24:       
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l67
+                        la r1 <- string47
+                        syscall IO.out_string
+                        syscall exit
+l67:                    push r1
+                        
+                        call Parse.c2i
+                        pop fp
+                        pop r0
+                        st fp[-2] <- r1
+                        jmp Parse.a2i_aux.25
+Parse.a2i_aux.25:       
+                        
+                        ld r2 <- fp[-4]
+                        ld r2 <- r2[3]
+                        ld r1 <- fp[-2]
+                        ld r1 <- r1[3]
+                        add r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[-2] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[0]
+                        ld r2 <- r2[3]
+                        la r1 <- int1
+                        ld r1 <- r1[3]
+                        add r1 <- r2 r1
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[-4] <- r1
+                        
+                        ld r1 <- fp[-1]
+                        st fp[-3] <- r1
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-4]
+                        push r1
+                        ld r1 <- fp[-3]
+                        push r1
+                        push r0
+                        call eq_handler
+                        pop fp
+                        pop r0
+                        st fp[-3] <- r1
+                        ld r1 <- fp[-3]
+                        ld r1 <- r1[3]
+                        bnz r1 Parse.a2i_aux.26
+                        jmp Parse.a2i_aux.27
+Parse.a2i_aux.26:       
+                        
+                        la r1 <- l24
+                        st r0[4] <- r1
+                        jmp Parse.a2i_aux.28
+Parse.a2i_aux.27:       
+                        jmp Parse.a2i_aux.28
+Parse.a2i_aux.28:       
+                        jmp Parse.a2i_aux.17
+Parse.a2i_aux.end:      
+                        pop ra
+                        li r2 <- 7
+                        add sp <- sp r2
+                        return
+                        
+Main.main:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Main.main.0:            
+                        
+                        ld r1 <- r0[5]
+                        st fp[0] <- r1
+                        jmp Main.main.1
+Main.main.1:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l68
+                        la r1 <- string48
+                        syscall IO.out_string
+                        syscall exit
+l68:                    push r1
+                        
+                        call Graph.print_V
+                        pop fp
+                        pop r0
+                        jmp Main.main.2
+Main.main.2:            
+                        
+                        ld r1 <- r0[5]
+                        st fp[0] <- r1
+                        jmp Main.main.3
+Main.main.3:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l69
+                        la r1 <- string49
+                        syscall IO.out_string
+                        syscall exit
+l69:                    push r1
+                        
+                        call Graph.print_E
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Main.main.4
+Main.main.4:            
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Main.main.end
+Main.main.end:          
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+String.concat:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r3 <- r1
+                        ld r2 <- fp[2]
+                        ld r2 <- r2[3]
+                        ld r1 <- r0[3]
+                        syscall String.concat
+                        st r3[3] <- r1
+                        mov r1 <- r3
+String.concat.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+String.length:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        ld r1 <- r0[3]
+                        syscall String.length
+                        st r2[3] <- r1
+                        mov r1 <- r2
+String.length.end:      
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+String.substr:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r3 <- r1
+                        ld r2 <- fp[2]
+                        ld r2 <- r2[3]
+                        ld r1 <- fp[3]
+                        ld r1 <- r1[3]
+                        ld r0 <- r0[3]
+                        syscall String.substr
+                        bnz r1 l70
+                        la r1 <- string50
+                        syscall IO.out_string
+                        syscall exit
+l70:                    st r3[3] <- r1
+                        mov r1 <- r3
+String.substr.end:      
+                        pop ra
+                        li r2 <- 3
+                        add sp <- sp r2
+                        return
+                        
+VCons.isNil:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+VCons.isNil.0:          
+                        
+                        la r1 <- false
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VCons.isNil.end
+VCons.isNil.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VCons.head:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+VCons.head.0:           
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VCons.head.end
+VCons.head.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VCons.tail:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+VCons.tail.0:           
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VCons.tail.end
+VCons.tail.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VList.cons:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 4
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+VList.cons.0:           
+                        
+                        ld r1 <- fp[2]
+                        st fp[-2] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[-1] <- r1
+                        
+                        push fp
+                        push r0
+                        la r2 <- VCons..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[0] <- r1
+                        jmp VList.cons.1
+VList.cons.1:           
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-2]
+                        push r1
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l71
+                        la r1 <- string51
+                        syscall IO.out_string
+                        syscall exit
+l71:                    push r1
+                        
+                        call VCons.init
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp VList.cons.2
+VList.cons.2:           
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VList.cons.end
+VList.cons.end:         
+                        pop ra
+                        li r2 <- 5
+                        add sp <- sp r2
+                        return
+                        
+VCons.print:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+VCons.print.0:          
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp VCons.print.1
+VCons.print.1:          
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l72
+                        la r1 <- string52
+                        syscall IO.out_string
+                        syscall exit
+l72:                    push r1
+                        
+                        call Vertice.print
+                        pop fp
+                        pop r0
+                        jmp VCons.print.2
+VCons.print.2:          
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp VCons.print.3
+VCons.print.3:          
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l73
+                        la r1 <- string53
+                        syscall IO.out_string
+                        syscall exit
+l73:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[13]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp VCons.print.4
+VCons.print.4:          
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VCons.print.end
+VCons.print.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VCons.init:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+VCons.init.0:           
+                        
+                        ld r1 <- fp[3]
+                        st r0[3] <- r1
+                        
+                        ld r1 <- fp[2]
+                        st r0[4] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VCons.init.end
+VCons.init.end:         
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+VList.isNil:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+VList.isNil.0:          
+                        
+                        la r1 <- true
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VList.isNil.end
+VList.isNil.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VList.head:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+VList.head.0:           
+                        jmp VList.head.1
+VList.head.1:           
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l74
+                        la r1 <- string54
+                        syscall IO.out_string
+                        syscall exit
+l74:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[2]
+                        call r2
+                        pop fp
+                        pop r0
+                        jmp VList.head.2
+VList.head.2:           
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VList.head.end
+VList.head.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VList.tail:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+VList.tail.0:           
+                        jmp VList.tail.1
+VList.tail.1:           
+                        
+                        push r0
+                        push fp
+                        mov r1 <- r0
+                        bnz r1 l75
+                        la r1 <- string55
+                        syscall IO.out_string
+                        syscall exit
+l75:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[2]
+                        call r2
+                        pop fp
+                        pop r0
+                        jmp VList.tail.2
+VList.tail.2:           
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VList.tail.end
+VList.tail.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+VList.print:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+VList.print.0:          
+                        jmp VList.print.1
+VList.print.1:          
+                        
+                        push r0
+                        push fp
+                        la r1 <- l13
+                        push r1
+                        mov r1 <- r0
+                        bnz r1 l76
+                        la r1 <- string56
+                        syscall IO.out_string
+                        syscall exit
+l76:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[8]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp VList.print.2
+VList.print.2:          
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp VList.print.end
+VList.print.end:        
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Vertice.outgoing:       
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+Vertice.outgoing.0:     
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Vertice.outgoing.end
+Vertice.outgoing.end:   
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Vertice.number:         
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+Vertice.number.0:       
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Vertice.number.end
+Vertice.number.end:     
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Vertice.init:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+Vertice.init.0:         
+                        
+                        ld r1 <- fp[2]
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Vertice.init.end
+Vertice.init.end:       
+                        pop ra
+                        li r2 <- 3
+                        add sp <- sp r2
+                        return
+                        
+Vertice.add_out:        
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 3
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Vertice.add_out.0:      
+                        
+                        ld r1 <- fp[2]
+                        st fp[-1] <- r1
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp Vertice.add_out.1
+Vertice.add_out.1:      
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[-1]
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l77
+                        la r1 <- string57
+                        syscall IO.out_string
+                        syscall exit
+l77:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[12]
+                        call r2
+                        pop fp
+                        pop r0
+                        st r0[4] <- r1
+                        jmp Vertice.add_out.2
+Vertice.add_out.2:      
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Vertice.add_out.end
+Vertice.add_out.end:    
+                        pop ra
+                        li r2 <- 4
+                        add sp <- sp r2
+                        return
+                        
+Vertice.print:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 2
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+Vertice.print.0:        
+                        
+                        ld r1 <- r0[3]
+                        st fp[0] <- r1
+                        jmp Vertice.print.1
+Vertice.print.1:        
+                        
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+                        jmp Vertice.print.2
+Vertice.print.2:        
+                        
+                        ld r1 <- r0[4]
+                        st fp[0] <- r1
+                        jmp Vertice.print.3
+Vertice.print.3:        
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l78
+                        la r1 <- string58
+                        syscall IO.out_string
+                        syscall exit
+l78:                    push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[14]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Vertice.print.4
+Vertice.print.4:        
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Vertice.print.end
+Vertice.print.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+                        
+the.empty.string:       constant ""
+string1:                constant "Bool"
+string2:                constant "BoolOp"
+string3:                constant "ECons"
+string4:                constant "EList"
+string5:                constant "Edge"
+string6:                constant "Graph"
+string7:                constant "IO"
+string8:                constant "Int"
+string9:                constant "Main"
+string10:               constant "Object"
+string11:               constant "Parse"
+string12:               constant "String"
+string13:               constant "VCons"
+string14:               constant "VList"
+string15:               constant "Vertice"
+string16:               constant "abort\n"
+string17:               constant "ERROR: 135: Exception: dispatch on void\n"
+string18:               constant "ERROR: 139: Exception: dispatch on void\n"
+string19:               constant "ERROR: 140: Exception: dispatch on void\n"
+string20:               constant "ERROR: 184: Exception: dispatch on void\n"
+string21:               constant "ERROR: 185: Exception: dispatch on void\n"
+string22:               constant "ERROR: 123: Exception: dispatch on void\n"
+string23:               constant "ERROR: 125: Exception: dispatch on void\n"
+string24:               constant "ERROR: 145: Exception: dispatch on void\n"
+string25:               constant "ERROR: 44: Exception: dispatch on void\n"
+string26:               constant "ERROR: 45: Exception: dispatch on void\n"
+string27:               constant "ERROR: 48: Exception: dispatch on void\n"
+string28:               constant "ERROR: 49: Exception: dispatch on void\n"
+string29:               constant "ERROR: 259: Exception: dispatch on void\n"
+string30:               constant "ERROR: 260: Exception: dispatch on void\n"
+string31:               constant "ERROR: 263: Exception: dispatch on void\n"
+string32:               constant "ERROR: 264: Exception: dispatch on void\n"
+string33:               constant "ERROR: 273: Exception: dispatch on void\n"
+string34:               constant "ERROR: 274: Exception: dispatch on void\n"
+string35:               constant "ERROR: 277: Exception: dispatch on void\n"
+string36:               constant "ERROR: 278: Exception: dispatch on void\n"
+string37:               constant "ERROR: 280: Exception: dispatch on void\n"
+string38:               constant "ERROR: 301: Exception: dispatch on void\n"
+string39:               constant "ERROR: 308: Exception: dispatch on void\n"
+string40:               constant "ERROR: 309: Exception: dispatch on void\n"
+string41:               constant "ERROR: 310: Exception: dispatch on void\n"
+string42:               constant "ERROR: 311: Exception: dispatch on void\n"
+string43:               constant "ERROR: 324: Exception: dispatch on void\n"
+string44:               constant "ERROR: 327: Exception: dispatch on void\n"
+string45:               constant "ERROR: 330: Exception: dispatch on void\n"
+string46:               constant "ERROR: 335: Exception: dispatch on void\n"
+string47:               constant "ERROR: 340: Exception: dispatch on void\n"
+string48:               constant "ERROR: 363: Exception: dispatch on void\n"
+string49:               constant "ERROR: 364: Exception: dispatch on void\n"
+string50:               constant "ERROR: 0: Exception: String.substr out of range\n"
+string51:               constant "ERROR: 213: Exception: dispatch on void\n"
+string52:               constant "ERROR: 241: Exception: dispatch on void\n"
+string53:               constant "ERROR: 242: Exception: dispatch on void\n"
+string54:               constant "ERROR: 201: Exception: dispatch on void\n"
+string55:               constant "ERROR: 203: Exception: dispatch on void\n"
+string56:               constant "ERROR: 216: Exception: dispatch on void\n"
+string57:               constant "ERROR: 72: Exception: dispatch on void\n"
+string58:               constant "ERROR: 80: Exception: dispatch on void\n"
+                        
+eq_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 eq_true
+                        li r3 <- 0
+                        beq r1 r3 eq_false
+                        beq r2 r3 eq_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 eq_bool
+                        li r2 <- 2
+                        beq r1 r2 eq_int
+                        li r2 <- 6
+                        beq r1 r2 eq_string
+                        
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 eq_true
+eq_false:               
+                        la r1 <- false
+                        jmp eq_end
+eq_true:                
+                        la r1 <- true
+                        jmp eq_end
+eq_bool:                
+eq_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        beq r1 r2 eq_true
+                        jmp eq_false
+eq_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        beq r1 r2 eq_true
+                        jmp eq_false
+eq_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+le_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 le_true
+                        li r3 <- 0
+                        beq r1 r3 le_false
+                        beq r2 r3 le_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 le_bool
+                        li r2 <- 2
+                        beq r1 r2 le_int
+                        li r2 <- 6
+                        beq r1 r2 le_string
+                        
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 le_true
+le_false:               
+                        la r1 <- false
+                        jmp le_end
+le_true:                
+                        la r1 <- true
+                        jmp le_end
+le_bool:                
+le_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ble r1 r2 le_true
+                        jmp le_false
+le_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        ble r1 r2 le_true
+                        jmp le_false
+le_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+lt_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        li r3 <- 0
+                        beq r1 r3 lt_false
+                        beq r2 r3 lt_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 lt_bool
+                        li r2 <- 2
+                        beq r1 r2 lt_int
+                        li r2 <- 6
+                        beq r1 r2 lt_string
+                        
+lt_false:               
+                        la r1 <- false
+                        jmp lt_end
+lt_true:                
+                        la r1 <- true
+                        jmp lt_end
+lt_bool:                
+lt_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        blt r1 r2 lt_true
+                        jmp lt_false
+lt_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        blt r1 r2 lt_true
+                        jmp lt_false
+lt_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+int0:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 0
+int1:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 1
+int2:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 2
+int3:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 3
+int4:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 4
+int5:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 5
+int6:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 6
+int7:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 7
+int8:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 8
+int9:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 9
+int10:                  constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 10
+l24:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l79
+l79:                    constant ""
+l55:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l80
+l80:                    constant " "
+l17:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l81
+l81:                    constant ")"
+l16:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l82
+l82:                    constant ","
+l50:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l83
+l83:                    constant "-"
+l37:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l84
+l84:                    constant "0"
+l38:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l85
+l85:                    constant "1"
+l39:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l86
+l86:                    constant "2"
+l40:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l87
+l87:                    constant "3"
+l41:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l88
+l88:                    constant "4"
+l42:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l89
+l89:                    constant "5"
+l43:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l90
+l90:                    constant "6"
+l44:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l91
+l91:                    constant "7"
+l45:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l92
+l92:                    constant "8"
+l46:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l93
+l93:                    constant "9"
+l13:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l94
+l94:                    constant "\n"
+l15:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l95
+l95:                    constant " ("
+true:                   constant 0
+                        constant 4
+                        constant Bool..vtable
+                        constant 1
+false:                  constant 0
+                        constant 4
+                        constant Bool..vtable
+                        constant 0
+                        
+start:                  
+                        la r2 <- Main..new
+                        push fp
+                        call r2
+                        push fp
+                        push r1
+                        la r2 <- Main.main
+                        call r2
+                        syscall exit

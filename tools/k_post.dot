@@ -1,0 +1,19 @@
+digraph k_post {
+  n0 [label="(Node 0)\nstart\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to var\nt$1 <- self.var(\"x\",)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to var\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nfcall-pre to var\nt$3 <- self.var(\"y\",)\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-post to var\nt$5 <- t$1\nt$7 <- t$3\nt$8 <- t$1\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-pre to lam\nt$6 <- self.lam(t$7,t$8,)\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-post to lam\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-pre to lam\nt$0 <- self.lam(t$5,t$6,)\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-post to lam\nt$0 <- return\n"];
+}

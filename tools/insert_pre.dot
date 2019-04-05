@@ -1,0 +1,7 @@
+digraph insert_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- i\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to rcons\nt$0 <- self.rcons(t$1,)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to rcons\nt$0 <- return\n"];
+}

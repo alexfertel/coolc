@@ -1,0 +1,15 @@
+digraph eval_class_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- \"class EvalObject inherits IO {\\\\n\"\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to out_string\nt$1 <- self.out_string(t$2,)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to out_string\nt$4 <- \"  eval() : EvalObject { { abort(); self; } };\\\\n\"\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nfcall-pre to out_string\nt$3 <- self.out_string(t$4,)\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-post to out_string\nt$5 <- \"};\\\\n\"\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-pre to out_string\nt$0 <- self.out_string(t$5,)\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-post to out_string\nt$0 <- return\n"];
+}

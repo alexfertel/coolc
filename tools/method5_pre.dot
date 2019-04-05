@@ -1,0 +1,7 @@
+digraph method5_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- Default_Int\nt$5 <- num\nt$6 <- num\nt$3 <- t$5 * t$6\nt$4 <- num\nt$1 <- t$3 * t$4\nt$2 <- t$1\nt$7 <- t$1\nt$8 <- new E\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to set_var\nt$0 <- t$8.set_var(t$7,)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to set_var\nt$0 <- return\n"];
+}

@@ -1,0 +1,26 @@
+digraph prompt2_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- Default_String\nt$3 <- \"\\\\n\\\\n\"\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to out_string\nt$2 <- self.out_string(t$3,)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to out_string\nt$5 <- \"Would you like to choose a background pattern? \\\\n\"\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nfcall-pre to out_string\nt$4 <- self.out_string(t$5,)\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-post to out_string\nt$7 <- \"Please use lowercase y or n for your answer [n]: \"\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-pre to out_string\nt$6 <- self.out_string(t$7,)\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-post to out_string\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-pre to in_string\nt$1 <- self.in_string()\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-post to in_string\nt$8 <- t$1\nt$10 <- t$1\nt$11 <- \"y\"\nt$9 <- t$10 = t$11\n"];
+ n8 -> n10 [label="!t$9"];
+ n8 -> n9 [label="t$9"];
+  n9 [label="(Node 9)\nthen branch\nt$0 <- true\n"];
+ n9 -> n11 [label="true"];
+  n10 [label="(Node 10)\nelse branch\nt$0 <- false\n"];
+ n10 -> n11 [label="true"];
+  n11 [label="(Node 11)\nif-join\nt$0 <- return\n"];
+}

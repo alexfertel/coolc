@@ -1,0 +1,22 @@
+digraph evolve_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- 0\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to num_cells\nt$2 <- self.num_cells()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to num_cells\nt$3 <- Default_String\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nwhile-pred\nt$6 <- t$1\nt$7 <- t$2\nt$5 <- t$6 < t$7\n"];
+ n3 -> n4 [label="!t$5"];
+ n3 -> n5 [label="t$5"];
+  n4 [label="(Node 4)\nwhile-join\nt$4 <- Default_Object\npopulation_map <- t$3\nt$15 <- population_map\nt$0 <- self\nt$0 <- return\n"];
+  n5 [label="(Node 5)\nwhile-body\nt$11 <- t$1\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-pre to cell_at_next_evolution\nt$10 <- self.cell_at_next_evolution(t$11,)\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-post to cell_at_next_evolution\nt$12 <- t$3\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-pre to concat\nt$3 <- t$12.concat(t$10,)\n"];
+ n8 -> n9 [label="true"];
+  n9 [label="(Node 9)\nfcall-post to concat\nt$9 <- t$3\nt$13 <- t$1\nt$14 <- 1\nt$1 <- t$13 + t$14\nt$8 <- t$1\n"];
+ n9 -> n3 [label="true"];
+}

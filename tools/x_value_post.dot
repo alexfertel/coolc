@@ -1,0 +1,3 @@
+digraph x_value_post {
+  n0 [label="(Node 0)\nstart\nt$0 <- x\nt$0 <- return\n"];
+}

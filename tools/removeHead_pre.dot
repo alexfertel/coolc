@@ -1,0 +1,7 @@
+digraph removeHead_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- l\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to tail\nl <- t$2.tail()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to tail\nt$1 <- l\nt$0 <- self\nt$0 <- return\n"];
+}
