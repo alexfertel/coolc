@@ -137,7 +137,7 @@ class TypeBuilderVisitor:
         self.__current_class = self.__scope.get_type(node.name)
 
         # Check if parent class exist
-        if node.parent not in self.__scope.get_types_dic().keys():
+        if node.parent not in self.__scope.get_types_dict().keys():
             self.__errors.append('Class %s doesn\'t exist.' % (node.parent))
         else:
             self.__current_class.parent = node.parent
@@ -170,7 +170,7 @@ class TypeBuilderVisitor:
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
         # Check if attribute is defined in the current class only once
-        if self.__current_class.get_method() is not None:
+        if self.__current_class.get_method(node.name) is not None:
             self.__errors.append(f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0
 

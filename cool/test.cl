@@ -9,7 +9,7 @@ class Main inherits IO {
     };
 };
 
-class A inherits B {
+class A inherits B{
     m () : String { "A" };
     f () : SELF_TYPE { new SELF_TYPE };
 };

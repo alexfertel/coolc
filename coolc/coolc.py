@@ -108,12 +108,9 @@ class Compiler:
         else:
             print("Correctly builder all types, no semantic problems with this pass!")
 
-        print(f'This program types are: {type_builder.get_scope().get_types_dic().keys()}')
+        print(f'This program types are: {type_builder.get_scope().get_types_dict().keys()}')
 
-        graph_handler = coolig.InheritanceGraphVisitor(type_builder.get_scope().get_types_dic().keys())
-        graph = graph_handler.visit(self.ast)
-
-        print(f'Inheritance Graph: {graph}')
+        graph_handler = coolig.InheritanceGraphVisitor(type_builder.get_scope().get_types_dict().values())
 
         errors.clear()
         valid = graph_handler.check_graph(errors)
