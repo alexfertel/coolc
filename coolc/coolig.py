@@ -10,10 +10,11 @@ class InheritanceGraphVisitor:
     - It is an error to inherit from 'String', 'Int' or 'Bool' (Redefinition of builtin classes is checked in cooltypes)
     """
 
-    def __init__(self, types):
-        self.types = types
-        self.edges = []
-        self.adjacency_dict = None
+    def __init__(self, class_list):
+        self.__class_list = class_list
+        # self.edges = []
+        self.__adjacency_dict = {}
+        self.__build_adjacency_dict()
 
     # Sort of DFS to check for cycles.
     def check_graph(self, errors):
@@ -23,9 +24,8 @@ class InheritanceGraphVisitor:
 
         def dfs(node):
             visited.append(node)
-            # print(node, visited)
             valid = 1
-            for child in self.adjacency_dict[node]:
+            for child in self.__adjacency_dict[node]:
                 if node in sealed_types:
                     errors.append(f"Type <{child}> inherits from <{node}>, which is sealed in Cool!")
                     valid &= 0
@@ -39,29 +39,20 @@ class InheritanceGraphVisitor:
         visited = []
         sealed_types = ['Int', 'Bool', 'String']
 
-        return dfs("Object")
+        return dfs("Object") & self.__visite_all(dfs, visited)
 
-    def build_adjacency_dict(self):
-        result = defaultdict(list)
-        for a, b in self.reversed_edges():
-            result[a].append(b)
-        return result
+    def __build_adjacency_dict(self):
+        for klass in self.__class_list:
+            if klass.parent is not None:
+                if self.__adjacency_dict.get(klass.parent) is None:
+                    self.__adjacency_dict[klass.parent] = []
+                if self.__adjacency_dict.get(klass.name) is None:
+                    self.__adjacency_dict[klass.name] = []
+                self.__adjacency_dict[klass.parent].append(klass.name)
 
-    def reversed_edges(self):
-        return [(b, a) for a, b in self.edges if b is not None]
-
-    @visitor.on('node')
-    def visit(self, node, tabs):
-        pass
-
-    @visitor.when(ast.Program)
-    def visit(self, node: ast.Program):
-        for klass in node.classes:
-            self.visit(klass)
-
-        self.adjacency_dict = self.build_adjacency_dict()
-        return self.adjacency_dict
-
-    @visitor.when(ast.Class)
-    def visit(self, node: ast.Class):
-        self.edges.append((node.name, node.parent))
+    def __visite_all(self, dfs, visited: list) -> bool:
+        valid = 1
+        for klass in self.__class_list:
+            if klass.name not in visited:
+                valid &= dfs(klass.name)
+        return valid
