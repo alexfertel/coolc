@@ -21,7 +21,7 @@ class Scope:
         return child_scope
 
     def is_defined(self, vname):
-        return self.get_variable_info(vname) is not None
+        return (self.get_variable_info(vname) is not None) and (parent.is_defined(vname) if parent is not None else False)
 
     def get_variable_info(self, vname):
         current = self
