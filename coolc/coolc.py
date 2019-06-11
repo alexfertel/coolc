@@ -6,6 +6,7 @@ from . import utils
 from . import cooltypecollector
 from . import cooltypebuilder
 
+
 class Compiler:
     def __init__(self, *programs):
         """
@@ -43,10 +44,10 @@ class Compiler:
 
         # Setup pipeline
         self.steps = [
-                self.lexing,
-                self.parsing,
-                self.semantics
-            ]
+            self.lexing,
+            self.parsing,
+            self.semantics
+        ]
 
     def compile(self):
         for step in self.steps:
@@ -95,7 +96,8 @@ class Compiler:
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
 
-        type_builder = cooltypebuilder.TypeBuilderVisitor(type_collector.get_scope())
+        type_builder = cooltypebuilder.TypeBuilderVisitor(
+            type_collector.get_scope())
         type_builder.visit(self.ast)
 
         errors = type_builder.get_errors()
@@ -108,20 +110,17 @@ class Compiler:
         else:
             print("Correctly builder all types, no semantic problems with this pass!")
 
-        # print(f'This program types are: {types_discoverer.types.keys()}')
+        print(
+            f'This program types are: {type_builder.get_scope().get_types_dict().keys()}')
 
-        # graph_handler = coolig.InheritanceGraphVisitor(types_discoverer.types.keys())
-        # graph = graph_handler.visit(ast_with_builtins)
+        graph_handler = coolig.InheritanceGraphVisitor(
+            type_builder.get_scope().get_types_dict().values())
 
-        # print(f'Inheritance Graph: {graph}')
-
-        # errors.clear()
-        # valid = graph_handler.check_graph(errors)
-        # if not valid:
-        #     for error in errors:
-        #         print(error)
-        #     exit(1)
-        # else:
-        #     print("Type Inheritance Graph is semantically correct!")
-
-
+        errors.clear()
+        valid = graph_handler.check_graph(errors)
+        if not valid:
+            for error in errors:
+                print(error)
+            exit(1)
+        else:
+            print("Type Inheritance Graph is semantically correct!")
