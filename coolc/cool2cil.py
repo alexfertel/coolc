@@ -5,6 +5,7 @@ from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
+from functools import partial
 
 
 class Cool2CilVisitor:
@@ -34,15 +35,14 @@ class Cool2CilVisitor:
     # =[ UTILS ]============================================================
     # ======================================================================
 
-    # def build_internal_fname(self):
-    #     fname = f'f{self.internal_f_count}'
-    #     self.internal_f_count += 1
-    #     return fname
+    def build_internal_fname(self):
+        fname = f'f{self.internal_f_count}'
+        self.internal_f_count += 1
+        return fname
 
-    # def build_internal_fname(self):
-    #     fname = f'f{self.internal_f_count}'
-    #     self.internal_f_count += 1
-    #     return fname
+    def build_method_name(self):
+        mname = f'{self.current_class_name}_{self.current_function_name}'
+        return mname
 
     def define_internal_lname(self):
         lname = f'{self.internal_l_count}_LABEL'
@@ -70,10 +70,10 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
-    # def register_func(self, instructions):
-    #     func = func(*args)
-    #     self.dotcode.append(func)
-    #     return func
+    def register_func(self, fname, instructions):
+        func = cil.CILFunction(fname, instructions)
+        self.dotcode.append(func)
+        return func
 
     def register_type(self):
         ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
@@ -179,7 +179,36 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.ClassMethod)
     def visit(self, node: ast.ClassMethod):
-        pass
+        # This visit is divided in two:
+        #   * The addition of the method to the current type
+        #   * The addition of a new function to dotcode
+        self.current_function_name = node.name
+        mname = self.build_method_name()
+        fname = self.build_internal_fname()
+
+        # Method addition
+        self.methods.append(cil.CILMethod(mname, fname))
+
+        # Function addition
+        # Clean instruction list 
+        self.instructions.clear()
+
+        # First line of every function is *self* param
+        self.register_instruction(cil.CILParam, VariableInfo('self'))
+
+        # For each formal parameter the function has, visit the corresponding node
+        for fparam in node.formal_params:
+            self.visit(fparam)
+
+        # Method body
+        vinfo = self.visit(node.body)
+
+        # Since the body of a function is an expression, 
+        # we return whatever returns the body
+        self.register_instruction(cil.CILReturn, vinfo)
+
+        # Register the function in dotcode
+        self.register_func(fname, self.instructions)
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
