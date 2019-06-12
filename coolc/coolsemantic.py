@@ -25,11 +25,15 @@ class SemanticVisitor:
         return valid
 
     @visitor.when(ast.Class)
-    def visit(self, node: ast.Class, errors):
-        pass
+    def visit(self, node: ast.Class, errors: list):
+        valid = True
+        for feature in node.features:
+            valid &= visit(feature, errors)
+
+        return valid
 
     @visitor.when(ast.ClassFeature)
-    def visit(self, node: ast.ClassFeature, errors):
+    def visit(self, node: ast.ClassFeature, errors: list):
         pass
 
     @visitor.when(ast.ClassMethod)
@@ -37,8 +41,14 @@ class SemanticVisitor:
         pass
 
     @visitor.when(ast.ClassAttribute)
-    def visit(self, node: ast.ClassAttribute, errors):
-        pass
+    def visit(self, node: ast.ClassAttribute, errors: list):
+        valid = visit(node.init_expr)
+        if node.init_expr.return_type != node.attr_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        return valid
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter, errors):

@@ -229,6 +229,15 @@ class Boolean(Constant):
 class Expr(Node):
     def __init__(self):
         super(Expr, self).__init__()
+        self.__return_type = None
+
+    @property
+    def return_type(self) -> str:
+        return self.__return_type
+
+    @return_type.setter
+    def return_type(self, value: str):
+        self.__return_type = value
 
 
 class NewObject(Expr):
