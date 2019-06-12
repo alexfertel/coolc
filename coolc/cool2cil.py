@@ -141,7 +141,7 @@ class Cool2CilVisitor:
         # Update current class name
         self.current_class_name = node.name
 
-        # Empty old values
+        # Clear old values
         self.attributes.clear()
         self.methods.clear()
         self.ctor.clear()
