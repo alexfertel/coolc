@@ -132,11 +132,21 @@ class SemanticVisitor:
 
     @visitor.when(ast.IntegerComplement)
     def visit(self, node: ast.IntegerComplement, errors):
-        pass
+        valid = visit(node.integer_expr)
+        if node.integer_expr.return_type != 'Int':
+            valid = False
+            errors.append('Operator \"~\" is used only on Integer expresions.')
+
+        return valid
 
     @visitor.when(ast.BooleanComplement)
     def visit(self, node: ast.BooleanComplement, errors):
-        pass
+        valid = visit(node.boolean_expr)
+        if node.boolean_expr.return_type != 'Bool':
+            valid = False
+            errors.append('Operator \"~\" is used only on Boolean expresions.')
+
+        return valid
 
     @visitor.when(ast.BinaryOperation)
     def visit(self, node: ast.BinaryOperation, errors):
@@ -144,28 +154,83 @@ class SemanticVisitor:
 
     @visitor.when(ast.Addition)
     def visit(self, node: ast.Addition, errors):
-        pass
+        valid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        return valid
 
     @visitor.when(ast.Subtraction)
     def visit(self, node: ast.Subtraction, errors):
-        pass
+        alid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        return valid
 
     @visitor.when(ast.Multiplication)
     def visit(self, node: ast.Multiplication, errors):
-        pass
+        alid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        return valid
 
     @visitor.when(ast.Division)
     def visit(self, node: ast.Division, errors):
-        pass
+        alid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        return valid
 
     @visitor.when(ast.Equal)
     def visit(self, node: ast.Equal, errors):
-        pass
+        valid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        node.return_type = 'Bool'
+
+        return valid
 
     @visitor.when(ast.LessThan)
     def visit(self, node: ast.LessThan, errors):
-        pass
+        valid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        node.return_type = 'Bool'
+
+        return valid
 
     @visitor.when(ast.LessThanOrEqual)
     def visit(self, node: ast.LessThanOrEqual, errors):
-        pass
+        valid = visit(node.first)
+        valid &= visit(node.second)
+        if node.first.return_type != node.second.return_type:
+            valid = False
+            errors.append('Types <%s> and <%s> are differente.' %
+                          (node.init_expr.return_type, node.attr_type))
+
+        node.return_type = 'Bool'
+
+        return valid
