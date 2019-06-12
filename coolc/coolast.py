@@ -176,6 +176,15 @@ class Self(Object):
 class Constant(Node):
     def __init__(self):
         super(Constant, self).__init__()
+        self.__return_value = None
+
+    @property
+    def return_value(self):
+        return self.__return_value
+
+    @return_value.setter
+    def return_value(self, value):
+        self.__return_value = value
 
 
 class Integer(Constant):

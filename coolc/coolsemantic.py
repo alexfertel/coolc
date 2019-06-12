@@ -68,15 +68,15 @@ class SemanticVisitor:
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer, errors):
-        pass
+        node.return_value = 'Int'
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String, errors):
-        pass
+        node.return_value = 'String'
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean, errors):
-        pass
+        node.return_value = 'Bool'
 
     @visitor.when(ast.Expr)
     def visit(self, node: ast.Expr, errors):
@@ -137,6 +137,8 @@ class SemanticVisitor:
             valid = False
             errors.append('Operator \"~\" is used only on Integer expresions.')
 
+        node.return_type = 'Int'
+
         return valid
 
     @visitor.when(ast.BooleanComplement)
@@ -145,6 +147,8 @@ class SemanticVisitor:
         if node.boolean_expr.return_type != 'Bool':
             valid = False
             errors.append('Operator \"~\" is used only on Boolean expresions.')
+
+        node.return_type = 'Bool'
 
         return valid
 
@@ -161,6 +165,8 @@ class SemanticVisitor:
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
 
+        node.return_type = 'Int'
+
         return valid
 
     @visitor.when(ast.Subtraction)
@@ -171,6 +177,8 @@ class SemanticVisitor:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
+
+        node.return_type = 'Int'
 
         return valid
 
@@ -183,6 +191,8 @@ class SemanticVisitor:
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
 
+        node.return_type = 'Int'
+
         return valid
 
     @visitor.when(ast.Division)
@@ -193,6 +203,8 @@ class SemanticVisitor:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
+
+        node.return_type = 'Int'
 
         return valid
 
