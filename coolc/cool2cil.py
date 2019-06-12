@@ -123,6 +123,9 @@ class Cool2CilVisitor:
         Every program in cil should have an `entrypoint` method which is to be run to start the program.
         """
 
+        for klass in node.classes:
+            self.visit(klass)
+
         root = cil.CILProgram(self.dottypes, self.dotdata, self.dotcode)
 
         # self.current_function_name = 'main'
@@ -236,6 +239,7 @@ class Cool2CilVisitor:
         
         # TODO: Make sure ALLOCATEs execute in order, i.e. when we run `new T`, the constructor of T
         # is already discovered!
+        # UPDATE: we build constructors in a visitor pass right before this visitor :).
         ttype = self.get_type(node.type)
         ctor = ttype.methods[0] if ttype else None
 
@@ -282,12 +286,33 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
-        for declaration in node.declaration_list:
-            self.visit(declaration)
-        # vinfo = self.visit(node.expr)
-        # internal = self.define_internal_local()
-        # vinfo = self.register_instruction(cil.CILAssign, internal, vinfo)
-        return self.visit(node.expr)
+        """
+        <let.locals>
+
+        ...
+        <let.body>
+        """
+		for declaration in node.declaration_list:
+			self.visit(declaration)
+
+		# Do `let` expressions return values? (Aren't they statements?) @Leo
+		let_value = self.define_internal_local() 
+        vinfo = self.visit(node.body)
+		self.register_instruction(cil.CILAssign, let_value, vinfo)
+		return let_value
+
+    @visitor.when(ast.Declaration)
+    def visit(self, node: ast.Declaration):
+        """
+        LOCAL identifier
+        <expression.locals>
+
+        identifier = <expression.body>
+        """
+        identifier = self.register_local(node.identifier)
+        vinfo = self.visit(node.expression)
+        self.register_instruction(cil.CILAssign, identifier, vinfo)
+		return identifier
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If):
