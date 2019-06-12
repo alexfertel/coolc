@@ -4,6 +4,7 @@ from . import cilast as cil
 from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
+from .coolutils import default
 
 
 class Cool2CilVisitor:
@@ -170,7 +171,7 @@ class Cool2CilVisitor:
 
         self.methods.insert(0, self.ctor)  # Add constructors as the first element of the methods
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
-        # recurison depth exceeded, of course, does C# detects this at compile time?
+        # recurison depth exceeded, of course, does C# detect this at compile time?
 
         ttype = self.register_type()
         print(ttype)
@@ -208,7 +209,9 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
-        pass
+        vinfo = VariableInfo(node.name)
+        self.register_instruction(cil.CILParam, vinfo)
+        return vinfo
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
@@ -218,19 +221,18 @@ class Cool2CilVisitor:
     def visit(self, node: ast.Self):
         pass
 
-    @visitor.when(ast.Integer)
-    def visit(self, node: ast.Integer):
-        # return int(node.content)
-        return node.content
+	@visitor.when(ast.Integer)
+	def visit(self, node: ast.Integer):
+		return node.content
 
-    @visitor.when(ast.String)
-    def visit(self, node: ast.String):
-        # return str(node.content)
-        return node.content
+	@visitor.when(ast.String)
+	def visit(self, node: ast.String):
+		data_vinfo = self.register_data(node.content)
+		return data_vinfo
 
-    @visitor.when(ast.Boolean)
-    def visit(self, node: ast.Boolean):
-        return node.content
+	@visitor.when(ast.Boolean)
+	def visit(self, node: ast.Boolean):
+		return 1 if node.content == True else 0
 
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
@@ -310,7 +312,7 @@ class Cool2CilVisitor:
         identifier = <expression.body>
         """
         identifier = self.register_local(node.identifier)
-        vinfo = self.visit(node.expression)
+        vinfo = self.visit(node.expression) if node.expression else default(node.ttype)
         self.register_instruction(cil.CILAssign, identifier, vinfo)
 		return identifier
 
