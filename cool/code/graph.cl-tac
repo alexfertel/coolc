@@ -1,0 +1,17 @@
+comment start
+label BoolOp_and_0
+t$1 <- b1
+t$2 <- not t$1
+bt t$2 BoolOp_and_2
+bt t$1 BoolOp_and_1
+comment then branch
+label BoolOp_and_1
+t$0 <- b2
+jmp BoolOp_and_3
+comment else branch
+label BoolOp_and_2
+t$0 <- bool false
+jmp BoolOp_and_3
+comment if-join
+label BoolOp_and_3
+return t$0

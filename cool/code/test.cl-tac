@@ -1,0 +1,5 @@
+comment start
+label A_m_0
+t$0 <- string
+A
+return t$0

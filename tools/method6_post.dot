@@ -1,0 +1,7 @@
+digraph method6_post {
+  n0 [label="(Node 0)\nstart\nt$3 <- num\nt$1 <- t$3 / 8\nt$5 <- t$1\nt$6 <- new A\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to set_var\nt$0 <- t$6.set_var(t$5,)\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to set_var\nt$0 <- return\n"];
+}

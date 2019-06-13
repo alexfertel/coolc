@@ -1,0 +1,3 @@
+digraph init_pre {
+  n0 [label="(Node 0)\nstart\nxcar <- hd\nt$1 <- xcar\nxcdr <- tl\nt$2 <- xcdr\nt$0 <- self\nt$0 <- return\n"];
+}

@@ -1,0 +1,7 @@
+digraph headE_pre {
+  n0 [label="(Node 0)\nstart\nt$1 <- l\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to headE\nt$0 <- t$1.headE()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to headE\nt$0 <- return\n"];
+}

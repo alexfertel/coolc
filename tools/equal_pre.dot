@@ -1,0 +1,25 @@
+digraph equal_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- x\nt$4 <- d\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to x_value\nt$3 <- t$4.x_value()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to x_value\nt$1 <- t$2 = t$3\n"];
+ n2 -> n4 [label="!t$1"];
+ n2 -> n3 [label="t$1"];
+  n3 [label="(Node 3)\nthen branch\nt$6 <- y\nt$8 <- d\n"];
+ n3 -> n6 [label="true"];
+  n4 [label="(Node 4)\nelse branch\nt$0 <- false\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nif-join\nt$0 <- return\n"];
+  n6 [label="(Node 6)\nfcall-pre to y_value\nt$7 <- t$8.y_value()\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-post to y_value\nt$5 <- t$6 = t$7\n"];
+ n7 -> n9 [label="!t$5"];
+ n7 -> n8 [label="t$5"];
+  n8 [label="(Node 8)\nthen branch\nt$0 <- true\n"];
+ n8 -> n10 [label="true"];
+  n9 [label="(Node 9)\nelse branch\nt$0 <- false\n"];
+ n9 -> n10 [label="true"];
+  n10 [label="(Node 10)\nif-join\n"];
+ n10 -> n5 [label="true"];
+}

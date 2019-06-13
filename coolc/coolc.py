@@ -15,7 +15,7 @@ class Compiler:
         # TODO: Setup pipeline: coolex => cooljack => semantic visitor => cool-cil visitor => cil-mips generator
         # coolex => cooljack => cooltypes => coolig => semantic visitor => cool-cil visitor => cil-mips generator
 
-        # Initialize the master program source code string and initial properties.
+        # Initialize the source code string and initial properties of the master program.
         self.cool_program_code = ""
         self.lexer = None
         self.parser = None
@@ -25,7 +25,7 @@ class Compiler:
         for program in programs:
             if not str(program).endswith(".cl"):
                 error = "Cool program files must end with a `.cl` extension.\r\n"
-                print(utils.error_template())
+                print(coolutils.error_template())
                 print(error)
                 exit(1)
 
@@ -37,7 +37,7 @@ class Compiler:
             except (IOError, FileNotFoundError):
                 error = f"(0,0) - CompilerError: File `{program}` was not found. Are you sure the file exists?"
                 # print(f'Error! File "{program}" was not found. Are you sure the file exists?')
-                print(utils.error_template())
+                print(coolutils.error_template())
                 print(error)
             except Exception:
                 print("An unexpected error occurred!")
@@ -61,7 +61,7 @@ class Compiler:
         for token in self.lexer:
             print(token)
         if self.lexer.error_list:
-            print(utils.error_template())
+            print(coolutils.error_template())
             for error in self.lexer.error_list:
                 print(error)
             exit(1)
@@ -74,7 +74,7 @@ class Compiler:
         self.parser.build()
         self.ast = self.parser.parse(self.cool_program_code)
         if self.parser.error_list:
-            print(utils.error_template())
+            print(coolutils.error_template())
             for error in self.parser.error_list:
                 print(error)
             exit(1)

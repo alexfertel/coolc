@@ -1,0 +1,815 @@
+                        
+Bool..vtable:           
+                        constant string1
+                        constant Bool..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+IO..vtable:             
+                        constant string2
+                        constant IO..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        
+Int..vtable:            
+                        constant string3
+                        constant Int..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+Main..vtable:           
+                        constant string4
+                        constant Main..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant IO.in_int
+                        constant IO.in_string
+                        constant IO.out_int
+                        constant IO.out_string
+                        constant Main.main
+                        
+Object..vtable:         
+                        constant string5
+                        constant Object..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        
+String..vtable:         
+                        constant string6
+                        constant String..new
+                        constant Object.abort
+                        constant Object.copy
+                        constant Object.type_name
+                        constant String.concat
+                        constant String.length
+                        constant String.substr
+                        
+Bool..new:              
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 0
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- Bool..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO..new:                
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 10
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- IO..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Int..new:               
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 1
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- Int..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        li r1 <- 0
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Main..new:              
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 11
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- Main..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object..new:            
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 3
+                        alloc r0 r0
+                        
+                        li r2 <- 12
+                        st r0[0] <- r2
+                        li r2 <- 3
+                        st r0[1] <- r2
+                        la r2 <- Object..vtable
+                        st r0[2] <- r2
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+String..new:            
+                        mov fp <- sp
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        li r0 <- 4
+                        alloc r0 r0
+                        
+                        li r2 <- 3
+                        st r0[0] <- r2
+                        li r2 <- 4
+                        st r0[1] <- r2
+                        la r2 <- String..vtable
+                        st r0[2] <- r2
+                        
+                        
+                        la r1 <- the.empty.string
+                        st r0[3] <- r1
+                        
+                        mov r1 <- r0
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.abort:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        la r1 <- string7
+                        syscall IO.out_string
+                        syscall exit
+Object.abort.end:       
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.copy:            
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        ld r2 <- r0[1]
+                        alloc r1 r2
+                        push r1
+l1:                     bz r2 l2
+                        ld r3 <- r0[0]
+                        st r1[0] <- r3
+                        li r3 <- 1
+                        add r0 <- r0 r3
+                        add r1 <- r1 r3
+                        li r3 <- 1
+                        sub r2 <- r2 r3
+                        jmp l1
+l2:                     
+                        pop r1
+Object.copy.end:        
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+Object.type_name:       
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        
+                        ld r2 <- r0[2]
+                        
+                        ld r2 <- r2[0]
+                        st r1[3] <- r2
+Object.type_name.end:   
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO.in_int:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        syscall IO.in_int
+                        st r2[3] <- r1
+                        mov r1 <- r2
+IO.in_int.end:          
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO.in_string:           
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        syscall IO.in_string
+                        st r2[3] <- r1
+                        mov r1 <- r2
+IO.in_string.end:       
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+IO.out_int:             
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        ld r2 <- fp[2]
+                        ld r1 <- r2[3]
+                        syscall IO.out_int
+                        mov r1 <- r0
+IO.out_int.end:         
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+IO.out_string:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        ld r2 <- fp[2]
+                        ld r1 <- r2[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+IO.out_string.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+Main.main:              
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 3
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+Main.main.0:            
+                        
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        
+                        ld r2 <- fp[0]
+                        bz r2 l3
+l4:                     
+                        li r1 <- 0
+                        jmp l5
+l3:                     
+                        li r1 <- 1
+l5:                     
+                        push r1
+                        push fp
+                        push r0
+                        la r2 <- Bool..new
+                        call r2
+                        pop r0
+                        pop fp
+                        pop r2
+                        st r1[3] <- r2
+                        st fp[0] <- r1
+                        jmp Main.main.1
+Main.main.1:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l6
+                        la r1 <- string8
+                        syscall IO.out_string
+                        syscall exit
+l6:                     push r1
+                        
+                        call Object.type_name
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Main.main.2
+Main.main.2:            
+                        jmp Main.main.3
+Main.main.3:            
+                        
+                        push r0
+                        push fp
+                        la r1 <- int1
+                        push r1
+                        la r1 <- int3
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l7
+                        la r1 <- string8
+                        syscall IO.out_string
+                        syscall exit
+l7:                     push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[-1] <- r1
+                        jmp Main.main.4
+Main.main.4:            
+                        
+                        push fp
+                        push r0
+                        la r2 <- Object..new
+                        call r2
+                        pop r0
+                        pop fp
+                        st fp[0] <- r1
+                        jmp Main.main.5
+Main.main.5:            
+                        
+                        push r0
+                        push fp
+                        ld r1 <- fp[0]
+                        bnz r1 l8
+                        la r1 <- string9
+                        syscall IO.out_string
+                        syscall exit
+l8:                     push r1
+                        
+                        ld r2 <- r1[2]
+                        
+                        ld r2 <- r2[4]
+                        call r2
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Main.main.6
+Main.main.6:            
+                        jmp Main.main.7
+Main.main.7:            
+                        
+                        push r0
+                        push fp
+                        la r1 <- int4
+                        push r1
+                        la r1 <- int1
+                        push r1
+                        ld r1 <- fp[0]
+                        bnz r1 l9
+                        la r1 <- string9
+                        syscall IO.out_string
+                        syscall exit
+l9:                     push r1
+                        
+                        call String.substr
+                        pop fp
+                        pop r0
+                        st fp[0] <- r1
+                        jmp Main.main.8
+Main.main.8:            
+                        jmp Main.main.9
+Main.main.9:            
+                        
+                        ld r1 <- fp[0]
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        jmp Main.main.10
+Main.main.10:           
+                        jmp Main.main.11
+Main.main.11:           
+                        
+                        ld r1 <- fp[-1]
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        ld r1 <- fp[0]
+                        jmp Main.main.12
+Main.main.12:           
+                        jmp Main.main.13
+Main.main.13:           
+                        
+                        la r1 <- l10
+                        ld r1 <- r1[3]
+                        syscall IO.out_string
+                        mov r1 <- r0
+                        st fp[0] <- r1
+                        jmp Main.main.14
+Main.main.14:           
+                        
+                        ld r1 <- fp[0]
+                        st fp[0] <- r1
+                        jmp Main.main.end
+Main.main.end:          
+                        pop ra
+                        li r2 <- 3
+                        add sp <- sp r2
+                        return
+                        
+String.concat:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r3 <- r1
+                        ld r2 <- fp[2]
+                        ld r2 <- r2[3]
+                        ld r1 <- r0[3]
+                        syscall String.concat
+                        st r3[3] <- r1
+                        mov r1 <- r3
+String.concat.end:      
+                        pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+String.length:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- Int..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r2 <- r1
+                        ld r1 <- r0[3]
+                        syscall String.length
+                        st r2[3] <- r1
+                        mov r1 <- r2
+String.length.end:      
+                        pop ra
+                        li r2 <- 1
+                        add sp <- sp r2
+                        return
+                        
+String.substr:          
+                        mov fp <- sp
+                        pop r0
+                        
+                        li r2 <- 1
+                        sub sp <- sp r2
+                        push ra
+                        
+                        
+                        
+                        
+                        push fp
+                        push r0
+                        la r2 <- String..new
+                        call r2
+                        pop r0
+                        pop fp
+                        mov r3 <- r1
+                        ld r2 <- fp[2]
+                        ld r2 <- r2[3]
+                        ld r1 <- fp[3]
+                        ld r1 <- r1[3]
+                        ld r0 <- r0[3]
+                        syscall String.substr
+                        bnz r1 l11
+                        la r1 <- string10
+                        syscall IO.out_string
+                        syscall exit
+l11:                    st r3[3] <- r1
+                        mov r1 <- r3
+String.substr.end:      
+                        pop ra
+                        li r2 <- 3
+                        add sp <- sp r2
+                        return
+                        
+                        
+the.empty.string:       constant ""
+string1:                constant "Bool"
+string2:                constant "IO"
+string3:                constant "Int"
+string4:                constant "Main"
+string5:                constant "Object"
+string6:                constant "String"
+string7:                constant "abort\n"
+string8:                constant "ERROR: 5: Exception: dispatch on void\n"
+string9:                constant "ERROR: 4: Exception: dispatch on void\n"
+string10:               constant "ERROR: 0: Exception: String.substr out of range\n"
+                        
+eq_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 eq_true
+                        li r3 <- 0
+                        beq r1 r3 eq_false
+                        beq r2 r3 eq_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 eq_bool
+                        li r2 <- 2
+                        beq r1 r2 eq_int
+                        li r2 <- 6
+                        beq r1 r2 eq_string
+                        
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 eq_true
+eq_false:               
+                        la r1 <- false
+                        jmp eq_end
+eq_true:                
+                        la r1 <- true
+                        jmp eq_end
+eq_bool:                
+eq_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        beq r1 r2 eq_true
+                        jmp eq_false
+eq_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        beq r1 r2 eq_true
+                        jmp eq_false
+eq_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+le_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 le_true
+                        li r3 <- 0
+                        beq r1 r3 le_false
+                        beq r2 r3 le_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 le_bool
+                        li r2 <- 2
+                        beq r1 r2 le_int
+                        li r2 <- 6
+                        beq r1 r2 le_string
+                        
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        beq r1 r2 le_true
+le_false:               
+                        la r1 <- false
+                        jmp le_end
+le_true:                
+                        la r1 <- true
+                        jmp le_end
+le_bool:                
+le_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ble r1 r2 le_true
+                        jmp le_false
+le_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        ble r1 r2 le_true
+                        jmp le_false
+le_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+                        
+lt_handler:             
+                        mov fp <- sp
+                        pop r0
+                        push ra
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        li r3 <- 0
+                        beq r1 r3 lt_false
+                        beq r2 r3 lt_false
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        
+                        add r1 <- r1 r2
+                        li r2 <- 0
+                        beq r1 r2 lt_bool
+                        li r2 <- 2
+                        beq r1 r2 lt_int
+                        li r2 <- 6
+                        beq r1 r2 lt_string
+                        
+lt_false:               
+                        la r1 <- false
+                        jmp lt_end
+lt_true:                
+                        la r1 <- true
+                        jmp lt_end
+lt_bool:                
+lt_int:                 
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        blt r1 r2 lt_true
+                        jmp lt_false
+lt_string:              
+                        ld r1 <- fp[3]
+                        ld r2 <- fp[2]
+                        ld r1 <- r1[3]
+                        ld r2 <- r2[3]
+                        ld r1 <- r1[0]
+                        ld r2 <- r2[0]
+                        blt r1 r2 lt_true
+                        jmp lt_false
+lt_end:                 pop ra
+                        li r2 <- 2
+                        add sp <- sp r2
+                        return
+int1:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 1
+int3:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 3
+int4:                   constant 1
+                        constant 4
+                        constant Int..vtable
+                        constant 4
+l10:                    constant 3
+                        constant 4
+                        constant String..vtable
+                        constant l12
+l12:                    constant "\n"
+true:                   constant 0
+                        constant 4
+                        constant Bool..vtable
+                        constant 1
+false:                  constant 0
+                        constant 4
+                        constant Bool..vtable
+                        constant 0
+                        
+start:                  
+                        la r2 <- Main..new
+                        push fp
+                        call r2
+                        push fp
+                        push r1
+                        la r2 <- Main.main
+                        call r2
+                        syscall exit

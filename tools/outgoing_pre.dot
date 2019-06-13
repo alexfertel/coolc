@@ -1,0 +1,3 @@
+digraph outgoing_pre {
+  n0 [label="(Node 0)\nstart\nt$0 <- out\nt$0 <- return\n"];
+}

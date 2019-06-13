@@ -1,0 +1,7 @@
+digraph car_post {
+  n0 [label="(Node 0)\nstart\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to abort\n_dead_ <- self.abort()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to abort\nt$0 <- new Int\nt$0 <- return\n"];
+}

@@ -1,0 +1,21 @@
+digraph west_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- position\nt$3 <- 0\nt$1 <- t$2 = t$3\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\nt$0 <- \" \"\n"];
+ n1 -> n3 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$9 <- position\nt$10 <- columns\nt$7 <- t$9 / t$10\nt$8 <- columns\nt$5 <- t$7 * t$8\nt$6 <- position\nt$4 <- t$5 = t$6\n"];
+ n2 -> n5 [label="!t$4"];
+ n2 -> n4 [label="t$4"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+  n4 [label="(Node 4)\nthen branch\nt$0 <- \" \"\n"];
+ n4 -> n6 [label="true"];
+  n5 [label="(Node 5)\nelse branch\nt$12 <- position\nt$13 <- 1\nt$11 <- t$12 - t$13\n"];
+ n5 -> n7 [label="true"];
+  n6 [label="(Node 6)\nif-join\n"];
+ n6 -> n3 [label="true"];
+  n7 [label="(Node 7)\nfcall-pre to cell\nt$0 <- self.cell(t$11,)\n"];
+ n7 -> n8 [label="true"];
+  n8 [label="(Node 8)\nfcall-post to cell\n"];
+ n8 -> n6 [label="true"];
+}

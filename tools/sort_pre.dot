@@ -1,0 +1,3 @@
+digraph sort_pre {
+  n0 [label="(Node 0)\nstart\nt$0 <- self\nt$0 <- return\n"];
+}

@@ -1,0 +1,7 @@
+comment start
+label A_out_a_0
+t$1 <- string
+A: Hello world\n
+t$2 <- io
+t$0 <- call out_string t$1
+return t$0

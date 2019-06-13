@@ -1,0 +1,5 @@
+comment start
+label Board_size_of_board_0
+t$1 <- initial
+t$0 <- call length
+return t$0

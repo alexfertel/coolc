@@ -176,7 +176,7 @@ class TypeBuilderVisitor:
             self.__has_main = 1
 
             if len(node.formal_params) != 0:
-                self.__bad_main == 1
+                self.__bad_main = 1
 
         return 1
 

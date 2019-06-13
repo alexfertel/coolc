@@ -1,0 +1,3 @@
+digraph init_post {
+  n0 [label="(Node 0)\nstart\nxcar <- hd\nxcdr <- tl\nt$0 <- self\nt$0 <- return\n"];
+}

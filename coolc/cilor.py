@@ -1,4 +1,4 @@
-#!/home/alex/anaconda3/bin/python3
+#!/usr/bin/python3
 import os.path
 import fileinput
 import sys

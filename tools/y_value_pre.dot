@@ -1,0 +1,3 @@
+digraph y_value_pre {
+  n0 [label="(Node 0)\nstart\nt$0 <- y\nt$0 <- return\n"];
+}

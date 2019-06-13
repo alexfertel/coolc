@@ -1,0 +1,15 @@
+digraph add_vertice_post {
+  n0 [label="(Node 0)\nstart\nt$2 <- edges\nt$4 <- v\n"];
+ n0 -> n1 [label="true"];
+  n1 [label="(Node 1)\nfcall-pre to outgoing\nt$3 <- t$4.outgoing()\n"];
+ n1 -> n2 [label="true"];
+  n2 [label="(Node 2)\nfcall-post to outgoing\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nfcall-pre to append\nedges <- t$3.append(t$2,)\n"];
+ n3 -> n4 [label="true"];
+  n4 [label="(Node 4)\nfcall-post to append\nt$5 <- v\nt$6 <- vertices\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-pre to cons\nvertices <- t$6.cons(t$5,)\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-post to cons\nt$0 <- vertices\nt$0 <- return\n"];
+}

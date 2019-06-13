@@ -1,0 +1,17 @@
+comment start
+label App_print_self_0
+t$2 <- string
+((
+t$1 <- call out_string t$2
+t$4 <- fun
+t$3 <- call print_self
+t$6 <- string
+)@(
+t$5 <- call out_string t$6
+t$8 <- arg
+t$7 <- call print_self
+t$10 <- string
+))
+t$9 <- call out_string t$10
+t$0 <- self
+return t$0

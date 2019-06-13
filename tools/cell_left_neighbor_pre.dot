@@ -1,0 +1,22 @@
+digraph cell_left_neighbor_pre {
+  n0 [label="(Node 0)\nstart\nt$2 <- position\nt$3 <- 0\nt$1 <- t$2 = t$3\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\n"];
+ n1 -> n4 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$8 <- position\nt$9 <- 1\nt$7 <- t$8 - t$9\n"];
+ n2 -> n8 [label="true"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+  n4 [label="(Node 4)\nfcall-pre to num_cells\nt$5 <- self.num_cells()\n"];
+ n4 -> n5 [label="true"];
+  n5 [label="(Node 5)\nfcall-post to num_cells\nt$6 <- 1\nt$4 <- t$5 - t$6\n"];
+ n5 -> n6 [label="true"];
+  n6 [label="(Node 6)\nfcall-pre to cell\nt$0 <- self.cell(t$4,)\n"];
+ n6 -> n7 [label="true"];
+  n7 [label="(Node 7)\nfcall-post to cell\n"];
+ n7 -> n3 [label="true"];
+  n8 [label="(Node 8)\nfcall-pre to cell\nt$0 <- self.cell(t$7,)\n"];
+ n8 -> n9 [label="true"];
+  n9 [label="(Node 9)\nfcall-post to cell\n"];
+ n9 -> n3 [label="true"];
+}

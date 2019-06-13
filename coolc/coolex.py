@@ -122,28 +122,27 @@ class Coolex:
     # Ignore rule for single line comments
     t_ignore_SINGLE_LINE_COMMENT = r"\-\-[^\n]*"
 
-    ###
     # SIMPLE TOKENS
-    t_LPAREN = r'\('  # (
-    t_RPAREN = r'\)'  # )
-    t_LBRACE = r'\{'  # {
-    t_RBRACE = r'\}'  # }
-    t_COLON = r'\:'  # :
-    t_COMMA = r'\,'  # ,
-    t_DOT = r'\.'  # .
-    t_SEMICOLON = r'\;'  # ;
-    t_AT = r'\@'  # @
-    t_MULTIPLY = r'\*'  # *
-    t_DIVIDE = r'\/'  # /
-    t_PLUS = r'\+'  # +
-    t_MINUS = r'\-'  # -
-    t_INT_COMP = r'~'  # ~
-    t_LT = r'\<'  # <
-    t_EQ = r'\='  # =
-    t_LTEQ = r'\<\='  # <=
-    t_ASSIGN = r'\<\-'  # <-
-    # t_NOT = r'not'  # not
-    t_ARROW = r'\=\>'  # =>
+    t_LPAREN        = r'\('     # (
+    t_RPAREN        = r'\)'     # )
+    t_LBRACE        = r'\{'     # {
+    t_RBRACE        = r'\}'     # }
+    t_COLON         = r'\:'     # :
+    t_COMMA         = r'\,'     # ,
+    t_DOT           = r'\.'     # .
+    t_SEMICOLON     = r'\;'     # ;
+    t_AT            = r'\@'     # @
+    t_MULTIPLY      = r'\*'     # *
+    t_DIVIDE        = r'\/'     # /
+    t_PLUS          = r'\+'     # +
+    t_MINUS         = r'\-'     # -
+    t_INT_COMP      = r'~'      # ~
+    t_LT            = r'\<'     # <
+    t_EQ            = r'\='     # =
+    t_LTEQ          = r'\<\='   # <=
+    t_ASSIGN        = r'\<\-'   # <-
+    # t_NOT         = r'not'    # not
+    t_ARROW         = r'\=\>'   # =>
 
     # @TOKEN(r"not")
     # def t_NOT(self, token):

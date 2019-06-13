@@ -1,0 +1,10 @@
+digraph substitute_post {
+  n0 [label="(Node 0)\nstart\nt$2 <- x\nt$3 <- self\nt$1 <- t$2 = t$3\n"];
+ n0 -> n2 [label="!t$1"];
+ n0 -> n1 [label="t$1"];
+  n1 [label="(Node 1)\nthen branch\nt$0 <- e\n"];
+ n1 -> n3 [label="true"];
+  n2 [label="(Node 2)\nelse branch\nt$0 <- self\n"];
+ n2 -> n3 [label="true"];
+  n3 [label="(Node 3)\nif-join\nt$0 <- return\n"];
+}
