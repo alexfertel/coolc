@@ -24,6 +24,7 @@ class CILData(CILNode):
         self.vname = vname
         self.value = value
 
+
 # I don't think this is it...
 # class CILFunction(CILNode):
 #     def __init__(self, fname, params, localvars, instructions):
@@ -32,10 +33,12 @@ class CILData(CILNode):
 #         self.localvars = localvars
 #         self.instructions = instructions
 
+
 class CILFunction(CILNode):
     def __init__(self, fname, instructions):
         self.fname = fname
         self.instructions = instructions
+
 
 class CILMethod(CILNode):
     def __init__(self, mname, fname):
@@ -85,20 +88,25 @@ class CILStar(CILArithmetic):
 class CILDiv(CILArithmetic):
     pass
 
+
 class CILBoolean(CILInstruction):
     def __init__(self, dest, left, right):
         self.dest = dest
         self.left = left
         self.right = right
 
+
 class CILEqual(CILBoolean):
     pass
+
 
 class CILLessThan(CILBoolean):
     pass
 
+
 class CILLessThanOrEqual(CILBoolean):
     pass
+
 
 class CILGetAttrib(CILInstruction):
     def __init__(self, dest, instance, attribute):

@@ -5,11 +5,10 @@ from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
-from functools import partial
 
 
 class Cool2CilVisitor:
-    def __init__(self):
+    def __init__(self, context):
         # Handle current program
         self.dottypes = []
         self.dotdata = []
@@ -30,6 +29,9 @@ class Cool2CilVisitor:
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
+
+        # Context
+        self.context = context
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -76,7 +78,8 @@ class Cool2CilVisitor:
         return func
 
     def register_type(self):
-        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
+        ttype = cil.CILType(self.current_class_name, self.attributes,
+                            self.methods)
         self.dottypes.append(ttype)
         return ttype
 
@@ -101,11 +104,10 @@ class Cool2CilVisitor:
         for instruction in replicated:
             if type(instruction) is cil.CILSetAttrib:
                 instruction.instance = instance
-        
+
         # Register instructions after the ALLOCATE
         self.instructions.extend(replicated)
         return replicated
-
 
     # ======================================================================
 
@@ -150,7 +152,7 @@ class Cool2CilVisitor:
         self.methods.clear()
         self.ctor.clear()
 
-        # The only arg to the ctor should be an instance of this type 
+        # The only arg to the ctor should be an instance of this type
         # (The address where the instance is stored).
         # I think this is always the result of an ALLOCATE!
         # So, actually, we don't need to write a PARAM-ARG duo.
@@ -165,11 +167,14 @@ class Cool2CilVisitor:
                     self.attributes.extend(ttype.attributes)
                     self.methods.extend(ttype.methods[1:])
 
-                    self.ctor.extend(self.methods[0].instructions)  # this is the parent's constructor
+                    self.ctor.extend(self.methods[0].instructions
+                                     )  # this is the parent's constructor
 
         self.visit(node.features)
 
-        self.methods.insert(0, self.ctor)  # Add constructors as the first element of the methods
+        self.methods.insert(
+            0,
+            self.ctor)  # Add constructors as the first element of the methods
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
 
@@ -190,7 +195,7 @@ class Cool2CilVisitor:
         self.methods.append(cil.CILMethod(mname, fname))
 
         # Function addition
-        # Clean instruction list 
+        # Clean instruction list
         self.instructions.clear()
 
         # First line of every function is *self* param
@@ -203,7 +208,7 @@ class Cool2CilVisitor:
         # Method body
         vinfo = self.visit(node.body)
 
-        # Since the body of a function is an expression, 
+        # Since the body of a function is an expression,
         # we return whatever returns the body
         self.register_instruction(cil.CILReturn, vinfo)
 
@@ -218,8 +223,8 @@ class Cool2CilVisitor:
         pass
         # # Check we're not cleaning and losing ctor instructions!
         # self.instructions.clear()  # Clean current CIL instructions
-        # self.current_function_name = "0_ctor"  # Attributes init is done in a ctor, the weird name is to avoid collisions 
-        # self.attributes.append(node.name)  # 
+        # self.current_function_name = "0_ctor"  # Attributes init is done in a ctor, the weird name is to avoid collisions
+        # self.attributes.append(node.name)  #
 
         # if node.init_expr:
         #     vinfo = self.visit(node.init_expr)
@@ -248,30 +253,31 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
-        pass
+        return VariableInfo(node.name)
 
+    # @Leo @Marcos
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
         pass
 
-	@visitor.when(ast.Integer)
-	def visit(self, node: ast.Integer):
-		return node.content
+    @visitor.when(ast.Integer)
+    def visit(self, node: ast.Integer):
+        return node.content
 
-	@visitor.when(ast.String)
-	def visit(self, node: ast.String):
-		data_vinfo = self.register_data(node.content)
-		return data_vinfo
+    @visitor.when(ast.String)
+    def visit(self, node: ast.String):
+        data_vinfo = self.register_data(node.content)
+        return data_vinfo
 
-	@visitor.when(ast.Boolean)
-	def visit(self, node: ast.Boolean):
-		return 1 if node.content == True else 0
+    @visitor.when(ast.Boolean)
+    def visit(self, node: ast.Boolean):
+        return 1 if node.content == True else 0
 
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
         vinfo = self.define_internal_local()
         self.register_instruction(cil.CILAllocate, vinfo, node.type)
-        
+
         # TODO: Make sure ALLOCATEs execute in order, i.e. when we run `new T`, the constructor of T
         # is already discovered!
         # UPDATE: we build constructors in a visitor pass right before this visitor :).
@@ -316,12 +322,31 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.DynamicDispatch)
     def visit(self, node: ast.DynamicDispatch):
-        pass
+        instance = self.visit(
+            node.instance)  # This is going to be param `self`
+        self.register_instruction(cil.CILArg, instance)
+
+        args = []  # Remaining arguments of the method
+        for arg in node.arguments:
+            vinfo = self.visit(arg)
+            self.register_instruction(cil.CILArg, vinfo)
+
+        # Here we have to compute the type, which is done using TYPEOF
+        ttype = self.define_internal_local()
+        self.register_instruction(cil.CILTypeOf, ttype, instance)
+
+        # All function calls have a result
+        result = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, result, ttype, node.method)
+
+        return result
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        instance = self.visit(node.instance)  # This is going to be param `self`
+        instance = self.visit(
+            node.instance)  # This is going to be param `self`
         self.register_instruction(cil.CILArg, instance)
+    "python.linting.pylamaArgs": ["--ignore W0404"]
 
         args = []  # Remaining arguments of the method
         for arg in node.arguments:
@@ -330,10 +355,10 @@ class Cool2CilVisitor:
 
         # All function calls have a result
         result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, node.dispatch_type, node.method)
-        
+        self.register_instruction(cil.CILVCall, result, node.dispatch_type,
+                                  node.method)
+
         return result
-        
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
@@ -343,13 +368,13 @@ class Cool2CilVisitor:
         ...
         <let.body>
         """
-		for declaration in node.declaration_list:
-			self.visit(declaration)
+        for declaration in node.declaration_list:
+            self.visit(declaration)
 
-		let_value = self.define_internal_local() 
+        let_value = self.define_internal_local()
         vinfo = self.visit(node.body)
-		self.register_instruction(cil.CILAssign, let_value, vinfo)
-		return let_value
+        self.register_instruction(cil.CILAssign, let_value, vinfo)
+        return let_value
 
     @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration):
@@ -360,9 +385,10 @@ class Cool2CilVisitor:
         identifier = <expression.body>
         """
         identifier = self.register_local(node.identifier)
-        vinfo = self.visit(node.expression) if node.expression else default(node.ttype)
+        vinfo = self.visit(node.expression) if node.expression else default(
+            node.ttype)
         self.register_instruction(cil.CILAssign, identifier, vinfo)
-		return identifier
+        return identifier
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If):
@@ -447,7 +473,8 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILPlus, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILPlus, dest_vinfo, left_vinfo,
+                                  right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Subtraction)
@@ -455,7 +482,8 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILMinus, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILMinus, dest_vinfo, left_vinfo,
+                                  right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Multiplication)
@@ -463,7 +491,8 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILStar, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILStar, dest_vinfo, left_vinfo,
+                                  right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Division)
@@ -471,7 +500,8 @@ class Cool2CilVisitor:
         left_vinfo = self.visit(node.left)
         right_vinfo = self.visit(node.right)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILDiv, dest_vinfo, left_vinfo, right_vinfo)
+        self.register_instruction(cil.CILDiv, dest_vinfo, left_vinfo,
+                                  right_vinfo)
         return dest_vinfo
 
     @visitor.when(ast.Equal)
@@ -479,7 +509,8 @@ class Cool2CilVisitor:
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILEqual, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILEqual, vinfo, first_vinfo,
+                                  second_vinfo)
         return vinfo
 
     @visitor.when(ast.LessThan)
@@ -487,7 +518,8 @@ class Cool2CilVisitor:
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLessThan, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILLessThan, vinfo, first_vinfo,
+                                  second_vinfo)
         return vinfo
 
     @visitor.when(ast.LessThanOrEqual)
@@ -495,5 +527,6 @@ class Cool2CilVisitor:
         first_vinfo = self.visit(node.first)
         second_vinfo = self.visit(node.second)
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLessThanOrEqual, vinfo, first_vinfo, second_vinfo)
+        self.register_instruction(cil.CILLessThanOrEqual, vinfo, first_vinfo,
+                                  second_vinfo)
         return vinfo
