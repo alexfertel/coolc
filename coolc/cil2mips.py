@@ -1,4 +1,4 @@
-from . import coolast as ast
+from . import cilast as ast
 from . import visitor
 
 
@@ -7,147 +7,167 @@ class Cil2MipsVisitor:
 	def visit(self, node):
 		pass
 
-	@visitor.when(ast.Node)
-	def visit(self, node: ast.Node):
+	@visitor.when(ast.CILNode)
+	def visit(self, node: ast.CILNode):
 		pass
 
-	@visitor.when(ast.Program)
-	def visit(self, node: ast.Program):
+	@visitor.when(ast.CILProgram)
+	def visit(self, node: ast.CILProgram):
 		pass
 
-	@visitor.when(ast.Class)
-	def visit(self, node: ast.Class):
+	@visitor.when(ast.CILType)
+	def visit(self, node: ast.CILType):
 		pass
 
-	@visitor.when(ast.ClassFeature)
-	def visit(self, node: ast.ClassFeature):
+	@visitor.when(ast.CILData)
+	def visit(self, node: ast.CILData):
 		pass
 
-	@visitor.when(ast.ClassMethod)
-	def visit(self, node: ast.ClassMethod):
+	@visitor.when(ast.CILFunction)
+	def visit(self, node: ast.CILFunction):
 		pass
 
-	@visitor.when(ast.ClassAttribute)
-	def visit(self, node: ast.ClassAttribute):
+	@visitor.when(ast.CILMethod)
+	def visit(self, node: ast.CILMethod):
 		pass
 
-	@visitor.when(ast.FormalParameter)
-	def visit(self, node: ast.FormalParameter):
+	@visitor.when(ast.CILParam)
+	def visit(self, node: ast.CILParam):
 		pass
 
-	@visitor.when(ast.Object)
-	def visit(self, node: ast.Object):
+	@visitor.when(ast.CILLocal)
+	def visit(self, node: ast.CILLocal):
 		pass
 
-	@visitor.when(ast.Self)
-	def visit(self, node: ast.Self):
+	@visitor.when(ast.CILInstruction)
+	def visit(self, node: ast.CILInstruction):
 		pass
 
-	@visitor.when(ast.Constant)
-	def visit(self, node: ast.Constant):
+	@visitor.when(ast.CILAssign)
+	def visit(self, node: ast.CILAssign):
 		pass
 
-	@visitor.when(ast.Integer)
-	def visit(self, node: ast.Integer):
+	@visitor.when(ast.CILArithmetic)
+	def visit(self, node: ast.CILArithmetic):
 		pass
 
-	@visitor.when(ast.String)
-	def visit(self, node: ast.String):
+	@visitor.when(ast.CILPlus)
+	def visit(self, node: ast.CILPlus):
 		pass
 
-	@visitor.when(ast.Boolean)
-	def visit(self, node: ast.Boolean):
+	@visitor.when(ast.CILMinus)
+	def visit(self, node: ast.CILMinus):
 		pass
 
-	@visitor.when(ast.Expr)
-	def visit(self, node: ast.Expr):
+	@visitor.when(ast.CILStar)
+	def visit(self, node: ast.CILStar):
 		pass
 
-	@visitor.when(ast.NewObject)
-	def visit(self, node: ast.NewObject):
+	@visitor.when(ast.CILDiv)
+	def visit(self, node: ast.CILDiv):
 		pass
 
-	@visitor.when(ast.IsVoid)
-	def visit(self, node: ast.IsVoid):
+	@visitor.when(ast.CILBoolean)
+	def visit(self, node: ast.CILBoolean):
 		pass
 
-	@visitor.when(ast.Assignment)
-	def visit(self, node: ast.Assignment):
+	@visitor.when(ast.CILEqual)
+	def visit(self, node: ast.CILEqual):
 		pass
 
-	@visitor.when(ast.Block)
-	def visit(self, node: ast.Block):
+	@visitor.when(ast.CILLessThan)
+	def visit(self, node: ast.CILLessThan):
 		pass
 
-	@visitor.when(ast.DynamicDispatch)
-	def visit(self, node: ast.DynamicDispatch):
+	@visitor.when(ast.CILLessThanOrEqual)
+	def visit(self, node: ast.CILLessThanOrEqual):
 		pass
 
-	@visitor.when(ast.StaticDispatch)
-	def visit(self, node: ast.StaticDispatch):
+	@visitor.when(ast.CILGetAttrib)
+	def visit(self, node: ast.CILGetAttrib):
 		pass
 
-	@visitor.when(ast.Let)
-	def visit(self, node: ast.Let):
+	@visitor.when(ast.CILSetAttrib)
+	def visit(self, node: ast.CILSetAttrib):
 		pass
 
-	@visitor.when(ast.If)
-	def visit(self, node: ast.If):
+	@visitor.when(ast.CILGetIndex)
+	def visit(self, node: ast.CILGetIndex):
 		pass
 
-	@visitor.when(ast.WhileLoop)
-	def visit(self, node: ast.WhileLoop):
+	@visitor.when(ast.CILSetIndex)
+	def visit(self, node: ast.CILSetIndex):
 		pass
 
-	@visitor.when(ast.Case)
-	def visit(self, node: ast.Case):
+	@visitor.when(ast.CILAllocate)
+	def visit(self, node: ast.CILAllocate):
 		pass
 
-	@visitor.when(ast.Action)
-	def visit(self, node: ast.Action):
+	@visitor.when(ast.CILArray)
+	def visit(self, node: ast.CILArray):
 		pass
 
-	@visitor.when(ast.UnaryOperation)
-	def visit(self, node: ast.UnaryOperation):
+	@visitor.when(ast.CILTypeOf)
+	def visit(self, node: ast.CILTypeOf):
 		pass
 
-	@visitor.when(ast.IntegerComplement)
-	def visit(self, node: ast.IntegerComplement):
+	@visitor.when(ast.CILLabel)
+	def visit(self, node: ast.CILLabel):
 		pass
 
-	@visitor.when(ast.BooleanComplement)
-	def visit(self, node: ast.BooleanComplement):
+	@visitor.when(ast.CILGoto)
+	def visit(self, node: ast.CILGoto):
 		pass
 
-	@visitor.when(ast.BinaryOperation)
-	def visit(self, node: ast.BinaryOperation):
+	@visitor.when(ast.CILGotoIf)
+	def visit(self, node: ast.CILGotoIf):
 		pass
 
-	@visitor.when(ast.Addition)
-	def visit(self, node: ast.Addition):
+	@visitor.when(ast.CILCall)
+	def visit(self, node: ast.CILCall):
 		pass
 
-	@visitor.when(ast.Subtraction)
-	def visit(self, node: ast.Subtraction):
+	@visitor.when(ast.CILVCall)
+	def visit(self, node: ast.CILVCall):
 		pass
 
-	@visitor.when(ast.Multiplication)
-	def visit(self, node: ast.Multiplication):
+	@visitor.when(ast.CILArg)
+	def visit(self, node: ast.CILArg):
 		pass
 
-	@visitor.when(ast.Division)
-	def visit(self, node: ast.Division):
+	@visitor.when(ast.CILReturn)
+	def visit(self, node: ast.CILReturn):
 		pass
 
-	@visitor.when(ast.Equal)
-	def visit(self, node: ast.Equal):
+	@visitor.when(ast.CILLoad)
+	def visit(self, node: ast.CILLoad):
 		pass
 
-	@visitor.when(ast.LessThan)
-	def visit(self, node: ast.LessThan):
+	@visitor.when(ast.CILLength)
+	def visit(self, node: ast.CILLength):
 		pass
 
-	@visitor.when(ast.LessThanOrEqual)
-	def visit(self, node: ast.LessThanOrEqual):
+	@visitor.when(ast.CILConcat)
+	def visit(self, node: ast.CILConcat):
+		pass
+
+	@visitor.when(ast.CILPrefix)
+	def visit(self, node: ast.CILPrefix):
+		pass
+
+	@visitor.when(ast.CILSubstring)
+	def visit(self, node: ast.CILSubstring):
+		pass
+
+	@visitor.when(ast.CILToStr)
+	def visit(self, node: ast.CILToStr):
+		pass
+
+	@visitor.when(ast.CILRead)
+	def visit(self, node: ast.CILRead):
+		pass
+
+	@visitor.when(ast.CILPrint)
+	def visit(self, node: ast.CILPrint):
 		pass
 
