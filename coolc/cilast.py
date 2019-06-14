@@ -156,13 +156,13 @@ class CILGotoIf(CILInstruction):
         self.label = label
 
 
-class CILStaticCall(CILInstruction):
+class CILCall(CILInstruction):
     def __init__(self, dest, func):
         self.dest = dest
         self.func = func
 
 
-class CILDinamicCall(CILInstruction):
+class CILVCall(CILInstruction):
     def __init__(self, dest, ttype, func):
         self.dest = dest
         self.ttype = ttype

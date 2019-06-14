@@ -212,29 +212,33 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
-        # Check we're not cleaning and losing ctor instructions!
-        self.instructions.clear()  # Clean current CIL instructions
-        self.current_function_name = "0_ctor"  # Attributes init is done in a ctor, the weird name is to avoid collisions 
-        self.attributes.append(node.name)  # 
+        """
+        This is handled in the constructors visitor
+        """
+        pass
+        # # Check we're not cleaning and losing ctor instructions!
+        # self.instructions.clear()  # Clean current CIL instructions
+        # self.current_function_name = "0_ctor"  # Attributes init is done in a ctor, the weird name is to avoid collisions 
+        # self.attributes.append(node.name)  # 
 
-        if node.init_expr:
-            vinfo = self.visit(node.init_expr)
-            # Here should go using SETATTR to set the vinfo as the instance's attribute
-            self.register_instruction(cil.CILSetAttrib, "", node.name, vinfo)  # The instance is not known at this point
-            # So we have to make a call after the ALLOCATE to set the instance here, that's why the ctor receives
-            # the instance as an argument.
+        # if node.init_expr:
+        #     vinfo = self.visit(node.init_expr)
+        #     # Here should go using SETATTR to set the vinfo as the instance's attribute
+        #     self.register_instruction(cil.CILSetAttrib, "", node.name, vinfo)  # The instance is not known at this point
+        #     # So we have to make a call after the ALLOCATE to set the instance here, that's why the ctor receives
+        #     # the instance as an argument.
 
-            self.ctor.extend(self.instructions)  # I gues we're not losing instructions cause we save them with this!
-        else:  # Init with default of the type
-            # We should do something with defaults!
-            # TODO: Add default init of node.attr_type here!
-            pass
+        #     self.ctor.extend(self.instructions)  # I gues we're not losing instructions cause we save them with this!
+        # else:  # Init with default of the type
+        #     # We should do something with defaults!
+        #     # TODO: Add default init of node.attr_type here!
+        #     pass
 
-        # Not sure what to do with this. How to store the value of the attr in its address?
-        # I think it should be something like this: Upon `new T`, we alloc a memory address,
-        # search for the constructor address and then it sets the attributes like an array.
-        # return_node = self.register_instruction(cil.CILReturn(vinfo))  # I think we don't need this
-        # self.ctor.append()  # Nor this
+        # # Not sure what to do with this. How to store the value of the attr in its address?
+        # # I think it should be something like this: Upon `new T`, we alloc a memory address,
+        # # search for the constructor address and then it sets the attributes like an array.
+        # # return_node = self.register_instruction(cil.CILReturn(vinfo))  # I think we don't need this
+        # # self.ctor.append()  # Nor this
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
@@ -288,9 +292,20 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment):
+        """
+        There are three ways of making an assignment.
+            1. By declaring an attribute.
+            2. By declaring inside a let.
+            3. Just making an assigning a value.
+        
+        The first two share the syntax, but the third doesn't.
+        In this node we don't have to generate a LOCAL CIL node,
+        because to make this kind of assignment(3) the identifier
+        should be declared from beforehand.
+        """
         source = self.visit(node.expr)
-        self.register_instruction(cil.CILAssign, node.instance.variable_info, source)
-        return node.instance.variable_info
+        self.register_instruction(cil.CILAssign, node.identifier, source)
+        return node.identifier
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
@@ -305,14 +320,19 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        args = []  # List of vinfos
-        for arg in node.arguments:
-            args.append(self.visit(arg))
-        
         instance = self.visit(node.instance)  # This is going to be param `self`
+        self.register_instruction(cil.CILArg, instance)
 
-        # Map function to a CIL function
+        args = []  # Remaining arguments of the method
+        for arg in node.arguments:
+            vinfo = self.visit(arg)
+            self.register_instruction(cil.CILArg, vinfo)
+
+        # All function calls have a result
+        result = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, result, node.dispatch_type, node.method)
         
+        return result
         
 
     @visitor.when(ast.Let)
@@ -326,7 +346,6 @@ class Cool2CilVisitor:
 		for declaration in node.declaration_list:
 			self.visit(declaration)
 
-		# Do `let` expressions return values? (Aren't they statements?) @Leo
 		let_value = self.define_internal_local() 
         vinfo = self.visit(node.body)
 		self.register_instruction(cil.CILAssign, let_value, vinfo)
