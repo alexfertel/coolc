@@ -95,19 +95,22 @@ class Cool2CilVisitor:
             return list(included)[0]
         return None
 
-    def call_ctor(self, ctor, instance):
-        # This updates all the SETATTR instructions of the ctor with the allocated instance,
-        # registers them in the instructions of the current method.
-        replicated = copy.deepcopy(ctor)
+    def build_ctr(self):
+        # Build constructor
+        ctr = []
+        ctr.append(cil.CILParam("self"))
+        for attr in attrs:
+            attr_node = self.visit(attr)
+            ctr.append(attr_node)
+        ctr.append(cil.CILReturn("self"))
 
-        # Update instructions
-        for instruction in replicated:
-            if type(instruction) is cil.CILSetAttrib:
-                instruction.instance = instance
+        self.current_function_name = "ctr"
+        ctr_name = build_method_name()
+        ctr_func = cil.CILFunction(ctr_name, ctr)
+        self.dotcode.append(ctr_func)
+        # Add constructor as the first element of the methods
+        self.methods.append(ctr_func)
 
-        # Register instructions after the ALLOCATE
-        self.instructions.extend(replicated)
-        return replicated
 
     # ======================================================================
 
@@ -150,31 +153,29 @@ class Cool2CilVisitor:
         # Clear old values
         self.attributes.clear()
         self.methods.clear()
-        self.ctor.clear()
 
-        # The only arg to the ctor should be an instance of this type
-        # (The address where the instance is stored).
-        # I think this is always the result of an ALLOCATE!
-        # So, actually, we don't need to write a PARAM-ARG duo.
-        # We just paste all the code from the constructor where its called!
-        # self.ctor
+        # @Leo you're doing this elsewhere, right?
+        # # If this class inherits we have to update its attributes, methods and ctor: CIL types have them all.
+        # if node.parent:
+        #     # TODO: Optimize this! Maybe use a dict?
+        #     for ttype in self.dottypes:
+        #         if ttype.name == node.parent:
+        #             self.attributes.extend(ttype.attributes)
+        #             self.methods.extend(ttype.methods[1:])
 
-        # If this class inherits we have to update its attributes, methods and ctor: CIL types have them all.
-        if node.parent:
-            # TODO: Optimize this! Maybe use a dict?
-            for ttype in self.dottypes:
-                if ttype.name == node.parent:
-                    self.attributes.extend(ttype.attributes)
-                    self.methods.extend(ttype.methods[1:])
+        attrs, funcs = [], []
+        for feature in node.features:
+            if isinstance(feature, ast.ClassMethod):
+                funcs.append(feature)
+            else:
+                attrs.append(feature)
+        
+        # Build constructor
+        self.build_ctr()
 
-                    self.ctor.extend(self.methods[0].instructions
-                                     )  # this is the parent's constructor
-
-        self.visit(node.features)
-
-        self.methods.insert(
-            0,
-            self.ctor)  # Add constructors as the first element of the methods
+        for func in funcs:
+            self.visit(func)
+        
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
 
@@ -199,7 +200,7 @@ class Cool2CilVisitor:
         self.instructions.clear()
 
         # First line of every function is *self* param
-        self.register_instruction(cil.CILParam, VariableInfo('self'))
+        self.register_instruction(cil.CILParam, "self")
 
         # For each formal parameter the function has, visit the corresponding node
         for fparam in node.formal_params:
@@ -217,33 +218,14 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
-        """
-        This is handled in the constructors visitor
-        """
-        pass
-        # # Check we're not cleaning and losing ctor instructions!
-        # self.instructions.clear()  # Clean current CIL instructions
-        # self.current_function_name = "0_ctor"  # Attributes init is done in a ctor, the weird name is to avoid collisions
-        # self.attributes.append(node.name)  #
+        # Check we're not cleaning and losing ctor instructions!
+        self.attributes.append(node.name)  #
 
-        # if node.init_expr:
-        #     vinfo = self.visit(node.init_expr)
-        #     # Here should go using SETATTR to set the vinfo as the instance's attribute
-        #     self.register_instruction(cil.CILSetAttrib, "", node.name, vinfo)  # The instance is not known at this point
-        #     # So we have to make a call after the ALLOCATE to set the instance here, that's why the ctor receives
-        #     # the instance as an argument.
-
-        #     self.ctor.extend(self.instructions)  # I gues we're not losing instructions cause we save them with this!
-        # else:  # Init with default of the type
-        #     # We should do something with defaults!
-        #     # TODO: Add default init of node.attr_type here!
-        #     pass
-
-        # # Not sure what to do with this. How to store the value of the attr in its address?
-        # # I think it should be something like this: Upon `new T`, we alloc a memory address,
-        # # search for the constructor address and then it sets the attributes like an array.
-        # # return_node = self.register_instruction(cil.CILReturn(vinfo))  # I think we don't need this
-        # # self.ctor.append()  # Nor this
+        if node.init_expr:
+            vinfo = self.visit(node.init_expr)
+        else:  # Init with default of the type
+            vinfo = coolutils.default(node.attr_type)
+        return cil.CILSetAttrib("self", node.name, vinfo)
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
@@ -281,10 +263,9 @@ class Cool2CilVisitor:
         # TODO: Make sure ALLOCATEs execute in order, i.e. when we run `new T`, the constructor of T
         # is already discovered!
         # UPDATE: we build constructors in a visitor pass right before this visitor :).
-        ttype = self.get_type(node.type)
-        ctor = ttype.methods[0] if ttype else None
+        # UPDAE2: nevermind, we build ctrs right here in this pass.
 
-        self.call_ctor(ctor, vinfo)
+    
 
         return vinfo
 
@@ -300,13 +281,13 @@ class Cool2CilVisitor:
     def visit(self, node: ast.Assignment):
         """
         There are three ways of making an assignment.
-            1. By declaring an attribute.
-            2. By declaring inside a let.
-            3. Just making an assigning a value.
+            i. By declaring an attribute.
+            ii. By declaring inside a let.
+            iii. Just making an assigning a value.
         
         The first two share the syntax, but the third doesn't.
         In this node we don't have to generate a LOCAL CIL node,
-        because to make this kind of assignment(3) the identifier
+        because to make this kind of assignment(iii) the identifier
         should be declared from beforehand.
         """
         source = self.visit(node.expr)
@@ -346,7 +327,6 @@ class Cool2CilVisitor:
         instance = self.visit(
             node.instance)  # This is going to be param `self`
         self.register_instruction(cil.CILArg, instance)
-    "python.linting.pylamaArgs": ["--ignore W0404"]
 
         args = []  # Remaining arguments of the method
         for arg in node.arguments:
