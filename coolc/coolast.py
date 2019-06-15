@@ -77,6 +77,15 @@ class Class(Node):
                 return True
         return False
 
+    def is_ancestor(self, klass: str) -> bool:
+        current_class = self
+        if current_class.name == klass.name:
+            return True
+        if current_class.parent is not None:
+            current_class = current_class.parent
+            return is_ancestor(current_class)
+        return False
+
 
 class ClassFeature(Node):
     def __init__(self):

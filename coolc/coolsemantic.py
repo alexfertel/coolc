@@ -37,11 +37,16 @@ class SemanticVisitor:
         pass
 
     @visitor.when(ast.ClassMethod)
-    def visit(self, node: ast.ClassMethod, errors):
-        pass
+    def visit(self, node: ast.ClassMethod, errors: list):
+        current_scope = self.__scope.create_child_scope()
+        valid = True
+        for param in node.formal_params:
+            valid &= visit(param)
+            current_scope.define_variable(param.name, param.param_type)
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors: list):
+        self.__scope.define_variable(node.name, node.attr_type)
         valid = visit(node.init_expr)
         if node.init_expr.return_type != node.attr_type:
             valid = False
@@ -51,7 +56,7 @@ class SemanticVisitor:
         return valid
 
     @visitor.when(ast.FormalParameter)
-    def visit(self, node: ast.FormalParameter, errors):
+    def visit(self, node: ast.FormalParameter, errors: list):
         pass
 
     @visitor.when(ast.Object)
@@ -69,14 +74,20 @@ class SemanticVisitor:
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer, errors):
         node.return_value = 'Int'
+        return True
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String, errors):
         node.return_value = 'String'
+        if len(node.content) > 1024:
+            errors.append('String type only can have 1024 characters.')
+            return False
+        return True
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean, errors):
         node.return_value = 'Bool'
+        return True
 
     @visitor.when(ast.Expr)
     def visit(self, node: ast.Expr, errors):
