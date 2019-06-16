@@ -27,9 +27,29 @@ class SemanticVisitor:
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class, errors: list):
         valid = True
+        self.__scope = self.__scope.create_child_scope()
         for feature in node.features:
+            if type(feature) == ClassMethod:
+                if node.parent is not None:
+                    acestor_method = node.parent.get_method(feature.name)
+                    if ancestor_method is not None:
+                        if len(ancestor_methods.formal_params) != len(feature.formal_params):
+                            valid = False
+                            errors.append(
+                                "Number of params isn't equal methode %s can't be overrided." % (feature.name))
+                        for i in range(len(feature.formal_params)):
+                            if ancestor_method.formal_params[i].param_type != feature.formal_params[i].param_type:
+                                valid = False
+                                errors.append(
+                                    'Params of method %s are not equal type, this method can\'t be overrided.' % (feature.name))
+                        if feature.return_type != ancestor_method.return_type:
+                            valid = False
+                            errors.append(
+                                'Return type of method %s are not equal, this method can\'t be overrided.' % (feature.name))
+
             valid &= visit(feature, errors)
 
+        self.__scope = self.__scope.parent
         return valid
 
     @visitor.when(ast.ClassFeature)
@@ -38,30 +58,45 @@ class SemanticVisitor:
 
     @visitor.when(ast.ClassMethod)
     def visit(self, node: ast.ClassMethod, errors: list):
-        current_scope = self.__scope.create_child_scope()
+        self.__scope = self.__scope.create_child_scope()
         valid = True
         for param in node.formal_params:
             valid &= visit(param)
-            current_scope.define_variable(param.name, param.param_type)
+            self.__scope.define_variable(param.name, param.param_type)
+
+        valid &= visit(node.body)
+        self.__scope = self.__scope.parent
+
+        if node.body.return_type != node.return_type:
+            valid = False
+            errors.append(
+                'Return type of method <%s> and return type of its body are different.' % (node.name))
+
+        return valid
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors: list):
-        self.__scope.define_variable(node.name, node.attr_type)
         valid = visit(node.init_expr)
         if node.init_expr.return_type != node.attr_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
-
+        self.__scope.define_variable(node.name, node.attr_type)
         return valid
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter, errors: list):
-        pass
+        return True
 
     @visitor.when(ast.Object)
-    def visit(self, node: ast.Object, errors):
-        pass
+    def visit(self, node: ast.Object, errors: list):
+        valid = True
+        if not self.__scope.is_defined(node.name):
+            valid = False
+            errors.append(
+                'Variable <%s> is not defined in this scope.' % (node.name))
+
+        return valid
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self, errors):
