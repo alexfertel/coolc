@@ -100,6 +100,8 @@ class SemanticVisitor:
             valid = False
             errors.append(
                 'Variable <%s> is not defined in this scope.' % (node.name))
+        else:
+            node.return_type = self.__scope.get_variable_info(node.name).type
 
         return valid
 

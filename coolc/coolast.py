@@ -155,6 +155,7 @@ class Object(Node):
     def __init__(self, name):
         super(Object, self).__init__()
         self.name = name
+        self.return_type = 'Object'
 
     def to_tuple(self):
         return tuple([
