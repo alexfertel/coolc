@@ -93,8 +93,9 @@ class Cool2CilVisitor:
         # Build constructor
         ctr = []
         ctr.append(cil.CILParam("self"))
-        for attr in attrs:
+        for index, attr in enumerate(attrs):
             attr_node = self.visit(attr)
+            attr_node.index = index
             ctr.append(attr_node)
         ctr.append(cil.CILReturn("self"))
 
@@ -166,9 +167,10 @@ class Cool2CilVisitor:
         # Build constructor
         self.build_ctr()
 
-        for func in funcs:
-            self.visit(func)
-        
+        for index, func in enumerate(funcs):
+            func_node = self.visit(func)
+            func_node.index = index
+
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
 
@@ -207,7 +209,8 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILReturn, vinfo)
 
         # Register the function in dotcode
-        self.register_func(fname)
+        func = self.register_func(fname)
+        return func
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
