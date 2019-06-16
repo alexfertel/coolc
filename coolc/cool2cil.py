@@ -257,9 +257,10 @@ class Cool2CilVisitor:
     # TODO: Check this!
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid):
-        vinfo = self.visit(node.expr)
         dest_vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILTypeOf, dest_vinfo, vinfo)
+		vinfo = self.visit(node.expr)
+		self.register_instruction(cil.CILTypeOf, ttype, vinfo)
+		self.register_instruction(cil.CILEqual, dest_vinfo, ttype, "void")
         return dest_vinfo
 
     @visitor.when(ast.Assignment)
