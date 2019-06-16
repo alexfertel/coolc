@@ -2,7 +2,10 @@ from . import coolex
 from . import cooljack
 from . import cooltypes
 from . import coolig
-from . import coolutils
+from . import utils
+from . import cooltypecollector
+from . import cooltypebuilder
+
 
 class Compiler:
     def __init__(self, *programs):
@@ -41,10 +44,10 @@ class Compiler:
 
         # Setup pipeline
         self.steps = [
-                self.lexing,
-                self.parsing,
-                self.semantics
-            ]
+            self.lexing,
+            self.parsing,
+            self.semantics
+        ]
 
     def compile(self):
         for step in self.steps:
@@ -80,16 +83,12 @@ class Compiler:
         print(self.ast.clsname)
 
     def semantics(self):
-        # Install Types
-        ast_with_builtins = cooltypes.TypesVisitor.add_builtins(self.ast)
+        type_collector = cooltypecollector.TypeCollectorVisitor()
+        type_collector.visit(self.ast)
 
-        # Semantic Analysis
-        types_discoverer = cooltypes.TypesVisitor()
-        errors = []
+        errors = type_collector.get_errors()
 
-        types_validity = types_discoverer.visit(ast_with_builtins, errors)
-
-        if not types_validity:
+        if len(errors) > 0:
             print("Something went wrong when discovering types!")
             for error in errors:
                 print(error)
@@ -97,12 +96,25 @@ class Compiler:
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
 
-        print(f'This program types are: {types_discoverer.types.keys()}')
+        type_builder = cooltypebuilder.TypeBuilderVisitor(
+            type_collector.get_scope())
+        type_builder.visit(self.ast)
 
-        graph_handler = coolig.InheritanceGraphVisitor(types_discoverer.types.keys())
-        graph = graph_handler.visit(ast_with_builtins)
+        errors = type_builder.get_errors()
 
-        print(f'Inheritance Graph: {graph}')
+        if len(errors) > 0:
+            print("Something went wrong when building types!")
+            for error in errors:
+                print(error)
+            exit(1)
+        else:
+            print("Correctly builder all types, no semantic problems with this pass!")
+
+        print(
+            f'This program types are: {type_builder.get_scope().get_types_dict().keys()}')
+
+        graph_handler = coolig.InheritanceGraphVisitor(
+            type_builder.get_scope().get_types_dict().values())
 
         errors.clear()
         valid = graph_handler.check_graph(errors)
@@ -112,5 +124,3 @@ class Compiler:
             exit(1)
         else:
             print("Type Inheritance Graph is semantically correct!")
-
-

@@ -39,6 +39,11 @@ class TypeCollectorVisitor:
         return self.__scope
 
     # Visitor
+
+    @visitor.on('node')
+    def visit(self, node, errors):
+        pass
+
     @visitor.when(ast.Program)
     def visit(self, node: ast.Program):
         self.__scope = Scope()
@@ -49,4 +54,4 @@ class TypeCollectorVisitor:
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class):
-        self.__scope.create_type(node.class_name)
+        self.__scope.create_type(node.name)

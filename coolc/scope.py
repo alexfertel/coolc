@@ -4,7 +4,7 @@ from . import coolast as ast
 
 class Scope:
     def __init__(self, parent=None):
-        self.__types = {} if parent != None else parent.types
+        self.__types = {} if parent is None else parent.types
         self.locals = []
         self.parent = parent
         self.children = []
@@ -40,7 +40,7 @@ class Scope:
     def get_local_variable_info(self, vname):
         return Scope.find_variable_info(vname, self)
 
-    def get_types_dic(self):
+    def get_types_dict(self):
         return self.__types
 
     def get_type(self, type_name):
