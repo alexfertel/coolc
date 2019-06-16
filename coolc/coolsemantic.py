@@ -9,6 +9,9 @@ class SemanticVisitor:
         self.__scope = scope
         self.__current_class_name = ""
 
+    def __real_type(self, var) -> str:
+        return var if var != 'SELF_TYPE' else self.__current_class_name
+
     def __sub_type(self, klass: str, ancestor_class: str) -> bool:
         return self.__scope.get_type(klass).is_ancestor(ancestor_class)
 
@@ -71,7 +74,7 @@ class SemanticVisitor:
         valid &= visit(node.body)
         self.__scope = self.__scope.parent
 
-        if not self.__sub_type(node.body.return_type, node.return_type):
+        if not self.__sub_type(self.__real_type(node.body.return_type), self.__real_type(node.return_type)):
             valid = False
             errors.append(
                 'Return type of method <%s> and return type of its body are different.' % (node.name))
@@ -81,7 +84,8 @@ class SemanticVisitor:
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors: list):
         valid = visit(node.init_expr)
-        if node.init_expr.return_type != node.attr_type:
+
+        if self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
@@ -176,7 +180,7 @@ class SemanticVisitor:
     @visit.when(ast.Declaration)
     def visit(self, node: ast.Declaration, errors: list):
         valid = True
-        if not self.__sub_type(node.expression.return_type, node.ttype):
+        if not self.__sub_type(self.__real_type(node.expression.return_type), self.__real_type(node.ttype)):
             valid = False
             errors.append('<%s> is defined with type <%s> diferent of type <%s>' % (
                 node.identifier, node.ttype, node.expression.return_type))
