@@ -24,6 +24,7 @@ class CILData(CILNode):
         self.vname = vname
         self.value = value
 
+
 # I don't think this is it...
 # class CILFunction(CILNode):
 #     def __init__(self, fname, params, localvars, instructions):
@@ -32,10 +33,12 @@ class CILData(CILNode):
 #         self.localvars = localvars
 #         self.instructions = instructions
 
+
 class CILFunction(CILNode):
     def __init__(self, fname, instructions):
         self.fname = fname
         self.instructions = instructions
+
 
 class CILMethod(CILNode):
     def __init__(self, mname, fname):
@@ -85,20 +88,25 @@ class CILStar(CILArithmetic):
 class CILDiv(CILArithmetic):
     pass
 
+
 class CILBoolean(CILInstruction):
     def __init__(self, dest, left, right):
         self.dest = dest
         self.left = left
         self.right = right
 
+
 class CILEqual(CILBoolean):
     pass
+
 
 class CILLessThan(CILBoolean):
     pass
 
+
 class CILLessThanOrEqual(CILBoolean):
     pass
+
 
 class CILGetAttrib(CILInstruction):
     def __init__(self, dest, instance, attribute):
@@ -156,13 +164,13 @@ class CILGotoIf(CILInstruction):
         self.label = label
 
 
-class CILStaticCall(CILInstruction):
+class CILCall(CILInstruction):
     def __init__(self, dest, func):
         self.dest = dest
         self.func = func
 
 
-class CILDinamicCall(CILInstruction):
+class CILVCall(CILInstruction):
     def __init__(self, dest, ttype, func):
         self.dest = dest
         self.ttype = ttype
@@ -180,10 +188,13 @@ class CILReturn(CILInstruction):
 
 
 class CILLoad(CILInstruction):
-    def __init__(self, dest, msg):
+    def __init__(self, dest, value):
         self.dest = dest
-        self.msg = msg
+        self.value = value
 
+class CILLoadSelf(CILInstruction):
+    def __init__(self, dest):
+        self.dest = dest
 
 class CILLength(CILInstruction):
     def __init__(self, dest, str_addr):
