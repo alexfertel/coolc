@@ -188,10 +188,13 @@ class CILReturn(CILInstruction):
 
 
 class CILLoad(CILInstruction):
-    def __init__(self, dest, msg):
+    def __init__(self, dest, value):
         self.dest = dest
-        self.msg = msg
+        self.value = value
 
+class CILLoadSelf(CILInstruction):
+    def __init__(self, dest):
+        self.dest = dest
 
 class CILLength(CILInstruction):
     def __init__(self, dest, str_addr):

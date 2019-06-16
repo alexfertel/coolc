@@ -8,7 +8,7 @@ from .coolutils import default
 
 
 class Cool2CilVisitor:
-    def __init__(self, context):
+    def __init__(self):
         # Handle current program
         self.dottypes = []
         self.dotdata = []
@@ -23,15 +23,14 @@ class Cool2CilVisitor:
         self.current_class_name = ""
         self.attributes = []
         self.methods = []
-        self.ctor = []
 
         # Handle internal names
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
 
-        # Context
-        self.context = context
+        # Define activation records for functions
+        self.ars = []
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -233,24 +232,56 @@ class Cool2CilVisitor:
     def visit(self, node: ast.Object):
         return VariableInfo(node.name)
 
-    # @Leo @Marcos
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
-        pass
+        """
+        Load to a variable the location of `self` in memory
+        This has a dedicated CIL node since we have to look in the stack
+        for the first param, which is where `self` will be,
+        the src is always the same.
+        lw $a0 0($sp)
+        """
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILLoadSelf, vinfo)
+        return vinfo
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        return node.content
+        """
+        li $a0 node.content
+        """
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILLoad, vinfo, node.content)
+        return vinfo
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String):
-        data_vinfo = self.register_data(node.content)
+        """
+        If the String is already in the .DATA section, we won't register it
+        again. We just return the name we gave to it which includes its offset.
+        We have to load the starting address of .DATA plus the offset of this
+        string. But most of this is MIPS.
+        li $a0 string_address
+        """
+        for index, data_node in enumerate(self.dotdata):
+            if node.content == data_node.value:
+                data_name = data_node.vname
+        else:
+            new_node = self.register_data(node.content)
+            data_name = new_node.vname
+
+        self.register_instruction(cil.CILLoad, vinfo, data_name)
         return data_vinfo
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        return 1 if node.content == True else 0
-
+        """
+        li $a0 (1 if node.content == True else 0)
+        """
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILLoadSelf, vinfo, 1 if node.content == True else 0)
+        return vinfo
+        
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
         vinfo = self.define_internal_local()

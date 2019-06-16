@@ -1,8 +1,18 @@
 from . import cilast as ast
 from . import visitor
-
+from . import mips_instruction_set as mis
 
 class Cil2MipsVisitor:
+	def __init__(self):
+		self.code = []
+
+	# ======================================================================
+    # =[ UTILS ]============================================================
+    # ======================================================================
+	def emit(self, msg):
+		self.code.append(msg)
+
+
 	@visitor.on('node')
 	def visit(self, node):
 		pass
@@ -53,19 +63,44 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
-		pass
+		self.visit(node.left)
+		self.emit("sw $a0 0($sp)")
+		self.emit("addiu $sp $sp -4")
+		self.visit(node.right)
+		self.emit("lw $t1 4($sp)")
+		self.emit("add $a0 $t1 $a0")
+		self.emit("addiu $sp $sp 4")
+		
 
 	@visitor.when(ast.CILMinus)
 	def visit(self, node: ast.CILMinus):
-		pass
+		self.visit(node.left)
+		self.emit("sw $a0 0($sp)")
+		self.emit("addiu $sp $sp -4")
+		self.visit(node.right)
+		self.emit("lw $t1 4($sp)")
+		self.emit("sub $a0 $t1 $a0")
+		self.emit("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILStar)
 	def visit(self, node: ast.CILStar):
-		pass
+		self.visit(node.left)
+		self.emit("sw $a0 0($sp)")
+		self.emit("addiu $sp $sp -4")
+		self.visit(node.right)
+		self.emit("lw $t1 4($sp)")
+		self.emit("mulu $a0 $t1 $a0")
+		self.emit("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILDiv)
 	def visit(self, node: ast.CILDiv):
-		pass
+		self.visit(node.left)
+		self.emit("sw $a0 0($sp)")
+		self.emit("addiu $sp $sp -4")
+		self.visit(node.right)
+		self.emit("lw $t1 4($sp)")
+		self.emit("divu $a0 $t1 $a0")
+		self.emit("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILBoolean)
 	def visit(self, node: ast.CILBoolean):
@@ -141,6 +176,10 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
+		pass
+
+	@visitor.when(ast.CILLoadSelf)
+	def visit(self, node: ast.CILLoadSelf):
 		pass
 
 	@visitor.when(ast.CILLength)
