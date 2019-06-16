@@ -149,7 +149,17 @@ class SemanticVisitor:
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment, errors):
-        pass
+        valid = visit(node.instance)
+        valid &= visit(node.expr)
+
+        if self.__sub_type(self.__real_type(node.expr.return_type), self.__real_type(node.instance.return_type)):
+            valid = False
+            errors.append('Type <%s> can\'t be assigned into var with type <%s>' % (
+                self.__real_type(node.expr.return_type), self.__real_type(node.instance.return_type)))
+
+        node.return_type = node.expr.return_type
+
+        return valid
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block, errors):
