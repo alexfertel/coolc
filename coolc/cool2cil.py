@@ -72,8 +72,8 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
-    def register_func(self, fname, instructions):
-        func = cil.CILFunction(fname, instructions)
+    def register_func(self, fname):
+        func = cil.CILFunction(fname, self.instructions)
         self.dotcode.append(func)
         return func
 
@@ -88,12 +88,6 @@ class Cool2CilVisitor:
         data_node = cil.CILData(vname, value)
         self.dotdata.append(data_node)
         return data_node
-
-    def get_type(self, name):
-        included = filter(lambda x: x.name == name, self.dottypes)
-        if included:
-            return list(included)[0]
-        return None
 
     def build_ctr(self):
         # Build constructor
@@ -111,6 +105,21 @@ class Cool2CilVisitor:
         # Add constructor as the first element of the methods
         self.methods.append(ctr_func)
 
+    def build_entry(self):
+        main_name = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, main_name, "Main")
+        self.register_instruction(cil.CILArg, main_name)
+        self.register_instruction(cil.CILCall, main_name, f'{node.new_type}_ctr')
+        
+        self.register_instruction(cil.CILArg, main_name)
+
+        result = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, result, "Main", "Main_main")
+        
+        self.register_instruction(cil.CILReturn, 0)
+
+        self.current_function_name = "entry"
+        self.register_func(self.current_function_name)
 
     # ======================================================================
 
@@ -129,21 +138,14 @@ class Cool2CilVisitor:
         Every program in cil should have an `entrypoint` method which is to be run to start the program.
         """
 
+        # Maybe sort the types before visiting them?
         for klass in node.classes:
             self.visit(klass)
 
+        # We register the entrypoint here.
+        self.build_entry()
+
         root = cil.CILProgram(self.dottypes, self.dotdata, self.dotcode)
-
-        # self.current_function_name = 'main'
-
-        # vinfo = self.visit(node.expr)
-        # # return_node = self.register_instruction(cil.CILReturn, vinfo)
-        # self.register_instruction(cil.CILReturn, vinfo)
-
-        # dotcode = cil.CILFunction(self.current_function_name, [], self.localvars, self.instructions)
-
-        # root = cil.CILProgram([], self.dotdata, [dotcode])
-        # return root
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class):
@@ -205,7 +207,7 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILReturn, vinfo)
 
         # Register the function in dotcode
-        self.register_func(fname, self.instructions)
+        self.register_func(fname)
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
