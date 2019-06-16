@@ -154,15 +154,6 @@ class Cool2CilVisitor:
         self.attributes.clear()
         self.methods.clear()
 
-        # @Leo you're doing this elsewhere, right?
-        # # If this class inherits we have to update its attributes, methods and ctor: CIL types have them all.
-        # if node.parent:
-        #     # TODO: Optimize this! Maybe use a dict?
-        #     for ttype in self.dottypes:
-        #         if ttype.name == node.parent:
-        #             self.attributes.extend(ttype.attributes)
-        #             self.methods.extend(ttype.methods[1:])
-
         attrs, funcs = [], []
         for feature in node.features:
             if isinstance(feature, ast.ClassMethod):
@@ -258,15 +249,9 @@ class Cool2CilVisitor:
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, vinfo, node.type)
-
-        # TODO: Make sure ALLOCATEs execute in order, i.e. when we run `new T`, the constructor of T
-        # is already discovered!
-        # UPDATE: we build constructors in a visitor pass right before this visitor :).
-        # UPDAE2: nevermind, we build ctrs right here in this pass.
-
-    
-
+        self.register_instruction(cil.CILAllocate, vinfo, node.new_type)
+        self.register_instruction(cil.CILArg, "self")
+        self.register_instruction(cil.CILCall, vinfo, f'{node.new_type}_ctr')
         return vinfo
 
     # TODO: Check this!
