@@ -7,6 +7,10 @@ class SemanticVisitor:
 
     def __init__(self, scope: Scope):
         self.__scope = scope
+        self.__current_class_name = ""
+
+    def __sub_type(self, klass: str, ancestor_class: str) -> bool:
+        return self.__scope.get_type(klass).is_ancestor(ancestor_class)
 
     @visitor.on('node')
     def visit(self, node, errors):
@@ -28,6 +32,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Class, errors: list):
         valid = True
         self.__scope = self.__scope.create_child_scope()
+        self.__current_class_name = node.name
         for feature in node.features:
             if type(feature) == ClassMethod:
                 if node.parent is not None:
@@ -62,12 +67,11 @@ class SemanticVisitor:
         valid = True
         for param in node.formal_params:
             valid &= visit(param)
-            self.__scope.define_variable(param.name, param.param_type)
 
         valid &= visit(node.body)
         self.__scope = self.__scope.parent
 
-        if node.body.return_type != node.return_type:
+        if not self.__sub_type(node.body.return_type, node.return_type):
             valid = False
             errors.append(
                 'Return type of method <%s> and return type of its body are different.' % (node.name))
@@ -86,6 +90,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter, errors: list):
+        self.__scope.define_variable(node.name, node.param_type)
         return True
 
     @visitor.when(ast.Object)
@@ -153,8 +158,31 @@ class SemanticVisitor:
         pass
 
     @visitor.when(ast.Let)
-    def visit(self, node: ast.Let, errors):
-        pass
+    def visit(self, node: ast.Let, errors: list):
+        valid = True
+        self.__scope = self.__scope.create_child_scope()
+        for declaration in node.declaration_list:
+            valid &= visit(declaration)
+
+        valid &= visit(node.body)
+        node.return_type = node.body.return_type
+
+        self.__scope = self.__scope.parent
+
+        return valid
+
+    @visit.when(ast.Declaration)
+    def visit(self, node: ast.Declaration, errors: list):
+        valid = True
+        if not self.__sub_type(node.expression.return_type, node.ttype):
+            valid = False
+            errors.append('<%s> is defined with type <%s> diferent of type <%s>' % (
+                node.identifier, node.ttype, node.expression.return_type))
+
+        node.return_type = node.ttype
+        self.__scope.define_variable(node.identifier, node.ttype)
+
+        return valid
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If, errors):
