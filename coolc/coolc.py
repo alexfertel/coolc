@@ -2,7 +2,7 @@ from . import coolex
 from . import cooljack
 from . import cooltypes
 from . import coolig
-from . import utils
+from . import coolutils
 from . import cooltypecollector
 from . import cooltypebuilder
 
