@@ -154,8 +154,13 @@ class SemanticVisitor:
         pass
 
     @visitor.when(ast.NewObject)
-    def visit(self, node: ast.NewObject, errors):
-        pass
+    def visit(self, node: ast.NewObject, errors: list):
+        valid = True
+        if node.type != 'SELF_TYPE' and self.__scope.get_type(node.type) is None:
+            valid = False
+            errors.append('Type <%s> doesn\'t exist.' % (node.type))
+        node.return_type = node.type
+        return valid
 
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid, errors):
