@@ -4,14 +4,17 @@ from . import mips_instruction_set as mis
 
 class Cil2MipsVisitor:
 	def __init__(self):
-		self.code = []
+		self.dotdata = []
+		self.dotcode = []
 
 	# ======================================================================
     # =[ UTILS ]============================================================
     # ======================================================================
-	def emit(self, msg):
-		self.code.append(msg)
+	def emit_code(self, msg):
+		self.dotcode.append(msg)
 
+	def emit_data(self, msg):
+		self.dotdata.append(msg)
 
 	@visitor.on('node')
 	def visit(self, node):
@@ -64,43 +67,43 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.emit_code("sw $a0 0($sp)")
+		self.emit_code("addiu $sp $sp -4")
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("add $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit_code("lw $t1 4($sp)")
+		self.emit_code("add $a0 $t1 $a0")
+		self.emit_code("addiu $sp $sp 4")
 		
 
 	@visitor.when(ast.CILMinus)
 	def visit(self, node: ast.CILMinus):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.emit_code("sw $a0 0($sp)")
+		self.emit_code("addiu $sp $sp -4")
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("sub $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit_code("lw $t1 4($sp)")
+		self.emit_code("sub $a0 $t1 $a0")
+		self.emit_code("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILStar)
 	def visit(self, node: ast.CILStar):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.emit_code("sw $a0 0($sp)")
+		self.emit_code("addiu $sp $sp -4")
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("mulu $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit_code("lw $t1 4($sp)")
+		self.emit_code("mulu $a0 $t1 $a0")
+		self.emit_code("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILDiv)
 	def visit(self, node: ast.CILDiv):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.emit_code("sw $a0 0($sp)")
+		self.emit_code("addiu $sp $sp -4")
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("divu $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit_code("lw $t1 4($sp)")
+		self.emit_code("divu $a0 $t1 $a0")
+		self.emit_code("addiu $sp $sp 4")
 
 	@visitor.when(ast.CILBoolean)
 	def visit(self, node: ast.CILBoolean):
