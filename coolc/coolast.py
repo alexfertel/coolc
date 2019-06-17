@@ -77,6 +77,15 @@ class Class(Node):
                 return True
         return False
 
+    def is_ancestor(self, klass: str) -> bool:
+        current_class = self
+        if current_class.name == klass.name:
+            return True
+        if current_class.parent is not None:
+            current_class = current_class.parent
+            return is_ancestor(current_class)
+        return False
+
 
 class ClassFeature(Node):
     def __init__(self):
@@ -146,6 +155,7 @@ class Object(Node):
     def __init__(self, name):
         super(Object, self).__init__()
         self.name = name
+        self.return_type = 'Object'
 
     def to_tuple(self):
         return tuple([
@@ -176,6 +186,15 @@ class Self(Object):
 class Constant(Node):
     def __init__(self):
         super(Constant, self).__init__()
+        self.__return_value = None
+
+    @property
+    def return_value(self):
+        return self.__return_value
+
+    @return_value.setter
+    def return_value(self, value):
+        self.__return_value = value
 
 
 class Integer(Constant):
@@ -229,6 +248,15 @@ class Boolean(Constant):
 class Expr(Node):
     def __init__(self):
         super(Expr, self).__init__()
+        self.__return_type = None
+
+    @property
+    def return_type(self) -> str:
+        return self.__return_type
+
+    @return_type.setter
+    def return_type(self, value: str):
+        self.__return_type = value
 
 
 class NewObject(Expr):
@@ -433,6 +461,7 @@ class Action(Node):
         self.name = name
         self.action_type = action_type
         self.body = body
+        self.return_type = None
 
     def to_tuple(self):
         return tuple([
