@@ -461,6 +461,7 @@ class Action(Node):
         self.name = name
         self.action_type = action_type
         self.body = body
+        self.return_type = None
 
     def to_tuple(self):
         return tuple([

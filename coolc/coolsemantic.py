@@ -15,6 +15,19 @@ class SemanticVisitor:
     def __sub_type(self, klass: str, ancestor_class: str) -> bool:
         return self.__scope.get_type(klass).is_ancestor(ancestor_class)
 
+    def __lsa_type(self, type_a, type_b):
+        a = self.__scope.get_type(self.__real_type(type_a))
+        b = self.__scope.get_type(self.__real_type(type_b))
+        if a.is_ancestor(b) and b.is_ancestor(b):
+            return b.name
+        if a.is_ancestor(a) and b.is_ancestor(a):
+            return a.name
+
+        while a.parent != None:
+            a = a.parent
+            if b.is_ancestor(a):
+                return a.name
+
     @visitor.on('node')
     def visit(self, node, errors):
         pass
@@ -145,7 +158,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid, errors):
-        pass
+        valid = visit(node.expr)
+        return valid
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment, errors):
@@ -162,12 +176,46 @@ class SemanticVisitor:
         return valid
 
     @visitor.when(ast.Block)
-    def visit(self, node: ast.Block, errors):
-        pass
+    def visit(self, node: ast.Block, errors: list):
+        valid = True
+        if len(node.expr_list) == 0:
+            valid = False
+            errors.append('A block expresion most be one expresion at least.')
+
+        for expr in node.expr_list:
+            valid &= visit(expr)
+
+        node.return_type = node.expr_list[-1].return_type
+
+        return valid
 
     @visitor.when(ast.DynamicDispatch)
-    def visit(self, node: ast.DynamicDispatch, errors):
-        pass
+    def visit(self, node: ast.DynamicDispatch, errors: list):
+        valid = True
+        for argument in node.arguments:
+            valid &= visit(argument)
+
+        valid &= visit(node.instance)
+        method = self.__scope.get_type(
+            node.instance.return_type).get_method(node.method)
+
+        if method is None:
+            valid = False
+            errors.append('Class <%s> not contain method <%s>.' %
+                          (node.instance.return_type, node.method))
+        else:
+            if len(node.arguments) != len(method.formal_params):
+                valid = False
+                errors.append('Different number of params')
+            else:
+                for i in range(len(node.arguments)):
+                    if node.arguments[i].return_type != method.formal_params[i].param_type:
+                        valid = False
+                        errors.append('Params not have the same types.')
+
+        node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.instance.return_type
+        # TODO verify other dispatch
+        return valid
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch, errors):
@@ -202,19 +250,48 @@ class SemanticVisitor:
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If, errors):
-        pass
+        valid = visit(node.predicate) and visit(
+            node.else_body) and visit(node.else_body)
+
+        node.return_type = self.__lsa_type(
+            node.then_body.return_type, node.else_body.return_type)
+
+        return valid
 
     @visitor.when(ast.WhileLoop)
-    def visit(self, node: ast.WhileLoop, errors):
-        pass
+    def visit(self, node: ast.WhileLoop, errors: list):
+        valid = visit(node.predicate)
+        if node.predicate.return_type != 'Bool':
+            valid = False
+            errors.append('Loop condition doesn\'t return a <boolean> value.')
+
+        valid &= node.body
+        node.return_type = 'Object'
+
+        return valid
 
     @visitor.when(ast.Case)
     def visit(self, node: ast.Case, errors):
-        pass
+        valid = visit(node.expr)
+        if len(node.actions) != 0:
+            valid &= visit(node.actions[0])
+            node.return_type = node.actions[0].return_type
+
+            for action in node.actions:
+                self.__scope = self.__scope.create_child_scope()
+                valid &= visit(action)
+                node.return_type = self.__lsa_type(
+                    node.return_type, action.return_type)
+                self.__scope = self.__scope.parent
+
+        return valid
 
     @visitor.when(ast.Action)
     def visit(self, node: ast.Action, errors):
-        pass
+        self.__scope.define_variable(node.name, node.action_type)
+        valid = visit(node.body)
+        node.return_type = node.body.return_type
+        return valid
 
     @visitor.when(ast.UnaryOperation)
     def visit(self, node: ast.UnaryOperation, errors):
