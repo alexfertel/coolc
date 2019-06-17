@@ -180,6 +180,7 @@ class CILVCall(CILInstruction):
 class CILArg(CILInstruction):
     def __init__(self, vinfo):
         self.vinfo = vinfo
+        self.index = -1
 
 
 class CILReturn(CILInstruction):
