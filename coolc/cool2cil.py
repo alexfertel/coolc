@@ -18,6 +18,9 @@ class Cool2CilVisitor:
         self.current_function_name = ""
         self.localvars = []
         self.instructions = []
+        
+        # Holds the map (function, (variable, offset))
+        self.fmaps = {}
 
         # Handle current class
         self.current_class_name = ""
