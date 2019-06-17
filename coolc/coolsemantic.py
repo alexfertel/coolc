@@ -15,7 +15,7 @@ class SemanticVisitor:
     def __sub_type(self, klass: str, ancestor_class: str) -> bool:
         return self.__scope.get_type(klass).is_ancestor(ancestor_class)
 
-    def __lsa_type(self, type_a, type_b):
+    def __lca_type(self, type_a, type_b):
         a = self.__scope.get_type(self.__real_type(type_a))
         b = self.__scope.get_type(self.__real_type(type_b))
         if a.is_ancestor(b) and b.is_ancestor(b):
@@ -124,7 +124,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self, errors):
-        pass
+        node.return_type = self.__current_class_name
+        return True
 
     @visitor.when(ast.Constant)
     def visit(self, node: ast.Constant, errors):
@@ -214,12 +215,42 @@ class SemanticVisitor:
                         errors.append('Params not have the same types.')
 
         node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.instance.return_type
-        # TODO verify other dispatch
+
         return valid
 
     @visitor.when(ast.StaticDispatch)
-    def visit(self, node: ast.StaticDispatch, errors):
-        pass
+    def visit(self, node: ast.StaticDispatch, errors: list):
+        valid = True
+        for argument in node.arguments:
+            valid &= visit(argument)
+        static_type = self.__scope.get_type(node.dispatch_type)
+
+        valid &= visit(node.instance)
+
+        if not self.__sub_type(node.instance.return_type, node.dispatch_type):
+            valid = False
+            errors.append('Type <%s> isn\'t a subtype of type <%s>.' %
+                          (node.instance.return_type, node.dispatch_type))
+        method = self.__scope.get_type(
+            node.dispatch_type).get_method(node.method)
+
+        if method is None:
+            valid = False
+            errors.append('Class <%s> not contain method <%s>.' %
+                          (node.instance.return_type, node.method))
+        else:
+            if len(node.arguments) != len(method.formal_params):
+                valid = False
+                errors.append('Different number of params')
+            else:
+                for i in range(len(node.arguments)):
+                    if node.arguments[i].return_type != method.formal_params[i].param_type:
+                        valid = False
+                        errors.append('Params not have the same types.')
+
+        node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.dispatch_type
+
+        return valid
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let, errors: list):
@@ -253,7 +284,7 @@ class SemanticVisitor:
         valid = visit(node.predicate) and visit(
             node.else_body) and visit(node.else_body)
 
-        node.return_type = self.__lsa_type(
+        node.return_type = self.__lca_type(
             node.then_body.return_type, node.else_body.return_type)
 
         return valid
@@ -280,7 +311,7 @@ class SemanticVisitor:
             for action in node.actions:
                 self.__scope = self.__scope.create_child_scope()
                 valid &= visit(action)
-                node.return_type = self.__lsa_type(
+                node.return_type = self.__lca_type(
                     node.return_type, action.return_type)
                 self.__scope = self.__scope.parent
 
