@@ -12,6 +12,19 @@ class Cil2MipsVisitor:
 	def emit(self, msg):
 		self.code.append(msg)
 
+	def push(self, reg, off):
+		self.emit(f'sw {reg} {off}($sp)')
+		self.emit(f'addiu $sp $sp -4')
+
+	def pop(self, reg, off):
+		self.emit(f'lw {reg} {off}($sp)')
+		self.emit(f'addiu $sp $sp 4')
+
+    # ======================================================================
+
+    # ======================================================================
+    # =[ VISIT ]============================================================
+    # ======================================================================
 
 	@visitor.on('node')
 	def visit(self, node):
@@ -57,72 +70,65 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("add $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('add $a0 $t1 $a0')
+		self.emit('addiu $sp $sp 4')
 		
 
 	@visitor.when(ast.CILMinus)
 	def visit(self, node: ast.CILMinus):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("sub $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('sub $a0 $t1 $a0')
+		self.emit('addiu $sp $sp 4')
 
 	@visitor.when(ast.CILStar)
 	def visit(self, node: ast.CILStar):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("mulu $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('mulu $a0 $t1 $a0')
+		self.emit('addiu $sp $sp 4')
 
 	@visitor.when(ast.CILDiv)
 	def visit(self, node: ast.CILDiv):
 		self.visit(node.left)
-		self.emit("sw $a0 0($sp)")
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("divu $a0 $t1 $a0")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('divu $a0 $t1 $a0')
+		self.emit('addiu $sp $sp 4')
 
 	@visitor.when(ast.CILEqual)
 	def visit(self, node: ast.CILEqual):
 		self.visit(node.left)
-		self.emit('sw $a0 0($sp)')
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('addiu $sp $sp 4')
 		return 'beq'
 
 	@visitor.when(ast.CILLessThan)
 	def visit(self, node: ast.CILLessThan):
 		self.visit(node.left)
-		self.emit('sw $a0 0($sp)')
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('addiu $sp $sp 4')
 		return 'bl'
 
 	@visitor.when(ast.CILLessThanOrEqual)
 	def visit(self, node: ast.CILLessThanOrEqual):
 		self.visit(node.left)
-		self.emit('sw $a0 0($sp)')
-		self.emit("addiu $sp $sp -4")
+		self.push('$a0', 0)
 		self.visit(node.right)
-		self.emit("lw $t1 4($sp)")
-		self.emit("addiu $sp $sp 4")
+		self.emit('lw $t1 4($sp)')
+		self.emit('addiu $sp $sp 4')
 		return 'ble'
 
 	@visitor.when(ast.CILGoto)
@@ -172,15 +178,15 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILVCall)
 	def visit(self, node: ast.CILVCall):
-		pass
+		# Save current frame pointer
+		self.push('$fp', 0)
+		
+		# Generate code for each of the params and push them
+		
 
 	@visitor.when(ast.CILArg)
 	def visit(self, node: ast.CILArg):
-		# param_offset = node.vinfo.
-		# self.emit()
-		# li $a0, 0
-		# sw $a0, ($sp)
-		# addiu $sp, $sp, 4
+		self.push('$a0', 0)
 
 	@visitor.when(ast.CILReturn)
 	def visit(self, node: ast.CILReturn):

@@ -333,10 +333,10 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILArg, instance)
 
         args = []  # Remaining arguments of the method
-        for arg in node.arguments:
+        for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
-            self.register_instruction(cil.CILArg, vinfo)
-
+            arg_node = self.register_instruction(cil.CILArg, vinfo)
+    
         # Here we have to compute the type, which is done using TYPEOF
         ttype = self.define_internal_local()
         self.register_instruction(cil.CILTypeOf, ttype, instance)
