@@ -194,7 +194,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
-		pass
+		self.emit(f'li $a0 {node.value}')
 
 	@visitor.when(ast.CILLoadSelf)
 	def visit(self, node: ast.CILLoadSelf):

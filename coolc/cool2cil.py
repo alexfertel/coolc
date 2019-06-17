@@ -196,8 +196,8 @@ class Cool2CilVisitor:
         # Clean instruction list
         self.instructions.clear()
 
-        # First line of every function is *self* param
-        self.register_instruction(cil.CILParam, "self")
+        # First line of every function is *self* param. Self is param `0`
+        self.register_instruction(cil.CILParam, 0)
 
         # For each formal parameter the function has, visit the corresponding node
         for fparam in node.formal_params:
@@ -238,33 +238,28 @@ class Cool2CilVisitor:
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
         """
-        Load to a variable the location of `self` in memory
+        Load to a variable the location of `self` in memory.
         This has a dedicated CIL node since we have to look in the stack
         for the first param, which is where `self` will be,
         the src is always the same.
         lw $a0 0($sp)
         """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0 0($sp)')
+        return dummy_node
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        """
-        li $a0 node.content
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoad, vinfo, node.content)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {node.content}')
+        return dummy_node
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String):
         """
         If the String is already in the .DATA section, we won't register it
-        again. We just return the name we gave to it which includes its offset.
+        again. We just return the name we gave it which includes its offset.
         We have to load the starting address of .DATA plus the offset of this
         string. But most of this is MIPS.
-        li $a0 string_address
+        la $a0 string_address
         """
         for index, data_node in enumerate(self.dotdata):
             if node.content == data_node.value:
@@ -273,17 +268,13 @@ class Cool2CilVisitor:
             new_node = self.register_data(node.content)
             data_name = new_node.vname
 
-        self.register_instruction(cil.CILLoad, vinfo, data_name)
-        return data_vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0 {data_name}')
+        return dummy_node
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        """
-        li $a0 (1 if node.content == True else 0)
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo, 1 if node.content == True else 0)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {1 if node.content == True else 0}')
+        return dummy_node
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
