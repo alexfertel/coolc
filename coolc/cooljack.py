@@ -310,7 +310,7 @@ class CoolJack:
         """
         action : ID COLON TYPE ARROW expression SEMICOLON
         """
-        parse[0] = (parse[1], parse[3], parse[5])
+        parse[0] = ast.Action(parse[1], parse[3], parse[5])
 
     # ######################### UNARY OPERATIONS #######################################
 

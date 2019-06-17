@@ -144,12 +144,12 @@ class CILWriterVisitor(object):
     def visit(self, node:cil.CILGotoIfNode):
         pass
 
-    @visitor.when(cil.CILStaticCallNode)
-    def visit(self, node:cil.CILStaticCallNode):
+    @visitor.when(cil.CILCallNode)
+    def visit(self, node:cil.CILCallNode):
         pass
 
-    @visitor.when(cil.CILDinamicCallNode)
-    def visit(self, node:cil.CILDinamicCallNode):
+    @visitor.when(cil.CILVCallNode)
+    def visit(self, node:cil.CILVCallNode):
         pass
 
     @visitor.when(cil.CILArgNode)

@@ -262,20 +262,20 @@ class IsVoid(Expr):
 
 
 class Assignment(Expr):
-    def __init__(self, instance, expr):
+    def __init__(self, identifier, expr):
         super(Assignment, self).__init__()
-        self.instance = instance
+        self.identifier = identifier
         self.expr = expr
 
     def to_tuple(self):
         return tuple([
             ("class_name", self.clsname),
-            ("instance", self.instance),
+            ("identifier", self.identifier),
             ("expr", self.expr)
         ])
 
     def to_readable(self):
-        return "{}(instance={}, expr={})".format(self.clsname, self.instance, self.expr)
+        return "{}(identifier={}, expr={})".format(self.clsname, self.instance, self.expr)
 
 
 class Block(Expr):
