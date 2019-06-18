@@ -17,6 +17,20 @@ class Cil2MipsVisitor:
 		self.dotdata.append('.data')
 		self.dotcode.append('.text')
 
+	def pusha(self):
+		dic = reg.__dict__
+		for key in dic.keys():
+			if not str(key).startswith('_'):
+				self.push(dic[key])
+
+	def popa(self):
+		dic = reg.__dict__
+		keys = dic.keys()
+		keys.reverse()
+		for key in keys:
+			if not str(key).startswith('_'):
+				self.pop(dic[key])
+
 	def emit_data_rec(self, type, data, label = None):
 		datas = ', '.join(data)
 		to_emit = f'.{type} {datas}'
