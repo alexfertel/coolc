@@ -139,7 +139,7 @@ class Compiler:
                 print(error)
             exit(1)
         else:
-            print("Correctly builder all types, no semantic problems with this pass!")
+            print("Correctly built all types, no semantic problems with this pass!")
 
         print(
             f'This program types are: {type_builder.get_scope().get_types_dict().keys()}')
@@ -175,4 +175,4 @@ class Compiler:
         mips_visitor.visit(cil_visitor.result)
         
         self.result = mips_visitor.dotdata + mips_visitor.dotcode
-        pprint(self.result)
+        # pprint(self.result)

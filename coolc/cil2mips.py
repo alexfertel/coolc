@@ -240,18 +240,18 @@ class Cil2MipsVisitor:
 
         # Visit every data node in Program
         # self.emit_code("\n# .data:")
-        print(node.dotdata)
+        # print(node.dotdata)
         for datanode in node.dotdata:
             self.visit(datanode)
 
         # self.emit_code("\n# .types:")
-        print(node.dottypes)
+        # print(node.dottypes)
         # Visit every type node in Program
         for typenode in node.dottypes:
             self.visit(typenode)
 
         # self.emit_code("\n# .code:")
-        print(node.dotcode)
+        # print(node.dotcode)
         # Visit every code node in Program
         for codenode in node.dotcode:
             self.visit(codenode)
@@ -280,7 +280,7 @@ class Cil2MipsVisitor:
     @visitor.when(ast.CILFunction)
     def visit(self, node: ast.CILFunction):
         # print("Function")
-        print(node.fname + " Function")
+        # print(node.fname + " Function")
         self.emit_label(node.fname)
         self.emit_instruction(op.move, reg.fp, reg.sp)
         self.push(reg.ra)

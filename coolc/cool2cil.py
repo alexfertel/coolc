@@ -80,7 +80,7 @@ class Cool2CilVisitor:
         return instruction
 
     def register_func(self, fname, mname):
-        print("Register Function")
+        # print("Register Function")
         func = cil.CILFunction(mname, self.instructions)
         
         # Handle localvars
@@ -155,10 +155,11 @@ class Cool2CilVisitor:
         Every program in cool has a `Main` class and a `main` method.
         Every program in cil should have an `entrypoint` method which is to be run to start the program.
         """
-
+        builtins = self.semantic_scope.get_types_dict().values()
+        klasses = [klass for klass in builtins if not klass in node.classes]
         # Maybe sort the types before visiting them?
-        for klass in set(node.classes) | set(self.semantic_scope.get_types_dict().values()):
-            print(klass)
+        for klass in klasses:
+            # print(klass)
             self.visit(klass)
 
         # We register the entrypoint here.
@@ -178,6 +179,9 @@ class Cool2CilVisitor:
         attrs, funcs = [], []
         for feature in node.features:
             if isinstance(feature, ast.ClassMethod):
+                print("!!!")
+                print(self.current_class_name)
+                print(feature)
                 funcs.append(feature)
             else:
                 attrs.append(feature)
@@ -187,6 +191,7 @@ class Cool2CilVisitor:
 
         # pprint(funcs)
         for index, func in enumerate(funcs):
+            # print(func)
             func_node = self.visit(func)
             self.context.add_func(func_node.fname, index)
 
@@ -256,7 +261,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        print('Integer')
+        # print('Integer')
         dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
         return dummy_node
 
@@ -332,7 +337,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
-        print('Block')
+        # print('Block')
         vinfo = 0
         for expr in node.expr_list:
             vinfo = self.visit(expr)
@@ -371,7 +376,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
-        print('Let')
+        # print('Let')
         for declaration in node.declaration_list:
             self.visit(declaration)
 
@@ -382,7 +387,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration):
-        print('Declaration')
+        # print('Declaration')
         identifier = self.register_local(node.identifier)
         vinfo = self.visit(node.expression) if node.expression else default(
             node.ttype)
