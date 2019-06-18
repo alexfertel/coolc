@@ -39,8 +39,7 @@ class CILFunction(CILNode):
         self.param_count = 0
 
 class CILMethod(CILNode):
-    def __init__(self, mname, fname):
-        self.fname = fname
+    def __init__(self, mname):
         self.mname = mname
 
 
