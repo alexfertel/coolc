@@ -159,6 +159,19 @@ class TypeBuilderVisitor:
         for feature in node.features:
             unique &= self.visit(feature)
 
+        # Get Methods and vars
+        current = node.parent
+        while current is not None:
+            current_type = self.__scope.get_type(current)
+            for feat in current_type.features:
+                if isinstance(feat, ast.ClassAttribute) and not node.is_attr_in_features(feat.name):
+                    node.features.insert(0, ast.ClassAttribute(
+                        feat.name, feat.attr_type, feat.init_expr))
+                if isinstance(feat, ast.ClassMethod) and not node.is_method_in_features(feat.name):
+                    node.features.insert(0,
+                                         ast.ClassMethod(feat.name, feat.formal_params, feat.return_type, feat.body))
+            current = current_type.parent
+
         return unique
 
     @visitor.when(ast.ClassMethod)
@@ -183,7 +196,7 @@ class TypeBuilderVisitor:
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
         # Check if attribute is defined in the current class only once
-        if self.__current_class.get_method(node.name) is not None:
+        if self.__current_class.get_attr(node.name, self.__scope) is not None:
             self.__errors.append(
                 f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0

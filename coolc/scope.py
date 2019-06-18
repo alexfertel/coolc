@@ -4,14 +4,14 @@ from . import coolast as ast
 
 class Scope:
     def __init__(self, parent=None):
-        self.__types = {} if parent is None else parent.types
+        self.__types = {} if parent is None else parent.get_types_dict()
         self.locals = []
         self.parent = parent
         self.children = []
         self.index_at_parent = 0 if parent is None else len(parent.locals)
 
-    def define_variable(self, vname):
-        vinfo = VariableInfo(vname)
+    def define_variable(self, vname, vtype=None):
+        vinfo = VariableInfo(vname, vtype)
         self.locals.append(vinfo)
         return vinfo
 
@@ -51,17 +51,19 @@ class Scope:
             self.__types[type_name] = ast.Class(type_name)
             return 'Ok'
         else:
-            return ('Duplicated class %s' %(type_name))
+            return ('Duplicated class %s' % (type_name))
 
     @staticmethod
     def find_variable_info(vname, scope, top=None):
         if top is None:
             top = len(scope.locals)
-        candidates = (vinfo for vinfo in itl.islice(scope.locals, top) if vinfo.name == vname)
+        candidates = (vinfo for vinfo in itl.islice(
+            scope.locals, top) if vinfo.name == vname)
         return next(candidates, None)
 
 
 class VariableInfo:
-    def __init__(self, name):
+    def __init__(self, name, vtype=None):
         self.name = name
         self.vmholder = None
+        self.type = vtype

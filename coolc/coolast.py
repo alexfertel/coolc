@@ -42,7 +42,7 @@ class Class(Node):
         super(Class, self).__init__()
         self.name = name
         self.parent = parent
-        self.features = features if features else []
+        self.features = list(features) if features else []
 
     def to_tuple(self):
         return tuple([
@@ -55,26 +55,47 @@ class Class(Node):
     def to_readable(self):
         return "{}(name='{}', parent={}, features={})".format(self.clsname, self.name, self.parent, self.features)
 
-    def get_method(self, name: str):
+    def get_method(self, name: str, scope):
         for feature in self.features:
-            if type(feature) == ClassMethod and feature.name == name:
+            if isinstance(feature, ClassMethod) and feature.name == name:
                 return feature
         if self.parent != None:
-            return self.parent.get_method(name)
+            return scope.get_type(self.parent).get_method(name, scope)
         return None
 
-    def get_attr(self, name: str):
+    def is_method_in_features(self, method_name):
         for feature in self.features:
-            if type(feature) == ClassAttribute and feature.name == name:
+            if isinstance(feature, ClassMethod) and feature.name == method_name:
+                return True
+        return False
+
+    def is_attr_in_features(self, method_name):
+        for feature in self.features:
+            if isinstance(feature, ClassAttribute) and feature.name == method_name:
+                return True
+        return False
+
+    def get_attr(self, name: str, scope):
+        for feature in self.features:
+            if isinstance(feature, ClassAttribute) and feature.name == name:
                 return feature
         if self.parent != None:
-            return self.parent.get_attr(name)
+            return scope.get_type(self.parent).get_attr(name, scope)
         return None
 
     def contain_method(self, name: str) -> bool:
         for feature in self.features:
-            if type(feature) == ClassMethod and feature.name == name:
+            if isinstance(feature, ClassMethod) and feature.name == name:
                 return True
+        return False
+
+    def is_ancestor(self, klass: str, scope) -> bool:
+        current_class = self
+        if current_class.name == klass:
+            return True
+        if current_class.parent is not None:
+            current_class = scope.get_type(current_class.parent)
+            return current_class.is_ancestor(klass, scope)
         return False
 
 
@@ -146,6 +167,7 @@ class Object(Node):
     def __init__(self, name):
         super(Object, self).__init__()
         self.name = name
+        self.return_type = 'Object'
 
     def to_tuple(self):
         return tuple([
@@ -176,12 +198,22 @@ class Self(Object):
 class Constant(Node):
     def __init__(self):
         super(Constant, self).__init__()
+        self.__return_value = None
+
+    @property
+    def return_value(self):
+        return self.__return_value
+
+    @return_value.setter
+    def return_value(self, value):
+        self.__return_value = value
 
 
 class Integer(Constant):
     def __init__(self, content):
         super(Integer, self).__init__()
         self.content = content
+        self.return_type = 'Int'
 
     def to_tuple(self):
         return tuple([
@@ -197,6 +229,7 @@ class String(Constant):
     def __init__(self, content):
         super(String, self).__init__()
         self.content = content
+        self.return_type = 'String'
 
     def to_tuple(self):
         return tuple([
@@ -212,6 +245,7 @@ class Boolean(Constant):
     def __init__(self, content):
         super(Boolean, self).__init__()
         self.content = content
+        self.return_type = 'Bool'
 
     def to_tuple(self):
         return tuple([
@@ -229,6 +263,15 @@ class Boolean(Constant):
 class Expr(Node):
     def __init__(self):
         super(Expr, self).__init__()
+        self.__return_type = None
+
+    @property
+    def return_type(self) -> str:
+        return self.__return_type
+
+    @return_type.setter
+    def return_type(self, value: str):
+        self.__return_type = value
 
 
 class NewObject(Expr):
@@ -433,6 +476,7 @@ class Action(Node):
         self.name = name
         self.action_type = action_type
         self.body = body
+        self.return_type = None
 
     def to_tuple(self):
         return tuple([

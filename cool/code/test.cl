@@ -9,11 +9,13 @@ class Main inherits IO {
     };
 };
 
-class A {
+class A{
+    a: Int <- 2;
     m () : String { "A" };
     f () : SELF_TYPE { new SELF_TYPE };
 };
 
-class A{
+class B inherits A{
     m () : String { "B" };
+    c () : Int {a};
 };

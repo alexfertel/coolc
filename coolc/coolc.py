@@ -7,6 +7,7 @@ from . import cooltypecollector
 from . import cooltypebuilder
 from . import cool2cil
 from . import cil2mips
+from . import coolsemantics
 
 from pprint import pprint
 
@@ -125,9 +126,8 @@ class Compiler:
             exit(1)
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
-
-        type_builder = cooltypebuilder.TypeBuilderVisitor(
-            type_collector.get_scope())
+        scope = type_collector.get_scope()
+        type_builder = cooltypebuilder.TypeBuilderVisitor(scope)
         type_builder.visit(self.ast)
 
         errors = type_builder.get_errors()
@@ -155,6 +155,16 @@ class Compiler:
         else:
             print("Type Inheritance Graph is semantically correct!")
 
+        errors.clear()
+        checksemantic = coolsemantics.SemanticVisitor(scope)
+        valid = checksemantic.visit(self.ast, errors)
+
+        if not valid:
+            for error in errors:
+                print(error)
+            exit(1)
+        else:
+            print('Done!')
 
     def code_generation(self):
         cil_visitor = cool2cil.Cool2CilVisitor()
