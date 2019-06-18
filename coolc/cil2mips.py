@@ -18,16 +18,27 @@ class Cil2MipsVisitor:
 	def emit_data(self, msg):
 		self.dotdata.append(msg)
 
-	def push(self, reg, off = 0):
-		self.emit_code(f'sw {reg} {off * 4}($sp)')
-		self.emit_code(f'addiu $sp $sp -4')
+	def off_reg(self, off, register):
+		return f'{off * 4}({register})'
 
-	def pop(self, reg):
-		self.emit_code(f'lw {reg} 4($sp)')
-		self.emit_code(f'addiu $sp $sp 4')
+	def push(self, register, off = 0):
+		self.emit_instruction(op.sw, register, self.off_reg(off, reg.sp))
+		self.emit_instruction(op.addiu, reg.sp, reg.sp, -4)
+		# self.emit_code(f'sw {reg} {off * 4}($sp)')
+		# self.emit_code(f'addiu $sp $sp -4')
+
+	def pop(self, register):
+		self.emit_instruction(op.lw, register, self.off_reg(4, reg.sp))
+		self.stack_allign()
+		# self.emit_code(f'lw {reg} 4($sp)')
+		# self.emit_code(f'addiu $sp $sp 4')
 
 	def stack_allign(self):
-		self.emit_code('addiu $sp $sp 4')
+		self.emit_instruction(op.addiu, reg.sp, reg.sp, 4)
+		# self.emit_code('addiu $sp $sp 4')
+
+	def emit_label(self, label):
+		self.emit_code(label + ':')
 
 	def eval_infix_func(self, node):
 		self.visit(node.left)
@@ -38,6 +49,17 @@ class Cil2MipsVisitor:
 	def infix_func(self, node, op, dest = reg.a0, source1 = reg.t1, source2 = reg.a0):
 		self.eval_infix_func(node)
 		self.emit_code(f'{op} {dest} {source1} {source2}')
+
+	def __emit_i__(self, inst, args):
+		result = inst
+		if len(args) > 0:
+			result += ' '
+			params = filter(lambda x: x != None, args)
+			inst += ', '.join(params)
+		self.emit_code(result)
+
+	def emit_instruction(self, inst: op, arg1: reg = None, arg2: reg = None, arg3: reg = None):
+		self.__emit_i__(inst, [arg1, arg2, arg3])
 
     # ======================================================================
     # =[ VISIT ]============================================================
@@ -53,6 +75,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
+		pass
 		# Generate virtual table for this type
 
 
@@ -88,7 +111,7 @@ class Cil2MipsVisitor:
 		
 	@visitor.when(ast.CILMinus)
 	def visit(self, node: ast.CILMinus):
-		self.infix_func(node, op.add)
+		self.infix_func(node, op.sub)
 
 	@visitor.when(ast.CILStar)
 	def visit(self, node: ast.CILStar):
@@ -101,21 +124,21 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILEqual)
 	def visit(self, node: ast.CILEqual):
 		self.eval_infix_func(node)
-		return 'beq'
+		return op.beq
 
 	@visitor.when(ast.CILLessThan)
 	def visit(self, node: ast.CILLessThan):
 		self.eval_infix_func(node)
-		return 'bl'
+		return op.blt
 
 	@visitor.when(ast.CILLessThanOrEqual)
 	def visit(self, node: ast.CILLessThanOrEqual):
 		self.eval_infix_func(node)
-		return 'ble'
+		return op.ble
 
 	@visitor.when(ast.CILGoto)
 	def visit(self, node: ast.CILGoto):
-		self.emit_code('j ' + node.name)
+		self.emit_instruction(op.j, node.name)
 
 	@visitor.when(ast.CILGotoIf)
 	def visit(self, node: ast.CILGotoIf):
@@ -152,7 +175,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLabel)
 	def visit(self, node: ast.CILLabel):
-		self.emit(node.name + ':')
+		self.emit_label(node.name)
 
 	@visitor.when(ast.CILCall)
 	def visit(self, node: ast.CILCall):
@@ -161,25 +184,21 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILVCall)
 	def visit(self, node: ast.CILVCall):
 		# Save current frame pointer
-		self.push('$fp', 0)
+		self.push(reg.fp)
 		
 		# Generate code for each of the params and push them
 		
 	@visitor.when(ast.CILArg)
 	def visit(self, node: ast.CILArg):
-		self.push('$a0', 0)
+		self.push(reg.a0)
 
 	@visitor.when(ast.CILReturn)
 	def visit(self, node: ast.CILReturn):
-		self.emit('jr $ra')
+		self.emit_instruction(op.jr, reg.ra)
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
-		self.emit(f'li $a0 {node.value}')
-
-	@visitor.when(ast.CILLoadSelf)
-	def visit(self, node: ast.CILLoadSelf):
-		pass
+		self.emit_instruction(op.li, reg.a0, node.value)
 
 	@visitor.when(ast.CILLength)
 	def visit(self, node: ast.CILLength):
