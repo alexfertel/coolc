@@ -4,7 +4,7 @@ from . import cilast as cil
 from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
-from .coolutils import default
+from . import coolutils
 from .context import Context
 from pprint import pprint
 
@@ -121,7 +121,7 @@ class Cool2CilVisitor:
         self.current_function_name = "ctr"
         fname = self.build_internal_fname()
         ctr_name = self.build_method_name()
-        ctr_func = cil.CILFunction(fname, ctr)
+        ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
 
         self.methods.append(cil.CILMethod(ctr_name))
@@ -157,7 +157,8 @@ class Cool2CilVisitor:
         """
 
         # Maybe sort the types before visiting them?
-        for klass in list(node.classes) + list(self.semantic_scope.get_types_dict().values()):
+        for klass in set(node.classes) | set(self.semantic_scope.get_types_dict().values()):
+            print(klass)
             self.visit(klass)
 
         # We register the entrypoint here.
@@ -213,8 +214,8 @@ class Cool2CilVisitor:
         self.instructions.clear()
 
         # Method body
-        return_val = self.visit(node.body)
-        print(return_val)
+        self.visit(node.body)
+        # print(return_val)
 
         # Register the function in dotcode
         func = self.register_func(fname, mname)

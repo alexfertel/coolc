@@ -381,7 +381,7 @@ class Cil2MipsVisitor:
         
         # $a0 contains the type of the instance.
         # Here we compute in $a0 the offset of the attribute
-        computed = self.off_set(node.attribute, reg.a0)
+        computed = self.off_reg(node.attribute, reg.a0)
         
         # Load into $a0 the value of the attribute
         self.emit_instruction(op.lw, reg.a0, computed)
@@ -395,10 +395,10 @@ class Cil2MipsVisitor:
         
         # $a0 contains the type of the instance.
         # Here we compute in $a0 the offset of the attribute
-        computed = self.off_set(node.attribute, reg.a0)
+        computed = self.off_reg(node.attribute, reg.a0)
         
         # Load the value of src
-        self.emit_instruction(op.lw, reg.t0, src)
+        self.emit_instruction(op.lw, reg.t0, node.src)
 
         # Store into computed the value of `src`
         self.emit_instruction(op.sw, reg.a0, computed)
@@ -447,7 +447,7 @@ class Cil2MipsVisitor:
     @visitor.when(ast.CILReturn)
     def visit(self, node: ast.CILReturn):
         self.emit_code("\n# Return")
-self.emit_instruction(op.jr, reg.ra)
+        self.emit_instruction(op.jr, reg.ra)
 
     # @visitor.when(ast.CILLoad)
     # def visit(self, node: ast.CILLoad):
