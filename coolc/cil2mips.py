@@ -102,18 +102,18 @@ class Cil2MipsVisitor:
         self.init_utils()
 
         # Visit every data node in Program
-        self.emit_code("\n# .data:")
+        # self.emit_code("\n# .data:")
         print(node.dotdata)
         for datanode in node.dotdata:
             self.visit(datanode)
 
-        self.emit_code("\n# .types:")
+        # self.emit_code("\n# .types:")
         print(node.dottypes)
         # Visit every type node in Program
         for typenode in node.dottypes:
             self.visit(typenode)
 
-        self.emit_code("\n# .code:")
+        # self.emit_code("\n# .code:")
         print(node.dotcode)
         # Visit every code node in Program
         for codenode in node.dotcode:
@@ -142,6 +142,7 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILFunction)
     def visit(self, node: ast.CILFunction):
+        # print("Function")
         print(node.fname + " Function")
         self.emit_label(node.fname)
         self.emit_instruction(op.move, reg.fp, reg.sp)
@@ -295,10 +296,11 @@ class Cil2MipsVisitor:
         if node.ttype:
             self.emit_instruction(op.la, reg.a0, node.ttype)
 
-        method_offset = self.context.fmap[node.func]
-        computed = self.off_reg(method_offset, reg.a0)
-        self.emit_instruction(op.lw, reg.a0, computed)
-        self.emit_instruction(op.jal, reg.a0)
+        # method_offset = self.context.fmap[node.func]
+        # computed = self.off_reg(method_offset, reg.a0)
+        # self.emit_instruction(op.lw, reg.a0, computed)
+        print(self.context.mmap.items())
+        self.emit_instruction(op.jal, node.func)
         
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):

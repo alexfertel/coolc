@@ -68,8 +68,8 @@ class Cool2CilVisitor:
         vinfo.vmholder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
         self.globalvars.append(local_node)
-        print("global")
-        print(self.globalvars)
+        # print("global")
+        # print(self.globalvars)
         return vinfo
 
     def register_instruction(self, instruction_type, *args):
@@ -79,7 +79,7 @@ class Cool2CilVisitor:
 
     def register_func(self, fname):
         print("Register Function")
-        func = cil.CILFunction(fname, self.instructions)
+        func = cil.CILFunction(mname, self.instructions)
         
         # Handle localvars
         func.localvars = self.globalvars[self.local_index:]
@@ -126,8 +126,7 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILCall, f'Main_ctr')        
         self.register_instruction(cil.CILArg)
         self.register_instruction(cil.CILVCall, "Main", "Main_main")
-        self.register_instruction(cil.CILReturn)
-
+        
         self.current_function_name = "entry"
         self.register_func(self.current_function_name)
 
@@ -367,7 +366,7 @@ class Cool2CilVisitor:
             self.visit(declaration)
 
         vinfo = self.visit(node.body)
-        print(vinfo)
+        # print(vinfo)
 
         return vinfo
 

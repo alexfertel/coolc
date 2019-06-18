@@ -9,10 +9,6 @@ Main: .word 0
 # Program
 .text
 
-# .data:
-
-# .types:
-
 # Type
 
 # .code:
@@ -72,11 +68,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
-
-# Return
-jr $ra
+jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -126,11 +118,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
-
-# Return
-jr $ra
+jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -180,11 +168,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
-
-# Return
-jr $ra
+jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -234,11 +218,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
-
-# Return
-jr $ra
+jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -288,11 +268,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
-
-# Return
-jr $ra
+jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
