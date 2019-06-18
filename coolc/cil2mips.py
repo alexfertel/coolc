@@ -81,7 +81,7 @@ class Cil2MipsVisitor:
 		if len(args) > 0:
 			result += ' '
 			params = filter(lambda x: x != None, args)
-			inst += ', '.join(params)
+			result += ', '.join(map(lambda x: str(x), params))
 		self.emit_code(result)
 
 	def emit_instruction(self, inst: op, arg1: reg = None, arg2: reg = None, arg3: reg = None):
@@ -127,7 +127,7 @@ class Cil2MipsVisitor:
 
 		# Generate virtual table for this type
 		for method in node.methods:
-			self.emit_data_rec(datatype.word, [method.name])
+			self.emit_data_rec(datatype.word, [method.fname])
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -213,11 +213,31 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILGetAttrib)
 	def visit(self, node: ast.CILGetAttrib):
-		pass
+		# Attribute offset
+		# loff = self.context.lmap[node.attribute]
+		
+		# $a0 contains the type of the instance.
+		# Here we compute in $a0 the offset of the attribute
+		computed = self.off_set(node.attribute, reg.a0)
+		
+		# Load into $a0 the value of the attribute
+		self.emit_instruction(op.lw, reg.a0, computed)
 
 	@visitor.when(ast.CILSetAttrib)
 	def visit(self, node: ast.CILSetAttrib):
-		pass
+		# Attribute offset
+		# loff = self.context.lmap[node.attribute]
+		
+		# $a0 contains the type of the instance.
+		# Here we compute in $a0 the offset of the attribute
+		computed = self.off_set(node.attribute, reg.a0)
+		
+		# Load the value of src
+		self.emit_instruction(op.lw, reg.t0, src)
+
+		# Store into computed the value of `src`
+		self.emit_instruction(op.sw, reg.a0, computed)
+
 
 	@visitor.when(ast.CILAllocate)
 	def visit(self, node: ast.CILAllocate):
@@ -257,9 +277,9 @@ class Cil2MipsVisitor:
 	def visit(self, node: ast.CILReturn):
 		self.emit_instruction(op.jr, reg.ra)
 
-	@visitor.when(ast.CILLoad)
-	def visit(self, node: ast.CILLoad):
-		self.emit_instruction(op.li, reg.a0, node.value)
+	# @visitor.when(ast.CILLoad)
+	# def visit(self, node: ast.CILLoad):
+	# 	self.emit_instruction(op.li, reg.a0, node.value)
 
 	@visitor.when(ast.CILLength)
 	def visit(self, node: ast.CILLength):

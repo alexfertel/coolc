@@ -3,8 +3,9 @@ import sys
 from coolc import Compiler
 
 def main():
-    programs = sys.argv[1:]
-    Compiler(*programs).compile()
+    program = sys.argv[1]
+    output = sys.argv[2]
+    Compiler(program, output).compile()
 
 if __name__ == '__main__':
     main()
