@@ -22,15 +22,16 @@ class SemanticVisitor:
     def __lca_type(self, type_a, type_b):
         a = self.__scope.get_type(self.__real_type(type_a))
         b = self.__scope.get_type(self.__real_type(type_b))
-        if a.is_ancestor(b) and b.is_ancestor(b):
+
+        if a.is_ancestor(b.name, self.__scope) and b.is_ancestor(b.name, self.__scope):
             return b.name
-        if a.is_ancestor(a) and b.is_ancestor(a):
+        if a.is_ancestor(a.name, self.__scope) and b.is_ancestor(a.name, self.__scope):
             return a.name
 
         while a.parent != None:
             a = a.parent
-            if b.is_ancestor(a):
-                return a.name
+            if b.is_ancestor(a, self.__scope):
+                return a
 
     @visitor.on('node')
     def visit(self, node, errors):
@@ -94,10 +95,10 @@ class SemanticVisitor:
         for param in node.formal_params:
             valid &= self.visit(param, errors)
 
-        valid &= self.visit(node.body, errors)
+        valid &= True if node.body is None else self.visit(node.body, errors)
         self.__scope = self.__scope.parent
 
-        if not self.__sub_type(self.__real_type(node.body.return_type), self.__real_type(node.return_type)):
+        if (node.body is not None) and (not self.__sub_type(self.__real_type(node.body.return_type), self.__real_type(node.return_type))):
             valid = False
             errors.append(
                 'Return type of method <%s> and return type of its body are different.' % (node.name))
@@ -113,7 +114,7 @@ class SemanticVisitor:
             valid = False
             errors.append('Type <%s> doesn\'t exist' % (node.attr_type))
 
-        if node.init_expr is not None and self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
+        if node.init_expr is not None and not self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
@@ -122,6 +123,9 @@ class SemanticVisitor:
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter, errors: list):
+        if self.__scope.get_type(node.param_type) is None:
+            errors.append('Type <%s> doesn\'t exist.' % (node.param_type))
+            return False
         self.__scope.define_variable(node.name, node.param_type)
         return True
 
@@ -184,13 +188,13 @@ class SemanticVisitor:
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment, errors):
-        valid = self.visit(node.instance, errors)
+        valid = self.visit(node.identifier, errors)
         valid &= self.visit(node.expr, errors)
 
-        if self.__sub_type(self.__real_type(node.expr.return_type), self.__real_type(node.instance.return_type)):
+        if not self.__sub_type(self.__real_type(node.expr.return_type), self.__real_type(node.identifier.return_type)):
             valid = False
             errors.append('Type <%s> can\'t be assigned into var with type <%s>' % (
-                self.__real_type(node.expr.return_type), self.__real_type(node.instance.return_type)))
+                self.__real_type(node.expr.return_type), self.__real_type(node.identifier.return_type)))
 
         node.return_type = node.expr.return_type
 
@@ -233,9 +237,11 @@ class SemanticVisitor:
                 errors.append('Different number of params')
             else:
                 for i in range(len(node.arguments)):
-                    if node.arguments[i].return_type != method.formal_params[i].param_type:
+                    if not self.__sub_type(node.arguments[i].return_type, method.formal_params[i].param_type):
                         valid = False
-                        errors.append('Params not have the same types.')
+                        errors.append(
+                            'Param <%s> has type <%s> diferent to type <%s> in method <%s>.'
+                            % (node.arguments[i], node.arguments[i].return_type, method.formal_params[i].param_type, node.method))
                 node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.instance.return_type
 
         return valid
@@ -300,15 +306,12 @@ class SemanticVisitor:
         node.return_type = node.ttype
         self.__scope.define_variable(node.identifier.name, node.ttype)
 
-        # print('-----------------TEST------------------')
-        # print(valid)
-        # print('---------------------------------------')
         return valid
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If, errors):
-        valid = self.visit(node.predicate, errors) and self.visit(
-            node.else_body, errors) and self.visit(node.else_body, errors)
+        valid = self.visit(node.predicate, errors) & self.visit(
+            node.then_body, errors) & self.visit(node.else_body, errors)
 
         node.return_type = self.__lca_type(
             node.then_body.return_type, node.else_body.return_type)
@@ -322,7 +325,7 @@ class SemanticVisitor:
             valid = False
             errors.append('Loop condition doesn\'t return a <boolean> value.')
 
-        valid &= node.body
+        valid &= self.visit(node.body, errors)
         node.return_type = 'Object'
 
         return valid
@@ -434,10 +437,10 @@ class SemanticVisitor:
     def visit(self, node: ast.Equal, errors):
         valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
+        if node.first.return_type != node.second.return_type:
             valid = False
             errors.append(
-                'Equal operator is valid only between Integer variables.')
+                'Types <%s> and <%s> can\'t be compared.' % (node.first.return_type, node.second.return_type))
 
         node.return_type = 'Bool'
 

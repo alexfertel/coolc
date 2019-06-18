@@ -78,25 +78,29 @@ class CoolJack:
         """
         feature : ID LPAREN formal_params_list RPAREN COLON TYPE LBRACE expression RBRACE
         """
-        parse[0] = ast.ClassMethod(name=parse[1], formal_params=parse[3], return_type=parse[6], body=parse[8])
+        parse[0] = ast.ClassMethod(
+            name=parse[1], formal_params=parse[3], return_type=parse[6], body=parse[8])
 
     def p_feature_method_no_formals(self, parse):
         """
         feature : ID LPAREN RPAREN COLON TYPE LBRACE expression RBRACE
         """
-        parse[0] = ast.ClassMethod(name=parse[1], formal_params=tuple(), return_type=parse[5], body=parse[7])
+        parse[0] = ast.ClassMethod(
+            name=parse[1], formal_params=tuple(), return_type=parse[5], body=parse[7])
 
     def p_feature_attr_initialized(self, parse):
         """
         feature : ID COLON TYPE ASSIGN expression
         """
-        parse[0] = ast.ClassAttribute(name=parse[1], attr_type=parse[3], init_expr=parse[5])
+        parse[0] = ast.ClassAttribute(
+            name=parse[1], attr_type=parse[3], init_expr=parse[5])
 
     def p_feature_attr(self, parse):
         """
         feature : ID COLON TYPE
         """
-        parse[0] = ast.ClassAttribute(name=parse[1], attr_type=parse[3], init_expr=None)
+        parse[0] = ast.ClassAttribute(
+            name=parse[1], attr_type=parse[3], init_expr=None)
 
     def p_formal_list_many(self, parse):
         """
@@ -172,7 +176,8 @@ class CoolJack:
         """
         expression : expression DOT ID LPAREN arguments_list_opt RPAREN
         """
-        parse[0] = ast.DynamicDispatch(instance=parse[1], method=parse[3], arguments=parse[5])
+        parse[0] = ast.DynamicDispatch(
+            instance=parse[1], method=parse[3], arguments=parse[5])
 
     def p_arguments_list_opt(self, parse):
         """
@@ -195,13 +200,15 @@ class CoolJack:
         """
         expression : expression AT TYPE DOT ID LPAREN arguments_list_opt RPAREN
         """
-        parse[0] = ast.StaticDispatch(instance=parse[1], dispatch_type=parse[3], method=parse[5], arguments=parse[7])
+        parse[0] = ast.StaticDispatch(
+            instance=parse[1], dispatch_type=parse[3], method=parse[5], arguments=parse[7])
 
     def p_expression_self_dispatch(self, parse):
         """
         expression : ID LPAREN arguments_list_opt RPAREN
         """
-        parse[0] = ast.DynamicDispatch(instance=ast.Self(), method=parse[1], arguments=parse[3])
+        parse[0] = ast.DynamicDispatch(
+            instance=ast.Self(), method=parse[1], arguments=parse[3])
 
     # ######################### PARENTHESIZED, MATH & COMPARISONS #####################
 
@@ -246,7 +253,8 @@ class CoolJack:
         """
         expression : IF expression THEN expression ELSE expression FI
         """
-        parse[0] = ast.If(predicate=parse[2], then_body=parse[4], else_body=parse[6])
+        parse[0] = ast.If(predicate=parse[2],
+                          then_body=parse[4], else_body=parse[6])
 
     def p_expression_while_loop(self, parse):
         """
@@ -284,9 +292,11 @@ class CoolJack:
                     | ID COLON TYPE
         """
         if len(parse) == 6:
-            parse[0] = ast.Declaration(identifier=ast.Object(name=parse[1]), ttype=parse[3], expression=parse[5])
+            parse[0] = ast.Declaration(identifier=ast.Object(
+                name=parse[1]), ttype=parse[3], expression=parse[5])
         else:
-            parse[0] = ast.Declaration(identifier=ast.Object(name=parse[1]), ttype=parse[3], expression=None)
+            parse[0] = ast.Declaration(identifier=ast.Object(
+                name=parse[1]), ttype=parse[3], expression=None)
 
     # ######################### CASE EXPRESSION ########################################
 
