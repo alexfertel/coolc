@@ -9,7 +9,7 @@ from .context import Context
 from pprint import pprint
 
 class Cool2CilVisitor:
-    def __init__(self):
+    def __init__(self, semantic_scope):
         # Handle current program
         self.dottypes = []
         self.dotdata = []
@@ -35,6 +35,8 @@ class Cool2CilVisitor:
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
+
+        self.semantic_scope = semantic_scope
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -148,7 +150,7 @@ class Cool2CilVisitor:
         """
 
         # Maybe sort the types before visiting them?
-        for klass in node.classes:
+        for klass in list(node.classes) + list(self.semantic_scope.get_types_dict().values()):
             self.visit(klass)
 
         # We register the entrypoint here.
