@@ -156,3 +156,16 @@ class op:
     syscall = 'syscall'
     brk = 'break'
     nop = 'nop'
+
+#types
+class datatype:
+    align = '.align'
+    ascii = '.ascii'
+    asciiz = '.asciiz'
+    byte = '.byte'
+    double = '.double'
+    floatt = '.float'
+    half = '.half'
+    space = '.space'
+    word = '.word'
+    
