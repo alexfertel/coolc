@@ -394,7 +394,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.Subtraction)
     def visit(self, node: ast.Subtraction, errors):
-        alid = self.visit(node.first, errors)
+        valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
@@ -407,7 +407,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.Multiplication)
     def visit(self, node: ast.Multiplication, errors):
-        alid = self.visit(node.first, errors)
+        valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
@@ -420,7 +420,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.Division)
     def visit(self, node: ast.Division, errors):
-        alid = self.visit(node.first, errors)
+        valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
