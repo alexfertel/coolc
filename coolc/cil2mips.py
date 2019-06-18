@@ -165,11 +165,11 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLocal)
 	def visit(self, node: ast.CILLocal):
-		pass
+		self.push(reg.t0)
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
-		pass
+		self.emit(f'move {node.dest} {node.source}')
 
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
@@ -276,4 +276,3 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILSubstring)
 	def visit(self, node: ast.CILSubstring):
 		pass
-		
