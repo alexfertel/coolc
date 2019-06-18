@@ -83,6 +83,8 @@ class Cil2MipsVisitor:
 			self.visit(datanode)
 		for typenode in node.dottypes:
 			self.visit(typenode)
+		for codenode in node.dotcode:
+			self.visit(codenode)
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
