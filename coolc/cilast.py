@@ -36,7 +36,7 @@ class CILFunction(CILNode):
         self.fname = fname
         self.instructions = instructions
         self.localvars = []
-        self.params = []
+        self.param_count = 0
 
 class CILMethod(CILNode):
     def __init__(self, mname, fname):
@@ -108,7 +108,6 @@ class CILLessThanOrEqual(CILBoolean):
 
 class CILGetAttrib(CILInstruction):
     def __init__(self, dest, instance, attribute):
-        self.dest = dest
         self.instance = instance
         self.attribute = attribute
 
@@ -141,7 +140,6 @@ class CILArray(CILInstruction):
 
 class CILTypeOf(CILInstruction):
     def __init__(self, dest, var):
-        self.dest = dest
         self.var = var
 
 
@@ -162,22 +160,18 @@ class CILGotoIf(CILInstruction):
 
 
 class CILCall(CILInstruction):
-    def __init__(self, dest, func):
-        self.dest = dest
+    def __init__(self, func):
         self.func = func
 
 
 class CILVCall(CILInstruction):
-    def __init__(self, dest, ttype, func):
-        self.dest = dest
+    def __init__(self, ttype, func):
         self.ttype = ttype
         self.func = func
 
 
 class CILArg(CILInstruction):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
-        # self.index = -1
+    pass
 
 
 class CILReturn(CILInstruction):
@@ -228,9 +222,7 @@ class CILToStr(CILInstruction):
 
 
 class CILRead(CILInstruction):
-    def __init__(self, dest):
-        self.dest = dest
-
+    pass
 
 class CILPrint(CILInstruction):
     def __init__(self, str_addr):
