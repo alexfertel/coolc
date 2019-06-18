@@ -91,23 +91,11 @@ class Cil2MipsVisitor:
 		- Function 2
 		...
 		"""
-<<<<<<< HEAD
-		# Type label
-		self.emit_data(f'{node.name}:')
-		
-		# Class Tag
-		self.emit_data(f'.word {self.context.tags{node.name}}')
-
-		# Generate virtual table for this type
-		for method in node.methods:
-			self.visit(method)
-=======
 		self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
 
 		# Generate virtual table for this type
 		for method in node.methods:
 			self.emit_data_rec(datatype.word, [method.name])
->>>>>>> 9c58aad193c609a3e23490d127bbdab132830c36
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -133,7 +121,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILMethod)
 	def visit(self, node: ast.CILMethod):
-		self.emit_data(f'.word {method.name}')
+		self.emit_data(f'.word {node.name}')
 
 	# @visitor.when(ast.CILParam)
 	# def visit(self, node: ast.CILParam):
@@ -141,11 +129,11 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLocal)
 	def visit(self, node: ast.CILLocal):
-		self.push(reg.)
+		self.push(reg.t0)
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
-		pass
+		self.emit(f'move {node.dest} {node.source}')
 
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
@@ -222,7 +210,7 @@ class Cil2MipsVisitor:
 
 		method_offset = self.context.fmap[node.func]
 		computed = self.off_reg(method_offset, reg.a0)
-		self.emit_instruction(op.lw, reg.a0, node.ttype)
+		self.emit_instruction(op.lw, reg.a0, computed)
 		self.emit_instruction(op.jal, reg.a0)
 		
 	@visitor.when(ast.CILArg)
@@ -252,18 +240,3 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILSubstring)
 	def visit(self, node: ast.CILSubstring):
 		pass
-<<<<<<< HEAD
-=======
-
-	@visitor.when(ast.CILToStr)
-	def visit(self, node: ast.CILToStr):
-		pass
-
-	@visitor.when(ast.CILRead)
-	def visit(self, node: ast.CILRead):
-		pass
-
-	@visitor.when(ast.CILPrint)
-	def visit(self, node: ast.CILPrint):
-		pass
->>>>>>> 9c58aad193c609a3e23490d127bbdab132830c36
