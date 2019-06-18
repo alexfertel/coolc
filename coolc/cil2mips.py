@@ -53,10 +53,23 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
-		# Generate virtual table for this type
-
-
+		"""
+		Object layout:
+		- Class Tag
+		- Object Size
+		- Function 1
+		- Function 2
+		...
+		"""
+		# Type label
+		self.emit_data(f'{node.name}:')
 		
+		# Class Tag
+		self.emit_data(f'.word {self.context.tags{node.name}}')
+
+		# Generate virtual table for this type
+		for method in node.methods:
+			self.emit_data(f'.word {method.name}')
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -140,7 +153,10 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILAllocate)
 	def visit(self, node: ast.CILAllocate):
-		pass
+		self.emit_instruction(op.la, reg.a0, node.ttype)
+		self.emit_instruction(op.lw, reg.a0, self.off_reg(1, reg.a0))
+		self.emit_instruction(op.li, reg.v0, 9)
+		self.emit_instruction(op.syscall)
 
 	@visitor.when(ast.CILArray)
 	def visit(self, node: ast.CILArray):
@@ -176,10 +192,6 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
 		self.emit(f'li $a0 {node.value}')
-
-	@visitor.when(ast.CILLoadSelf)
-	def visit(self, node: ast.CILLoadSelf):
-		pass
 
 	@visitor.when(ast.CILLength)
 	def visit(self, node: ast.CILLength):

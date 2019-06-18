@@ -20,7 +20,6 @@ class Cool2CilVisitor:
         self.local_index = 0  # This solves the variable scopes
         self.instructions = []
         
-
         # Holds the maps: 
         # * method name => offset in the class 
         # * var name => offset in the function
@@ -90,8 +89,8 @@ class Cool2CilVisitor:
         return func
 
     def register_type(self):
-        ttype = cil.CILType(self.current_class_name, self.attributes,
-                            self.methods)
+        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
+        self.context.add_tag(self.current_class_name)
         self.dottypes.append(ttype)
         return ttype
 
@@ -107,6 +106,8 @@ class Cool2CilVisitor:
         ctr.append(cil.CILParam("self"))
         for index, attr in enumerate(attrs):
             attr_node = self.visit(attr)
+            
+            
             attr_node.index = index
             ctr.append(attr_node)
         ctr.append(cil.CILReturn())
@@ -119,8 +120,7 @@ class Cool2CilVisitor:
         self.methods.append(ctr_func)
 
     def build_entry(self):
-        main_name = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, main_name, "Main")
+        self.register_instruction(cil.CILAllocate, "Main")
         self.register_instruction(cil.CILArg, main_name)
         self.register_instruction(cil.CILCall, main_name, f'{node.new_type}_ctr')
         
@@ -286,7 +286,7 @@ class Cool2CilVisitor:
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
         vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, vinfo, node.new_type)
+        self.register_instruction(cil.CILAllocate, node.new_type)
         self.register_instruction(cil.CILArg, "self")
         self.register_instruction(cil.CILCall, vinfo, f'{node.new_type}_ctr')
         return vinfo
