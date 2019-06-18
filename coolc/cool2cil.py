@@ -85,6 +85,8 @@ class Cool2CilVisitor:
         for index, local in enumerate(func.localvars):
             self.context.add_var(local.name)
         
+        func.params = self.params.copy()
+
         self.dotcode.append(func)
         return func
 
@@ -121,14 +123,10 @@ class Cool2CilVisitor:
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
-        self.register_instruction(cil.CILArg, main_name)
-        self.register_instruction(cil.CILCall, main_name, f'{node.new_type}_ctr')
-        
-        self.register_instruction(cil.CILArg, main_name)
-
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, "Main", "Main_main")
-        
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILCall, f'Main_ctr')        
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILVCall, "Main", "Main_main")
         self.register_instruction(cil.CILReturn)
 
         self.current_function_name = "entry"
@@ -205,21 +203,14 @@ class Cool2CilVisitor:
         # Function addition
         # Clean instruction list
         self.instructions.clear()
-
-        # First line of every function is *self* param. Self is param `0`
-        self.register_instruction(cil.CILParam, 0)
-
-        # For each formal parameter the function has, visit the corresponding node
-        for fparam in node.formal_params:
-            self.visit(fparam)
+        self.params.clear()
 
         # Method body
-        vinfo = self.visit(node.body)
-
-        self.register_instruction(cil.CILReturn)
+        self.visit(node.body)
 
         # Register the function in dotcode
         func = self.register_func(fname)
+        func.param_count = len(node.formal_params)        
         return func
 
     @visitor.when(ast.ClassAttribute)
@@ -263,7 +254,7 @@ class Cool2CilVisitor:
     def visit(self, node: ast.String):
         """
         If the String is already in the .DATA section, we won't register it
-        again. We just return the name we gave it which includes its offset.
+        again. We just return the name we gave it, which includes its offset.
         We have to load the starting address of .DATA plus the offset of this
         string. But most of this is MIPS.
         la $a0 string_address
@@ -285,10 +276,9 @@ class Cool2CilVisitor:
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
-        vinfo = self.define_internal_local()
         self.register_instruction(cil.CILAllocate, node.new_type)
-        self.register_instruction(cil.CILArg, "self")
-        self.register_instruction(cil.CILCall, vinfo, f'{node.new_type}_ctr')
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILCall, f'{node.new_type}_ctr')
         return vinfo
 
     # TODO: Check this!
@@ -326,42 +316,34 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.DynamicDispatch)
     def visit(self, node: ast.DynamicDispatch):
-        instance = self.visit(
-            node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg, instance)
-
-        args = []  # Remaining arguments of the method
+		# Save current frame pointer
+        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
+        
+		# Generate code for each of the params and push them
+        args = []
         for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
             arg_node = self.register_instruction(cil.CILArg, vinfo)
     
+        instance = self.visit(node.instance)  # This is going to be param `self`
+        self.register_instruction(cil.CILArg, instance)
+
         # Here we have to compute the type, which is done using TYPEOF
-        ttype = self.define_internal_local()
-        self.register_instruction(cil.CILTypeOf, ttype, instance)
-
-        # All function calls have a result
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, ttype, node.method)
-
-        return result
+        self.register_instruction(cil.CILTypeOf, instance)
+        self.register_instruction(cil.CILVCall, None, node.method)
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        instance = self.visit(
-            node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg, instance)
+		# Save current frame pointer
+        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
 
-        args = []  # Remaining arguments of the method
-        for arg in node.arguments:
+		# Generate code for each of the params and push them
+        args = []
+        for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
-            self.register_instruction(cil.CILArg, vinfo)
+            arg_node = self.register_instruction(cil.CILArg, vinfo)
 
-        # All function calls have a result
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, node.dispatch_type,
-                                  node.method)
-
-        return result
+        self.register_instruction(cil.CILVCall, node.dispatch_type, node.method)
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):

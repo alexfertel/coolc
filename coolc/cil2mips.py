@@ -109,31 +109,57 @@ class Cil2MipsVisitor:
 		- Function 2
 		...
 		"""
+<<<<<<< HEAD
+		# Type label
+		self.emit_data(f'{node.name}:')
+		
+		# Class Tag
+		self.emit_data(f'.word {self.context.tags{node.name}}')
+
+		# Generate virtual table for this type
+		for method in node.methods:
+			self.visit(method)
+=======
 		self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
 
 		# Generate virtual table for this type
 		for method in node.methods:
 			self.emit_data_rec(datatype.word, [method.name])
+>>>>>>> 9c58aad193c609a3e23490d127bbdab132830c36
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
-		pass
+		self.emit_label(node.vname)
+		self.emit_data(f'.asciiz {node.value}')
 
 	@visitor.when(ast.CILFunction)
 	def visit(self, node: ast.CILFunction):
-		pass
+		self.emit_label(node.fname)
+		self.emit_instruction(op.move, reg.fp, reg.sp)
+		self.push(reg.ra)
+		self.visit(node.instructions)
+
+		computed = self.off_reg(1, reg.sp)
+		self.emit_instruction(op.lw, reg.ra, computed)
+
+		z = 4 * node.param_count + 8
+		self.emit_instruction(op.addiu, reg.sp, reg.sp, z)
+		
+		computed = self.off_reg(0, reg.sp)
+		self.emit_instruction(op.lw, reg.fp, computed)
+		self.emit_instruction(op.jr, reg.ra)
 
 	@visitor.when(ast.CILMethod)
 	def visit(self, node: ast.CILMethod):
-		pass
+		self.emit_data(f'.word {method.name}')
 
-	@visitor.when(ast.CILParam)
-	def visit(self, node: ast.CILParam):
-		pass
+	# @visitor.when(ast.CILParam)
+	# def visit(self, node: ast.CILParam):
+	# 	pass
 
 	@visitor.when(ast.CILLocal)
 	def visit(self, node: ast.CILLocal):
-		pass
+		self.push(reg.)
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
@@ -187,28 +213,17 @@ class Cil2MipsVisitor:
 	def visit(self, node: ast.CILSetAttrib):
 		pass
 
-	@visitor.when(ast.CILGetIndex)
-	def visit(self, node: ast.CILGetIndex):
-		pass
-
-	@visitor.when(ast.CILSetIndex)
-	def visit(self, node: ast.CILSetIndex):
-		pass
-
 	@visitor.when(ast.CILAllocate)
 	def visit(self, node: ast.CILAllocate):
 		self.emit_instruction(op.la, reg.a0, node.ttype)
-		self.emit_instruction(op.lw, reg.a0, self.off_reg(1, reg.a0))
+		computed = self.off_reg(0, reg.sp)
+		self.emit_instruction(op.lw, reg.a0, computed)
 		self.emit_instruction(op.li, reg.v0, 9)
 		self.emit_instruction(op.syscall)
 
-	@visitor.when(ast.CILArray)
-	def visit(self, node: ast.CILArray):
-		pass
-
 	@visitor.when(ast.CILTypeOf)
 	def visit(self, node: ast.CILTypeOf):
-		pass
+		self.emit_instruction(op.la, reg.a0, node.var)
 
 	@visitor.when(ast.CILLabel)
 	def visit(self, node: ast.CILLabel):
@@ -216,14 +231,17 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILCall)
 	def visit(self, node: ast.CILCall):
-		pass
+		self.emit_instruction(op.jal, node.func)
 
 	@visitor.when(ast.CILVCall)
 	def visit(self, node: ast.CILVCall):
-		# Save current frame pointer
-		self.push(reg.fp)
-		
-		# Generate code for each of the params and push them
+		if node.ttype:
+			self.emit_instruction(op.la, reg.a0, node.ttype)
+
+		method_offset = self.context.fmap[node.func]
+		computed = self.off_reg(method_offset, reg.a0)
+		self.emit_instruction(op.lw, reg.a0, node.ttype)
+		self.emit_instruction(op.jal, reg.a0)
 		
 	@visitor.when(ast.CILArg)
 	def visit(self, node: ast.CILArg):
@@ -252,6 +270,8 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILSubstring)
 	def visit(self, node: ast.CILSubstring):
 		pass
+<<<<<<< HEAD
+=======
 
 	@visitor.when(ast.CILToStr)
 	def visit(self, node: ast.CILToStr):
@@ -264,3 +284,4 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILPrint)
 	def visit(self, node: ast.CILPrint):
 		pass
+>>>>>>> 9c58aad193c609a3e23490d127bbdab132830c36
