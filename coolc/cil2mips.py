@@ -3,8 +3,9 @@ from . import visitor
 from . import mips_instruction_set as mis
 
 class Cil2MipsVisitor:
-	def __init__(self):
+	def __init__(self, context):
 		self.code = []
+		self.context = context
 
 	# ======================================================================
     # =[ UTILS ]============================================================
@@ -30,17 +31,16 @@ class Cil2MipsVisitor:
 	def visit(self, node):
 		pass
 
-	@visitor.when(ast.CILNode)
-	def visit(self, node: ast.CILNode):
-		pass
-
 	@visitor.when(ast.CILProgram)
 	def visit(self, node: ast.CILProgram):
 		pass
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
-		pass
+		# Generate virtual table for this type
+
+
+		
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -64,7 +64,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
-		pass
+		self.emit(f'move {node.dest} {node.source}')
 
 
 	@visitor.when(ast.CILPlus)
@@ -190,7 +190,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILReturn)
 	def visit(self, node: ast.CILReturn):
-		pass
+		self.emit('jr $ra')
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
