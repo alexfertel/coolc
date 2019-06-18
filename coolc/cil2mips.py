@@ -228,7 +228,7 @@ class Cil2MipsVisitor:
 
 		method_offset = self.context.fmap[node.func]
 		computed = self.off_reg(method_offset, reg.a0)
-		self.emit_instruction(op.lw, reg.a0, node.ttype)
+		self.emit_instruction(op.lw, reg.a0, computed)
 		self.emit_instruction(op.jal, reg.a0)
 		
 	@visitor.when(ast.CILArg)
@@ -258,15 +258,4 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILSubstring)
 	def visit(self, node: ast.CILSubstring):
 		pass
-
-	@visitor.when(ast.CILToStr)
-	def visit(self, node: ast.CILToStr):
-		pass
-
-	@visitor.when(ast.CILRead)
-	def visit(self, node: ast.CILRead):
-		pass
-
-	@visitor.when(ast.CILPrint)
-	def visit(self, node: ast.CILPrint):
-		pass
+		
