@@ -1,6 +1,7 @@
 from . import cilast as ast
 from . import visitor
-from .mipsutils import reg, op
+from .mipsutils import datatype, op, reg
+
 
 class Cil2MipsVisitor:
 	def __init__(self, context):
@@ -12,6 +13,13 @@ class Cil2MipsVisitor:
     # =[ UTILS ]============================================================
     # ======================================================================
 	
+	def emit_data_rec(self, type, data, label = None):
+		datas = ', '.join(data)
+		to_emit = f'.{type} {datas}'
+		if label:
+			to_emit = label + ': ' + to_emit
+		self.emit_data(to_emit)
+
 	def emit_code(self, msg):
 		self.dotcode.append(msg)
 
@@ -83,15 +91,11 @@ class Cil2MipsVisitor:
 		- Function 2
 		...
 		"""
-		# Type label
-		self.emit_data(f'{node.name}:')
-		
-		# Class Tag
-		self.emit_data(f'.word {self.context.tags{node.name}}')
+		self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
 
 		# Generate virtual table for this type
 		for method in node.methods:
-			self.emit_data(f'.word {method.name}')
+			self.emit_data_rec(datatype.word, [method.name])
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -115,7 +119,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
-		self.emit(f'move {node.dest} {node.source}')
+		pass
 
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
@@ -155,7 +159,7 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILGotoIf)
 	def visit(self, node: ast.CILGotoIf):
 		branch_instruction = self.visit(node.condition)
-		self.emit_code(f'{branch_instruction} $a0 $t1 {node.label}')
+		self.emit_instruction(branch_instruction, reg.a0, reg.t1, node.label)
 
 	@visitor.when(ast.CILGetAttrib)
 	def visit(self, node: ast.CILGetAttrib):
@@ -242,4 +246,3 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILPrint)
 	def visit(self, node: ast.CILPrint):
 		pass
-
