@@ -6,6 +6,7 @@ from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
 from .context import Context
+from pprint import pprint
 
 class Cool2CilVisitor:
     def __init__(self):
@@ -100,22 +101,22 @@ class Cool2CilVisitor:
         self.dotdata.append(data_node)
         return data_node
 
-    def build_ctr(self):
+    def build_ctr(self, attrs):
         # Build constructor
         ctr = []
-        for index, attr in enumerate(self.attributes):
+        for index, attr in enumerate(attrs):
             attr_node = self.visit(attr)
             self.context.add_attribute(attr_node, index)
             ctr.append(attr_node)
+        print(ctr)
         ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
-        ctr_name = self.build_internal_fname()
+        ctr_name = self.build_method_name()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
 
-        mname = self.build_method_name()
-        self.methods.append(cil.CILMethod(mname, ctr_name))
+        self.methods.append(cil.CILMethod(ctr_name))
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
@@ -171,8 +172,9 @@ class Cool2CilVisitor:
                 attrs.append(feature)
         
         # Build constructor
-        self.build_ctr()
+        self.build_ctr(attrs)
 
+        pprint(funcs)
         for index, func in enumerate(funcs):
             func_node = self.visit(func)
             self.context.add_func(func_node.fname, index)
@@ -194,7 +196,7 @@ class Cool2CilVisitor:
         fname = self.build_internal_fname()
 
         # Method addition
-        self.methods.append(cil.CILMethod(mname, fname))
+        self.methods.append(cil.CILMethod(mname))
 
         # Function addition
         # Clean instruction list
@@ -204,7 +206,7 @@ class Cool2CilVisitor:
         self.visit(node.body)
 
         # Register the function in dotcode
-        func = self.register_func(fname)
+        func = self.register_func(mname)
         func.param_count = len(node.formal_params)        
         return func
 

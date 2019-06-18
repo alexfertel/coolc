@@ -25,15 +25,15 @@ class Cil2MipsVisitor:
 
 	def popa(self, excep = []):
 		dic = reg.__dict__
-		keys = dic.keys()
-		keys.reverse()
+		keys = list(dic.keys())
+		keys = list(reversed(keys))
 		for key in keys:
 			if not str(key).startswith('_') and not excep.__contains__(key):
 				self.pop(dic[key])
 
 	def emit_data_rec(self, type, data, label = None):
-		datas = ', '.join(data)
-		to_emit = f'.{type} {datas}'
+		datas = ', '.join(map(lambda x: str(x), data))
+		to_emit = f'{type} {datas}'
 		if label:
 			to_emit = label + ': ' + to_emit
 		self.emit_data(to_emit)
@@ -124,10 +124,9 @@ class Cil2MipsVisitor:
 		...
 		"""
 		self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
-
-		# Generate virtual table for this type
+		# Generate virtual table for map(lambda x: str(x), this) type
 		for method in node.methods:
-			self.emit_data_rec(datatype.word, [method.fname])
+			self.emit_data_rec(datatype.word, [method.mname])
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -139,11 +138,13 @@ class Cil2MipsVisitor:
 		self.emit_instruction(op.move, reg.fp, reg.sp)
 		self.push(reg.ra)
 
-		self.pusha(['a0'])
+		# self.pusha(['a0'])
 
-		self.visit(node.instructions)
+		for instruction in node.instructions:
+			print(instruction)
+			self.visit(node.instructions)
 
-		self.popa(['a0'])
+		# self.popa(['a0'])
 
 		computed = self.off_reg(1, reg.sp)
 		self.emit_instruction(op.lw, reg.ra, computed)
@@ -158,6 +159,11 @@ class Cil2MipsVisitor:
 	@visitor.when(ast.CILMethod)
 	def visit(self, node: ast.CILMethod):
 		self.emit_data(f'.word {node.name}')
+
+	@visitor.when(ast.CILDummy)
+	def visit(self, node: ast.CILDummy):
+		print('!!!!!!!!!!!!')
+		self.emit_data(node.value)
 
 	# @visitor.when(ast.CILParam)
 	# def visit(self, node: ast.CILParam):
