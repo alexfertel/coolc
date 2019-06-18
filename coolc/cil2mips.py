@@ -13,6 +13,10 @@ class Cil2MipsVisitor:
     # =[ UTILS ]============================================================
     # ======================================================================
 	
+	def init_utils(self):
+		self.dotdata.append('.data')
+		self.dotcode.append('.text')
+
 	def emit_data_rec(self, type, data, label = None):
 		datas = ', '.join(data)
 		to_emit = f'.{type} {datas}'
@@ -79,7 +83,21 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILProgram)
 	def visit(self, node: ast.CILProgram):
-		pass
+
+		# Init son util funtions
+		self.init_utils()
+
+		# Visit every data node in Program
+		for datanode in node.dotdata:
+			self.visit(datanode)
+
+		# Visit every type node in Program
+		for typenode in node.dottypes:
+			self.visit(typenode)
+
+		# Visit every code node in Program
+		for codenode in node.dotcode:
+			self.visit(codenode)
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
