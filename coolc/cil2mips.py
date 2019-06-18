@@ -117,8 +117,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
-		self.emit_label(node.vname)
-		self.emit_data(f'.asciiz {node.value}')
+		self.emit_data_rec(datatype.asciiz, [node.value], node.vname)
 
 	@visitor.when(ast.CILFunction)
 	def visit(self, node: ast.CILFunction):
