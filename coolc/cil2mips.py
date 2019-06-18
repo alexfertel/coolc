@@ -295,10 +295,10 @@ class Cil2MipsVisitor:
         if node.ttype:
             self.emit_instruction(op.la, reg.a0, node.ttype)
 
-        method_offset = self.context.fmap[node.func]
-        computed = self.off_reg(method_offset, reg.a0)
-        self.emit_instruction(op.lw, reg.a0, computed)
-        self.emit_instruction(op.jal, reg.a0)
+        # method_offset = self.context.fmap[node.func]
+        # computed = self.off_reg(method_offset, reg.a0)
+        # self.emit_instruction(op.lw, reg.a0, computed)
+        self.emit_instruction(op.jal, self.context.mmap[node.func])
         
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):

@@ -1,5 +1,6 @@
 .data
-Main: .word 0
+Main: 
+.word 0
 .word Main_ctr
 .word Main_type_name
 .word Main_copy
@@ -16,7 +17,7 @@ Main: .word 0
 # Type
 
 # .code:
-Main_ctr:
+f0:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -27,7 +28,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-Main_type_name:
+f1:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -72,8 +73,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
+jal f4
 
 # Return
 jr $ra
@@ -81,7 +81,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-Main_copy:
+f2:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -126,8 +126,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
+jal f4
 
 # Return
 jr $ra
@@ -135,7 +134,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-Main_abort:
+f3:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -180,8 +179,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
+jal f4
 
 # Return
 jr $ra
@@ -189,7 +187,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-Main_main:
+f4:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -234,8 +232,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
+jal f4
 
 # Return
 jr $ra
@@ -243,7 +240,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-entry:
+main:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -288,8 +285,7 @@ addiu $sp, $sp, -4
 
 # VCall
 la $a0, Main
-lw $a0, 12($a0)
-jal $a0
+jal f4
 
 # Return
 jr $ra

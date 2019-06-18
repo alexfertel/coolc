@@ -77,7 +77,7 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
-    def register_func(self, fname):
+    def register_func(self, fname, mname):
         print("Register Function")
         func = cil.CILFunction(fname, self.instructions)
         
@@ -89,6 +89,9 @@ class Cool2CilVisitor:
         for index, local in enumerate(func.localvars):
             self.context.add_var(local.value.name, index)
         
+        # Update the context with the function name
+        self.context.add_mf(mname, fname)
+
         self.dotcode.append(func)
         return func
 
@@ -114,11 +117,14 @@ class Cool2CilVisitor:
         ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
+        fname = self.build_internal_fname()
         ctr_name = self.build_method_name()
-        ctr_func = cil.CILFunction(ctr_name, ctr)
+        ctr_func = cil.CILFunction(fname, ctr)
         self.dotcode.append(ctr_func)
 
         self.methods.append(cil.CILMethod(ctr_name))
+
+        self.context.add_mf(ctr_name, fname)
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
@@ -129,7 +135,8 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILReturn)
 
         self.current_function_name = "entry"
-        self.register_func(self.current_function_name)
+        # entry_name = self.build_internal_fname()
+        self.register_func("main", self.current_function_name)
 
     # ======================================================================
 
@@ -209,7 +216,7 @@ class Cool2CilVisitor:
         print(return_val)
 
         # Register the function in dotcode
-        func = self.register_func(mname)
+        func = self.register_func(fname, mname)
         func.param_count = len(node.formal_params)        
         return func
 
