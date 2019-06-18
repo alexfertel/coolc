@@ -17,18 +17,18 @@ class Cil2MipsVisitor:
 		self.dotdata.append('.data')
 		self.dotcode.append('.text')
 
-	def pusha(self):
+	def pusha(self, excep = []):
 		dic = reg.__dict__
 		for key in dic.keys():
-			if not str(key).startswith('_'):
+			if not str(key).startswith('_') and not excep.__contains__(key):
 				self.push(dic[key])
 
-	def popa(self):
+	def popa(self, excep = []):
 		dic = reg.__dict__
 		keys = dic.keys()
 		keys.reverse()
 		for key in keys:
-			if not str(key).startswith('_'):
+			if not str(key).startswith('_') and not excep.__contains__(key):
 				self.pop(dic[key])
 
 	def emit_data_rec(self, type, data, label = None):
@@ -138,7 +138,12 @@ class Cil2MipsVisitor:
 		self.emit_label(node.fname)
 		self.emit_instruction(op.move, reg.fp, reg.sp)
 		self.push(reg.ra)
+
+		self.pusha(['a0'])
+
 		self.visit(node.instructions)
+
+		self.popa(['a0'])
 
 		computed = self.off_reg(1, reg.sp)
 		self.emit_instruction(op.lw, reg.ra, computed)
