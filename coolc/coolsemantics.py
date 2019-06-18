@@ -86,6 +86,11 @@ class SemanticVisitor:
     def visit(self, node: ast.ClassMethod, errors: list):
         self.__scope = self.__scope.create_child_scope()
         valid = True
+
+        if self.__scope.get_type(node.return_type) is None:
+            valid = False
+            errors.append('Type <%s> doesn\'t exist' % (node.return_type))
+
         for param in node.formal_params:
             valid &= self.visit(param, errors)
 
@@ -101,9 +106,14 @@ class SemanticVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors: list):
-        valid = self.visit(node.init_expr, errors)
+        valid = True if node.init_expr is None else self.visit(
+            node.init_expr, errors)
 
-        if self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
+        if self.__scope.get_type(node.attr_type) is None:
+            valid = False
+            errors.append('Type <%s> doesn\'t exist' % (node.attr_type))
+
+        if node.init_expr is not None and self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
                           (node.init_expr.return_type, node.attr_type))
@@ -374,7 +384,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Addition, errors):
         valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append('Addition is valid only between Integer variables.')
 
@@ -386,7 +396,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Subtraction, errors):
         alid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
                 'Substraction is valid only between Integer variables.')
@@ -399,7 +409,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Multiplication, errors):
         alid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
                 'Multiplication is valid only between Integer variables.')
@@ -412,7 +422,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Division, errors):
         alid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append('Division is valid only between Integer variables.')
 
@@ -424,7 +434,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Equal, errors):
         valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
                 'Equal operator is valid only between Integer variables.')
@@ -437,7 +447,7 @@ class SemanticVisitor:
     def visit(self, node: ast.LessThan, errors):
         valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
                 'LessThan operator is valid only between Integer variables.')
@@ -450,7 +460,7 @@ class SemanticVisitor:
     def visit(self, node: ast.LessThanOrEqual, errors):
         valid = self.visit(node.first, errors)
         valid &= self.visit(node.second, errors)
-        if node.first.return_type != 'Int' and node.second.return_type != 'Int':
+        if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
                 'LessThanOrEqual operator is valid only between Integer variables.')

@@ -182,10 +182,8 @@ class TypeBuilderVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
-        print('--------')
-        print(node.clsname)
         # Check if attribute is defined in the current class only once
-        if self.__current_class.get_attr(node.name) is not None:
+        if self.__current_class.get_attr(node.name, self.__scope) is not None:
             self.__errors.append(
                 f"Attribute '{node.name}' is defined more than once in class <{self.__current_class.name}>!")
             return 0

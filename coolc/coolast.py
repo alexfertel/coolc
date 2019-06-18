@@ -63,12 +63,12 @@ class Class(Node):
             return scope.get_type(self.parent).get_method(name, scope)
         return None
 
-    def get_attr(self, name: str):
+    def get_attr(self, name: str, scope):
         for feature in self.features:
             if type(feature) == ClassAttribute and feature.name == name:
                 return feature
         if self.parent != None:
-            return self.parent.get_attr(name)
+            return scope.get_type(self.parent).get_attr(name, scope)
         return None
 
     def contain_method(self, name: str) -> bool:
