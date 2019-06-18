@@ -79,7 +79,8 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILProgram)
 	def visit(self, node: ast.CILProgram):
-		pass
+		for datanode in node.dotdata:
+			self.visit(datanode)
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
