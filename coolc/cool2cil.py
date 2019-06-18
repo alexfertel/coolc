@@ -78,15 +78,13 @@ class Cool2CilVisitor:
         func = cil.CILFunction(fname, self.instructions)
         
         # Handle localvars
-        func.localvars = [self.globalvars[self.local_index:]]
+        func.localvars = self.globalvars[self.local_index:]
         self.local_index = len(self.globalvars)
 
         # Update the context with the new names
         for index, local in enumerate(func.localvars):
-            self.context.add_var(local.name)
+            self.context.add_var(local.value, index)
         
-        func.params = self.params.copy()
-
         self.dotcode.append(func)
         return func
 
@@ -112,7 +110,7 @@ class Cool2CilVisitor:
         ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
-        ctr_name = build_method_name()
+        ctr_name = self.build_internal_fname()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
 
@@ -154,7 +152,7 @@ class Cool2CilVisitor:
         # We register the entrypoint here.
         self.build_entry()
 
-        root = cil.CILProgram(self.dottypes, self.dotdata, self.dotcode)
+        self.result = cil.CILProgram(self.dottypes, self.dotdata, self.dotcode)
 
     @visitor.when(ast.Class)
     def visit(self, node: ast.Class):
@@ -177,7 +175,7 @@ class Cool2CilVisitor:
 
         for index, func in enumerate(funcs):
             func_node = self.visit(func)
-            self.context.add_func(func_node.mname, index)
+            self.context.add_func(func_node.fname, index)
 
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
@@ -201,7 +199,6 @@ class Cool2CilVisitor:
         # Function addition
         # Clean instruction list
         self.instructions.clear()
-        self.params.clear()
 
         # Method body
         self.visit(node.body)
@@ -238,14 +235,14 @@ class Cool2CilVisitor:
         This has a dedicated CIL node since we have to look in the stack
         for the first param, which is where `self` will be,
         the src is always the same.
-        lw $a0 0($sp)
+        lw $a0, 0($sp)
         """
-        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0 0($sp)')
+        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0, 0($sp)')
         return dummy_node
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {node.content}')
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
         return dummy_node
 
     @visitor.when(ast.String)
@@ -255,7 +252,7 @@ class Cool2CilVisitor:
         again. We just return the name we gave it, which includes its offset.
         We have to load the starting address of .DATA plus the offset of this
         string. But most of this is MIPS.
-        la $a0 string_address
+        la $a0, string_address
         """
         for index, data_node in enumerate(self.dotdata):
             if node.content == data_node.value:
@@ -264,12 +261,12 @@ class Cool2CilVisitor:
             new_node = self.register_data(node.content)
             data_name = new_node.vname
 
-        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0 {data_name}')
+        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0, {data_name}')
         return dummy_node
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {1 if node.content == True else 0}')
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {1 if node.content == True else 0}')
         return dummy_node
         
     @visitor.when(ast.NewObject)
@@ -283,9 +280,9 @@ class Cool2CilVisitor:
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid):
         dest_vinfo = self.define_internal_local()
-		vinfo = self.visit(node.expr)
-		self.register_instruction(cil.CILTypeOf, ttype, vinfo)
-		self.register_instruction(cil.CILEqual, dest_vinfo, ttype, "void")
+        vinfo = self.visit(node.expr)
+        self.register_instruction(cil.CILTypeOf, ttype, vinfo)
+        self.register_instruction(cil.CILEqual, dest_vinfo, ttype, "void")
         return dest_vinfo
 
     @visitor.when(ast.Assignment)
@@ -294,24 +291,24 @@ class Cool2CilVisitor:
         There are three ways of making an assignment.
             i. By declaring an attribute.
             ii. By declaring inside a let.
-            iii. Just making an assigning a value.
+            iii. Just assigning a value.
         
         The first two share the syntax, but the third doesn't.
         In this node we don't have to generate a LOCAL CIL node,
         because to make this kind of assignment(iii) the identifier
         should be declared from beforehand.
         
-		First, check if the source is in `localvars`,
-		if not, check if it's in the function arguments.
+        First, check if the source is in `localvars`,
+        if not, check if it's in the function arguments.
 
-		Repeat with destination.        
+        Repeat with destination.        
         """
         if source in self.globalvars[self.local_index:]:
             offset_src = self.context.lname[source]
-            self.register_instruction(cil.CILDummy, f'lw $t0 {offset_src * -4}')
+            self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
         else:
             offset_src = self.context.lname[source]
-            self.register_instruction(cil.CILDummy, f'lw $a0 {offset_src * 4}')
+            self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
 
 
         source = self.visit(node.expr)
@@ -327,17 +324,17 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.DynamicDispatch)
     def visit(self, node: ast.DynamicDispatch):
-		# Save current frame pointer
+        # Save current frame pointer
         self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
         
-		# Generate code for each of the params and push them
+        # Generate code for each of the params and push them
         args = []
         for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
-            arg_node = self.register_instruction(cil.CILArg, vinfo)
+            arg_node = self.register_instruction(cil.CILArg)
     
         instance = self.visit(node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg, instance)
+        self.register_instruction(cil.CILArg)
 
         # Here we have to compute the type, which is done using TYPEOF
         self.register_instruction(cil.CILTypeOf, instance)
@@ -345,14 +342,14 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-		# Save current frame pointer
+        # Save current frame pointer
         self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
 
-		# Generate code for each of the params and push them
+        # Generate code for each of the params and push them
         args = []
         for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
-            arg_node = self.register_instruction(cil.CILArg, vinfo)
+            arg_node = self.register_instruction(cil.CILArg)
 
         self.register_instruction(cil.CILVCall, node.dispatch_type, node.method)
 

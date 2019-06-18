@@ -9,7 +9,7 @@ class Context:
     def add_func(self, fname, offset):
         self.fmap[fname] = offset
 
-    def add_localvar(self, lname, offset):
+    def add_var(self, lname, offset):
         self.lmap[lname] = offset
 
     def add_attribute(self, aname, offset):
