@@ -4,7 +4,7 @@ from . import coolast as ast
 
 class Scope:
     def __init__(self, parent=None):
-        self.__types = {} if parent is None else parent.types
+        self.__types = {} if parent is None else parent.get_types_dict()
         self.locals = []
         self.parent = parent
         self.children = []
@@ -21,7 +21,7 @@ class Scope:
         return child_scope
 
     def is_defined(self, vname):
-        return (self.get_variable_info(vname) is not None) and (parent.is_defined(vname) if parent is not None else False)
+        return self.get_variable_info(vname) is not None
 
     def get_variable_info(self, vname):
         current = self

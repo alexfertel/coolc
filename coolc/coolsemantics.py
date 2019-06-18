@@ -2,6 +2,10 @@ from . import coolast as ast
 from . import visitor
 from .scope import Scope
 
+# print('-----------------TEST------------------')
+# print(a)
+# print('---------------------------------------')
+
 
 class SemanticVisitor:
 
@@ -13,7 +17,7 @@ class SemanticVisitor:
         return var if var != 'SELF_TYPE' else self.__current_class_name
 
     def __sub_type(self, klass: str, ancestor_class: str) -> bool:
-        return self.__scope.get_type(klass).is_ancestor(ancestor_class)
+        return self.__scope.get_type(klass).is_ancestor(ancestor_class, self.__scope)
 
     def __lca_type(self, type_a, type_b):
         a = self.__scope.get_type(self.__real_type(type_a))
@@ -40,7 +44,7 @@ class SemanticVisitor:
     def visit(self, node: ast.Program, errors):
         valid = True
         for klass in node.classes:
-            valid &= visit(klass, errors)
+            valid &= self.visit(klass, errors)
 
         return valid
 
@@ -50,9 +54,10 @@ class SemanticVisitor:
         self.__scope = self.__scope.create_child_scope()
         self.__current_class_name = node.name
         for feature in node.features:
-            if type(feature) == ClassMethod:
+            if type(feature) == 'ClassMethod':
                 if node.parent is not None:
-                    acestor_method = node.parent.get_method(feature.name)
+                    acestor_method = node.parent.get_method(
+                        feature.name, self.__scope)
                     if ancestor_method is not None:
                         if len(ancestor_methods.formal_params) != len(feature.formal_params):
                             valid = False
@@ -68,7 +73,7 @@ class SemanticVisitor:
                             errors.append(
                                 'Return type of method %s are not equal, this method can\'t be overrided.' % (feature.name))
 
-            valid &= visit(feature, errors)
+            valid &= self.visit(feature, errors)
 
         self.__scope = self.__scope.parent
         return valid
@@ -82,9 +87,9 @@ class SemanticVisitor:
         self.__scope = self.__scope.create_child_scope()
         valid = True
         for param in node.formal_params:
-            valid &= visit(param)
+            valid &= self.visit(param, errors)
 
-        valid &= visit(node.body)
+        valid &= self.visit(node.body, errors)
         self.__scope = self.__scope.parent
 
         if not self.__sub_type(self.__real_type(node.body.return_type), self.__real_type(node.return_type)):
@@ -96,7 +101,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute, errors: list):
-        valid = visit(node.init_expr)
+        valid = self.visit(node.init_expr, errors)
 
         if self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
             valid = False
@@ -164,13 +169,13 @@ class SemanticVisitor:
 
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid, errors):
-        valid = visit(node.expr)
+        valid = self.visit(node.expr, errors)
         return valid
 
     @visitor.when(ast.Assignment)
     def visit(self, node: ast.Assignment, errors):
-        valid = visit(node.instance)
-        valid &= visit(node.expr)
+        valid = self.visit(node.instance, errors)
+        valid &= self.visit(node.expr, errors)
 
         if self.__sub_type(self.__real_type(node.expr.return_type), self.__real_type(node.instance.return_type)):
             valid = False
@@ -189,7 +194,7 @@ class SemanticVisitor:
             errors.append('A block expresion most be one expresion at least.')
 
         for expr in node.expr_list:
-            valid &= visit(expr)
+            valid &= self.visit(expr, errors)
 
         node.return_type = node.expr_list[-1].return_type
 
@@ -199,11 +204,14 @@ class SemanticVisitor:
     def visit(self, node: ast.DynamicDispatch, errors: list):
         valid = True
         for argument in node.arguments:
-            valid &= visit(argument)
+            valid &= self.visit(argument, errors)
 
-        valid &= visit(node.instance)
+        valid &= self.visit(node.instance, errors)
+        if node.instance.return_type is None:
+            return False
+
         method = self.__scope.get_type(
-            node.instance.return_type).get_method(node.method)
+            node.instance.return_type).get_method(node.method, self.__scope)
 
         if method is None:
             valid = False
@@ -218,8 +226,7 @@ class SemanticVisitor:
                     if node.arguments[i].return_type != method.formal_params[i].param_type:
                         valid = False
                         errors.append('Params not have the same types.')
-
-        node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.instance.return_type
+                node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.instance.return_type
 
         return valid
 
@@ -227,17 +234,17 @@ class SemanticVisitor:
     def visit(self, node: ast.StaticDispatch, errors: list):
         valid = True
         for argument in node.arguments:
-            valid &= visit(argument)
+            valid &= self.visit(argument, errors)
         static_type = self.__scope.get_type(node.dispatch_type)
 
-        valid &= visit(node.instance)
+        valid &= self.visit(node.instance, errors)
 
         if not self.__sub_type(node.instance.return_type, node.dispatch_type):
             valid = False
             errors.append('Type <%s> isn\'t a subtype of type <%s>.' %
                           (node.instance.return_type, node.dispatch_type))
         method = self.__scope.get_type(
-            node.dispatch_type).get_method(node.method)
+            node.dispatch_type).get_method(node.method, self.__scope)
 
         if method is None:
             valid = False
@@ -262,32 +269,35 @@ class SemanticVisitor:
         valid = True
         self.__scope = self.__scope.create_child_scope()
         for declaration in node.declaration_list:
-            valid &= visit(declaration)
+            valid &= self.visit(declaration, errors)
 
-        valid &= visit(node.body)
+        valid &= self.visit(node.body, errors)
         node.return_type = node.body.return_type
 
         self.__scope = self.__scope.parent
 
         return valid
 
-    @visit.when(ast.Declaration)
+    @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration, errors: list):
-        valid = True
+        valid = self.visit(node.expression, errors)
         if not self.__sub_type(self.__real_type(node.expression.return_type), self.__real_type(node.ttype)):
             valid = False
             errors.append('<%s> is defined with type <%s> diferent of type <%s>' % (
-                node.identifier, node.ttype, node.expression.return_type))
+                node.identifier.name, node.ttype, node.expression.return_type))
 
         node.return_type = node.ttype
-        self.__scope.define_variable(node.identifier, node.ttype)
+        # print('-----------------TEST------------------')
+        # print(node.identifier.name)
+        # print('---------------------------------------')
+        self.__scope.define_variable(node.identifier.name, node.ttype)
 
         return valid
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If, errors):
-        valid = visit(node.predicate) and visit(
-            node.else_body) and visit(node.else_body)
+        valid = self.visit(node.predicate, errors) and self.visit(
+            node.else_body, errors) and self.visit(node.else_body, errors)
 
         node.return_type = self.__lca_type(
             node.then_body.return_type, node.else_body.return_type)
@@ -296,7 +306,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.WhileLoop)
     def visit(self, node: ast.WhileLoop, errors: list):
-        valid = visit(node.predicate)
+        valid = self.visit(node.predicate, errors)
         if node.predicate.return_type != 'Bool':
             valid = False
             errors.append('Loop condition doesn\'t return a <boolean> value.')
@@ -308,14 +318,14 @@ class SemanticVisitor:
 
     @visitor.when(ast.Case)
     def visit(self, node: ast.Case, errors):
-        valid = visit(node.expr)
+        valid = self.visit(node.expr, errors)
         if len(node.actions) != 0:
-            valid &= visit(node.actions[0])
+            valid &= self.visit(node.actions[0], errors)
             node.return_type = node.actions[0].return_type
 
             for action in node.actions:
                 self.__scope = self.__scope.create_child_scope()
-                valid &= visit(action)
+                valid &= self.visit(action, errors)
                 node.return_type = self.__lca_type(
                     node.return_type, action.return_type)
                 self.__scope = self.__scope.parent
@@ -325,7 +335,7 @@ class SemanticVisitor:
     @visitor.when(ast.Action)
     def visit(self, node: ast.Action, errors):
         self.__scope.define_variable(node.name, node.action_type)
-        valid = visit(node.body)
+        valid = self.visit(node.body, errors)
         node.return_type = node.body.return_type
         return valid
 
@@ -335,7 +345,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.IntegerComplement)
     def visit(self, node: ast.IntegerComplement, errors):
-        valid = visit(node.integer_expr)
+        valid = self.visit(node.integer_expr, errors)
         if node.integer_expr.return_type != 'Int':
             valid = False
             errors.append('Operator \"~\" is used only on Integer expresions.')
@@ -346,7 +356,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.BooleanComplement)
     def visit(self, node: ast.BooleanComplement, errors):
-        valid = visit(node.boolean_expr)
+        valid = self.visit(node.boolean_expr, errors)
         if node.boolean_expr.return_type != 'Bool':
             valid = False
             errors.append('Operator \"~\" is used only on Boolean expresions.')
@@ -361,8 +371,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Addition)
     def visit(self, node: ast.Addition, errors):
-        valid = visit(node.first)
-        valid &= visit(node.second)
+        valid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -374,8 +384,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Subtraction)
     def visit(self, node: ast.Subtraction, errors):
-        alid = visit(node.first)
-        valid &= visit(node.second)
+        alid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -387,8 +397,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Multiplication)
     def visit(self, node: ast.Multiplication, errors):
-        alid = visit(node.first)
-        valid &= visit(node.second)
+        alid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -400,8 +410,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Division)
     def visit(self, node: ast.Division, errors):
-        alid = visit(node.first)
-        valid &= visit(node.second)
+        alid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -413,8 +423,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.Equal)
     def visit(self, node: ast.Equal, errors):
-        valid = visit(node.first)
-        valid &= visit(node.second)
+        valid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -426,8 +436,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.LessThan)
     def visit(self, node: ast.LessThan, errors):
-        valid = visit(node.first)
-        valid &= visit(node.second)
+        valid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %
@@ -439,8 +449,8 @@ class SemanticVisitor:
 
     @visitor.when(ast.LessThanOrEqual)
     def visit(self, node: ast.LessThanOrEqual, errors):
-        valid = visit(node.first)
-        valid &= visit(node.second)
+        valid = self.visit(node.first, errors)
+        valid &= self.visit(node.second, errors)
         if node.first.return_type != node.second.return_type:
             valid = False
             errors.append('Types <%s> and <%s> are differente.' %

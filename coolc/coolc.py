@@ -5,6 +5,7 @@ from . import coolig
 from . import coolutils
 from . import cooltypecollector
 from . import cooltypebuilder
+from . import coolsemantics
 
 
 class Compiler:
@@ -95,9 +96,8 @@ class Compiler:
             exit(1)
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
-
-        type_builder = cooltypebuilder.TypeBuilderVisitor(
-            type_collector.get_scope())
+        scope = type_collector.get_scope()
+        type_builder = cooltypebuilder.TypeBuilderVisitor(scope)
         type_builder.visit(self.ast)
 
         errors = type_builder.get_errors()
@@ -124,3 +124,14 @@ class Compiler:
             exit(1)
         else:
             print("Type Inheritance Graph is semantically correct!")
+
+        errors.clear()
+        checksemantic = coolsemantics.SemanticVisitor(scope)
+        valid = checksemantic.visit(self.ast, errors)
+
+        if not valid:
+            for error in errors:
+                print(error)
+            exit(1)
+        else:
+            print('Done!')

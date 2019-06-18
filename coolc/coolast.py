@@ -55,12 +55,12 @@ class Class(Node):
     def to_readable(self):
         return "{}(name='{}', parent={}, features={})".format(self.clsname, self.name, self.parent, self.features)
 
-    def get_method(self, name: str):
+    def get_method(self, name: str, scope):
         for feature in self.features:
             if type(feature) == ClassMethod and feature.name == name:
                 return feature
         if self.parent != None:
-            return self.parent.get_method(name)
+            return scope.get_type(self.parent).get_method(name, scope)
         return None
 
     def get_attr(self, name: str):
@@ -77,13 +77,13 @@ class Class(Node):
                 return True
         return False
 
-    def is_ancestor(self, klass: str) -> bool:
+    def is_ancestor(self, klass: str, scope) -> bool:
         current_class = self
-        if current_class.name == klass.name:
+        if current_class.name == klass:
             return True
         if current_class.parent is not None:
-            current_class = current_class.parent
-            return is_ancestor(current_class)
+            current_class = scope.get_type(current_class.parent)
+            return current_class.is_ancestor(klass, scope)
         return False
 
 
@@ -201,6 +201,7 @@ class Integer(Constant):
     def __init__(self, content):
         super(Integer, self).__init__()
         self.content = content
+        self.return_type = 'Int'
 
     def to_tuple(self):
         return tuple([
@@ -216,6 +217,7 @@ class String(Constant):
     def __init__(self, content):
         super(String, self).__init__()
         self.content = content
+        self.return_type = 'String'
 
     def to_tuple(self):
         return tuple([
@@ -231,6 +233,7 @@ class Boolean(Constant):
     def __init__(self, content):
         super(Boolean, self).__init__()
         self.content = content
+        self.return_type = 'Bool'
 
     def to_tuple(self):
         return tuple([

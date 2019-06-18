@@ -14,6 +14,6 @@ class A{
     f () : SELF_TYPE { new SELF_TYPE };
 };
 
-class A{
+class B inherits A{
     m () : String { "B" };
 };
