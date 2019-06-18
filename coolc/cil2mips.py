@@ -75,12 +75,6 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
-<<<<<<< HEAD
-		pass
-		# Generate virtual table for this type
-
-
-=======
 		"""
 		Object layout:
 		- Class Tag
@@ -91,7 +85,6 @@ class Cil2MipsVisitor:
 		"""
 		# Type label
 		self.emit_data(f'{node.name}:')
->>>>>>> 797643aadc5b01a2f2e56625cbae2c026e21e2aa
 		
 		# Class Tag
 		self.emit_data(f'.word {self.context.tags{node.name}}')
@@ -220,11 +213,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
-<<<<<<< HEAD
 		self.emit_instruction(op.li, reg.a0, node.value)
-=======
-		self.emit(f'li $a0 {node.value}')
->>>>>>> 797643aadc5b01a2f2e56625cbae2c026e21e2aa
 
 	@visitor.when(ast.CILLength)
 	def visit(self, node: ast.CILLength):
