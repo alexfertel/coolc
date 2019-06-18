@@ -3,9 +3,10 @@ from . import visitor
 from .mipsutils import reg, op
 
 class Cil2MipsVisitor:
-	def __init__(self):
+	def __init__(self, context):
 		self.dotdata = []
 		self.dotcode = []
+		self.context = context
 
 	# ======================================================================
     # =[ UTILS ]============================================================
@@ -46,17 +47,16 @@ class Cil2MipsVisitor:
 	def visit(self, node):
 		pass
 
-	@visitor.when(ast.CILNode)
-	def visit(self, node: ast.CILNode):
-		pass
-
 	@visitor.when(ast.CILProgram)
 	def visit(self, node: ast.CILProgram):
 		pass
 
 	@visitor.when(ast.CILType)
 	def visit(self, node: ast.CILType):
-		pass
+		# Generate virtual table for this type
+
+
+		
 
 	@visitor.when(ast.CILData)
 	def visit(self, node: ast.CILData):
@@ -80,7 +80,7 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILAssign)
 	def visit(self, node: ast.CILAssign):
-		pass
+		self.emit(f'move {node.dest} {node.source}')
 
 	@visitor.when(ast.CILPlus)
 	def visit(self, node: ast.CILPlus):
@@ -171,11 +171,11 @@ class Cil2MipsVisitor:
 
 	@visitor.when(ast.CILReturn)
 	def visit(self, node: ast.CILReturn):
-		pass
+		self.emit('jr $ra')
 
 	@visitor.when(ast.CILLoad)
 	def visit(self, node: ast.CILLoad):
-		pass
+		self.emit(f'li $a0 {node.value}')
 
 	@visitor.when(ast.CILLoadSelf)
 	def visit(self, node: ast.CILLoadSelf):

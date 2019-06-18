@@ -5,7 +5,7 @@ from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
-
+from .context import Context
 
 class Cool2CilVisitor:
     def __init__(self):
@@ -13,14 +13,18 @@ class Cool2CilVisitor:
         self.dottypes = []
         self.dotdata = []
         self.dotcode = []
+        self.globalvars = []
 
         # Handle current function
         self.current_function_name = ""
-        self.localvars = []
+        self.local_index = 0  # This solves the variable scopes
         self.instructions = []
         
-        # Holds the map (function, (variable, offset))
-        self.fmaps = {}
+
+        # Holds the maps: 
+        # * method name => offset in the class 
+        # * var name => offset in the function
+        self.context = Context()
 
         # Handle current class
         self.current_class_name = ""
@@ -31,9 +35,6 @@ class Cool2CilVisitor:
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
-
-        # Define activation records for functions
-        self.ars = []
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -64,9 +65,9 @@ class Cool2CilVisitor:
 
     def register_local(self, vinfo):
         vinfo.name = self.build_internal_vname(vinfo.name)
-        vinfo.vmholder = len(self.localvars)
+        vinfo.vmholder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
-        self.localvars.append(local_node)
+        self.globalvars.append(local_node)
         return vinfo
 
     def register_instruction(self, instruction_type, *args):
@@ -76,6 +77,15 @@ class Cool2CilVisitor:
 
     def register_func(self, fname):
         func = cil.CILFunction(fname, self.instructions)
+        
+        # Handle localvars
+        func.localvars = [self.globalvars[self.local_index:]]
+        self.local_index = len(self.globalvars)
+
+        # Update the context with the new names
+        for index, local in enumerate(func.localvars):
+            self.context.add_var(local.name)
+        
         self.dotcode.append(func)
         return func
 
@@ -99,7 +109,7 @@ class Cool2CilVisitor:
             attr_node = self.visit(attr)
             attr_node.index = index
             ctr.append(attr_node)
-        ctr.append(cil.CILReturn("self"))
+        ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
         ctr_name = build_method_name()
@@ -119,7 +129,7 @@ class Cool2CilVisitor:
         result = self.define_internal_local()
         self.register_instruction(cil.CILVCall, result, "Main", "Main_main")
         
-        self.register_instruction(cil.CILReturn, 0)
+        self.register_instruction(cil.CILReturn)
 
         self.current_function_name = "entry"
         self.register_func(self.current_function_name)
@@ -171,13 +181,13 @@ class Cool2CilVisitor:
 
         for index, func in enumerate(funcs):
             func_node = self.visit(func)
-            func_node.index = index
+            self.context.add_func(func_node.mname, index)
 
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
 
         ttype = self.register_type()
-        print(ttype)
+        # print(ttype)
         return ttype
 
     @visitor.when(ast.ClassMethod)
@@ -196,8 +206,8 @@ class Cool2CilVisitor:
         # Clean instruction list
         self.instructions.clear()
 
-        # First line of every function is *self* param
-        self.register_instruction(cil.CILParam, "self")
+        # First line of every function is *self* param. Self is param `0`
+        self.register_instruction(cil.CILParam, 0)
 
         # For each formal parameter the function has, visit the corresponding node
         for fparam in node.formal_params:
@@ -206,9 +216,7 @@ class Cool2CilVisitor:
         # Method body
         vinfo = self.visit(node.body)
 
-        # Since the body of a function is an expression,
-        # we return whatever returns the body
-        self.register_instruction(cil.CILReturn, vinfo)
+        self.register_instruction(cil.CILReturn)
 
         # Register the function in dotcode
         func = self.register_func(fname)
@@ -217,54 +225,48 @@ class Cool2CilVisitor:
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
         # Check we're not cleaning and losing ctor instructions!
-        self.attributes.append(node.name)  #
+        self.attributes.append(node.name)
 
         if node.init_expr:
-            vinfo = self.visit(node.init_expr)
+            name = self.visit(node.init_expr)
         else:  # Init with default of the type
-            vinfo = coolutils.default(node.attr_type)
-        return cil.CILSetAttrib("self", node.name, vinfo)
+            name = coolutils.default(node.attr_type)
+        return cil.CILSetAttrib("self", node.name, name)
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
-        vinfo = VariableInfo(node.name)
-        self.register_instruction(cil.CILParam, vinfo)
-        return vinfo
+        param_node = self.register_instruction(cil.CILParam, node.name)
+        return param_node
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
-        return VariableInfo(node.name)
+        return node.name
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
         """
-        Load to a variable the location of `self` in memory
+        Load to a variable the location of `self` in memory.
         This has a dedicated CIL node since we have to look in the stack
         for the first param, which is where `self` will be,
         the src is always the same.
         lw $a0 0($sp)
         """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0 0($sp)')
+        return dummy_node
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        """
-        li $a0 node.content
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoad, vinfo, node.content)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {node.content}')
+        return dummy_node
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String):
         """
         If the String is already in the .DATA section, we won't register it
-        again. We just return the name we gave to it which includes its offset.
+        again. We just return the name we gave it which includes its offset.
         We have to load the starting address of .DATA plus the offset of this
         string. But most of this is MIPS.
-        li $a0 string_address
+        la $a0 string_address
         """
         for index, data_node in enumerate(self.dotdata):
             if node.content == data_node.value:
@@ -273,17 +275,13 @@ class Cool2CilVisitor:
             new_node = self.register_data(node.content)
             data_name = new_node.vname
 
-        self.register_instruction(cil.CILLoad, vinfo, data_name)
-        return data_vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0 {data_name}')
+        return dummy_node
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        """
-        li $a0 (1 if node.content == True else 0)
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo, 1 if node.content == True else 0)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {1 if node.content == True else 0}')
+        return dummy_node
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):

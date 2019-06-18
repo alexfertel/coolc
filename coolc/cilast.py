@@ -38,7 +38,8 @@ class CILFunction(CILNode):
     def __init__(self, fname, instructions):
         self.fname = fname
         self.instructions = instructions
-
+        self.localvars = []
+        self.params = []
 
 class CILMethod(CILNode):
     def __init__(self, mname, fname):
@@ -47,13 +48,13 @@ class CILMethod(CILNode):
 
 
 class CILParam(CILNode):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
+    def __init__(self, value):
+        self.value = value
 
 
 class CILLocal(CILNode):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
+    def __init__(self, value):
+        self.value = value
 
 
 class CILInstruction(CILNode):
@@ -180,22 +181,22 @@ class CILVCall(CILInstruction):
 class CILArg(CILInstruction):
     def __init__(self, vinfo):
         self.vinfo = vinfo
-        self.index = -1
+        # self.index = -1
 
 
 class CILReturn(CILInstruction):
-    def __init__(self, value=None):
+    pass
+
+
+class CILDummy(CILInstruction):
+    def __init__(self, value):
         self.value = value
 
 
 class CILLoad(CILInstruction):
     def __init__(self, dest, value):
-        self.dest = dest
         self.value = value
 
-class CILLoadSelf(CILInstruction):
-    def __init__(self, dest):
-        self.dest = dest
 
 class CILLength(CILInstruction):
     def __init__(self, dest, str_addr):
