@@ -164,12 +164,12 @@ class TypeBuilderVisitor:
         while current is not None:
             current_type = self.__scope.get_type(current)
             for feat in current_type.features:
-                if type(feat) == 'ClassAttribute' and current_type.get_attr(feat.name) is None:
-                    current_type.features.append(ast.ClassAttribute(
+                if isinstance(feat, ast.ClassAttribute) and not node.is_attr_in_features(feat.name):
+                    node.features.insert(0, ast.ClassAttribute(
                         feat.name, feat.attr_type, feat.init_expr))
-                if type(feat) == 'ClassMethod' and current_type.get_method(feat.name) is None:
-                    current_type.features.append(
-                        ast.ClassMethod(feat.name, feat.formal_params, feat.return_type, feat.body))
+                if isinstance(feat, ast.ClassMethod) and not node.is_method_in_features(feat.name):
+                    node.features.insert(0,
+                                         ast.ClassMethod(feat.name, feat.formal_params, feat.return_type, feat.body))
             current = current_type.parent
 
         return unique

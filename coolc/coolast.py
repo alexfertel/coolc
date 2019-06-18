@@ -42,7 +42,7 @@ class Class(Node):
         super(Class, self).__init__()
         self.name = name
         self.parent = parent
-        self.features = features if features else []
+        self.features = list(features) if features else []
 
     def to_tuple(self):
         return tuple([
@@ -57,15 +57,27 @@ class Class(Node):
 
     def get_method(self, name: str, scope):
         for feature in self.features:
-            if type(feature) == ClassMethod and feature.name == name:
+            if isinstance(feature, ClassMethod) and feature.name == name:
                 return feature
         if self.parent != None:
             return scope.get_type(self.parent).get_method(name, scope)
         return None
 
+    def is_method_in_features(self, method_name):
+        for feature in self.features:
+            if isinstance(feature, ClassMethod) and feature.name == method_name:
+                return True
+        return False
+
+    def is_attr_in_features(self, method_name):
+        for feature in self.features:
+            if isinstance(feature, ClassAttribute) and feature.name == method_name:
+                return True
+        return False
+
     def get_attr(self, name: str, scope):
         for feature in self.features:
-            if type(feature) == ClassAttribute and feature.name == name:
+            if isinstance(feature, ClassAttribute) and feature.name == name:
                 return feature
         if self.parent != None:
             return scope.get_type(self.parent).get_attr(name, scope)
@@ -73,7 +85,7 @@ class Class(Node):
 
     def contain_method(self, name: str) -> bool:
         for feature in self.features:
-            if type(feature) == ClassMethod and feature.name == name:
+            if isinstance(feature, ClassMethod) and feature.name == name:
                 return True
         return False
 

@@ -55,12 +55,15 @@ class SemanticVisitor:
         self.__scope = self.__scope.create_child_scope()
         self.__current_class_name = node.name
         for feature in node.features:
-            if type(feature) == 'ClassMethod':
+            if isinstance(feature, ast.ClassAttribute):
+                valid &= self.visit(feature, errors)
+        for feature in node.features:
+            if isinstance(feature, ast.ClassMethod):
                 if node.parent is not None:
-                    acestor_method = node.parent.get_method(
+                    ancestor_method = self.__scope.get_type(node.parent).get_method(
                         feature.name, self.__scope)
                     if ancestor_method is not None:
-                        if len(ancestor_methods.formal_params) != len(feature.formal_params):
+                        if len(ancestor_method.formal_params) != len(feature.formal_params):
                             valid = False
                             errors.append(
                                 "Number of params isn't equal methode %s can't be overrided." % (feature.name))
@@ -88,7 +91,7 @@ class SemanticVisitor:
         self.__scope = self.__scope.create_child_scope()
         valid = True
 
-        if self.__scope.get_type(node.return_type) is None:
+        if node.return_type != 'SELF_TYPE' and self.__scope.get_type(node.return_type) is None:
             valid = False
             errors.append('Type <%s> doesn\'t exist' % (node.return_type))
 
@@ -110,7 +113,7 @@ class SemanticVisitor:
         valid = True if node.init_expr is None else self.visit(
             node.init_expr, errors)
 
-        if self.__scope.get_type(node.attr_type) is None:
+        if self.__scope.get_type(node.attr_type) is None and node.attr_type != 'SELF_TYPE':
             valid = False
             errors.append('Type <%s> doesn\'t exist' % (node.attr_type))
 
@@ -123,7 +126,7 @@ class SemanticVisitor:
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter, errors: list):
-        if self.__scope.get_type(node.param_type) is None:
+        if self.__scope.get_type(node.param_type) is None and node.param_type != 'SELF_TYPE':
             errors.append('Type <%s> doesn\'t exist.' % (node.param_type))
             return False
         self.__scope.define_variable(node.name, node.param_type)
