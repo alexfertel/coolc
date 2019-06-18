@@ -11,9 +11,6 @@ class CILProgram(CILNode):
 
 class CILType(CILNode):
     def __init__(self, name, attributes, methods):
-        """
-        The ctor of a type must be its first method
-        """
         self.name = name
         self.attributes = attributes
         self.methods = methods
@@ -38,7 +35,8 @@ class CILFunction(CILNode):
     def __init__(self, fname, instructions):
         self.fname = fname
         self.instructions = instructions
-
+        self.localvars = []
+        self.param_count = 0
 
 class CILMethod(CILNode):
     def __init__(self, mname, fname):
@@ -47,13 +45,13 @@ class CILMethod(CILNode):
 
 
 class CILParam(CILNode):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
+    def __init__(self, value):
+        self.value = value
 
 
 class CILLocal(CILNode):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
+    def __init__(self, value):
+        self.value = value
 
 
 class CILInstruction(CILNode):
@@ -110,7 +108,6 @@ class CILLessThanOrEqual(CILBoolean):
 
 class CILGetAttrib(CILInstruction):
     def __init__(self, dest, instance, attribute):
-        self.dest = dest
         self.instance = instance
         self.attribute = attribute
 
@@ -122,29 +119,13 @@ class CILSetAttrib(CILInstruction):
         self.src = src
 
 
-class CILGetIndex(CILGetAttrib):
-    pass
-
-
-class CILSetIndex(CILSetAttrib):
-    pass
-
-
 class CILAllocate(CILInstruction):
     def __init__(self, dest, ttype):
-        self.dest = dest
         self.ttype = ttype
-
-
-class CILArray(CILInstruction):
-    def __init__(self, dest, src):
-        self.dest = dest
-        self.src = src
 
 
 class CILTypeOf(CILInstruction):
     def __init__(self, dest, var):
-        self.dest = dest
         self.var = var
 
 
@@ -165,36 +146,33 @@ class CILGotoIf(CILInstruction):
 
 
 class CILCall(CILInstruction):
-    def __init__(self, dest, func):
-        self.dest = dest
+    def __init__(self, func):
         self.func = func
 
 
 class CILVCall(CILInstruction):
-    def __init__(self, dest, ttype, func):
-        self.dest = dest
+    def __init__(self, ttype, func):
         self.ttype = ttype
         self.func = func
 
 
 class CILArg(CILInstruction):
-    def __init__(self, vinfo):
-        self.vinfo = vinfo
+    pass
 
 
 class CILReturn(CILInstruction):
-    def __init__(self, value=None):
+    pass
+
+
+class CILDummy(CILInstruction):
+    def __init__(self, value):
         self.value = value
 
 
 class CILLoad(CILInstruction):
     def __init__(self, dest, value):
-        self.dest = dest
         self.value = value
 
-class CILLoadSelf(CILInstruction):
-    def __init__(self, dest):
-        self.dest = dest
 
 class CILLength(CILInstruction):
     def __init__(self, dest, str_addr):
@@ -221,19 +199,3 @@ class CILSubstring(CILInstruction):
         self.dest = dest
         self.str_addr = str_addr
         self.pos = pos
-
-
-class CILToStr(CILInstruction):
-    def __init__(self, dest, ivalue):
-        self.dest = dest
-        self.ivalue = ivalue
-
-
-class CILRead(CILInstruction):
-    def __init__(self, dest):
-        self.dest = dest
-
-
-class CILPrint(CILInstruction):
-    def __init__(self, str_addr):
-        self.str_addr = str_addr

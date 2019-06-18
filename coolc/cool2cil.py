@@ -5,7 +5,7 @@ from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
-
+from .context import Context
 
 class Cool2CilVisitor:
     def __init__(self):
@@ -13,11 +13,17 @@ class Cool2CilVisitor:
         self.dottypes = []
         self.dotdata = []
         self.dotcode = []
+        self.globalvars = []
 
         # Handle current function
         self.current_function_name = ""
-        self.localvars = []
+        self.local_index = 0  # This solves the variable scopes
         self.instructions = []
+        
+        # Holds the maps: 
+        # * method name => offset in the class 
+        # * var name => offset in the function
+        self.context = Context()
 
         # Handle current class
         self.current_class_name = ""
@@ -28,9 +34,6 @@ class Cool2CilVisitor:
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
-
-        # Define activation records for functions
-        self.ars = []
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -61,9 +64,9 @@ class Cool2CilVisitor:
 
     def register_local(self, vinfo):
         vinfo.name = self.build_internal_vname(vinfo.name)
-        vinfo.vmholder = len(self.localvars)
+        vinfo.vmholder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
-        self.localvars.append(local_node)
+        self.globalvars.append(local_node)
         return vinfo
 
     def register_instruction(self, instruction_type, *args):
@@ -73,12 +76,23 @@ class Cool2CilVisitor:
 
     def register_func(self, fname):
         func = cil.CILFunction(fname, self.instructions)
+        
+        # Handle localvars
+        func.localvars = [self.globalvars[self.local_index:]]
+        self.local_index = len(self.globalvars)
+
+        # Update the context with the new names
+        for index, local in enumerate(func.localvars):
+            self.context.add_var(local.name)
+        
+        func.params = self.params.copy()
+
         self.dotcode.append(func)
         return func
 
     def register_type(self):
-        ttype = cil.CILType(self.current_class_name, self.attributes,
-                            self.methods)
+        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
+        self.context.add_tag(self.current_class_name)
         self.dottypes.append(ttype)
         return ttype
 
@@ -91,32 +105,27 @@ class Cool2CilVisitor:
     def build_ctr(self):
         # Build constructor
         ctr = []
-        ctr.append(cil.CILParam("self"))
-        for index, attr in enumerate(attrs):
+        for index, attr in enumerate(self.attributes):
             attr_node = self.visit(attr)
-            attr_node.index = index
+            self.context.add_attribute(attr_node, index)
             ctr.append(attr_node)
-        ctr.append(cil.CILReturn("self"))
+        ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
         ctr_name = build_method_name()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
-        # Add constructor as the first element of the methods
-        self.methods.append(ctr_func)
+
+        mname = self.build_method_name()
+        self.methods.append(cil.CILMethod(mname, ctr_name))
 
     def build_entry(self):
-        main_name = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, main_name, "Main")
-        self.register_instruction(cil.CILArg, main_name)
-        self.register_instruction(cil.CILCall, main_name, f'{node.new_type}_ctr')
-        
-        self.register_instruction(cil.CILArg, main_name)
-
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, "Main", "Main_main")
-        
-        self.register_instruction(cil.CILReturn, 0)
+        self.register_instruction(cil.CILAllocate, "Main")
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILCall, f'Main_ctr')        
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILVCall, "Main", "Main_main")
+        self.register_instruction(cil.CILReturn)
 
         self.current_function_name = "entry"
         self.register_func(self.current_function_name)
@@ -168,13 +177,13 @@ class Cool2CilVisitor:
 
         for index, func in enumerate(funcs):
             func_node = self.visit(func)
-            func_node.index = index
+            self.context.add_func(func_node.mname, index)
 
         # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
         # recurison depth exceeded, of course, does C# detect this at compile time?
 
         ttype = self.register_type()
-        print(ttype)
+        # print(ttype)
         return ttype
 
     @visitor.when(ast.ClassMethod)
@@ -192,76 +201,61 @@ class Cool2CilVisitor:
         # Function addition
         # Clean instruction list
         self.instructions.clear()
-
-        # First line of every function is *self* param
-        self.register_instruction(cil.CILParam, "self")
-
-        # For each formal parameter the function has, visit the corresponding node
-        for fparam in node.formal_params:
-            self.visit(fparam)
+        self.params.clear()
 
         # Method body
-        vinfo = self.visit(node.body)
-
-        # Since the body of a function is an expression,
-        # we return whatever returns the body
-        self.register_instruction(cil.CILReturn, vinfo)
+        self.visit(node.body)
 
         # Register the function in dotcode
         func = self.register_func(fname)
+        func.param_count = len(node.formal_params)        
         return func
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
         # Check we're not cleaning and losing ctor instructions!
-        self.attributes.append(node.name)  #
+        self.attributes.append(node.name)
 
         if node.init_expr:
-            vinfo = self.visit(node.init_expr)
+            name = self.visit(node.init_expr)
         else:  # Init with default of the type
-            vinfo = coolutils.default(node.attr_type)
-        return cil.CILSetAttrib("self", node.name, vinfo)
+            name = coolutils.default(node.attr_type)
+        return cil.CILSetAttrib("self", node.name, name)
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
-        vinfo = VariableInfo(node.name)
-        self.register_instruction(cil.CILParam, vinfo)
-        return vinfo
+        param_node = self.register_instruction(cil.CILParam, node.name)
+        return param_node
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
-        return VariableInfo(node.name)
+        return node.name
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
         """
-        Load to a variable the location of `self` in memory
+        Load to a variable the location of `self` in memory.
         This has a dedicated CIL node since we have to look in the stack
         for the first param, which is where `self` will be,
         the src is always the same.
         lw $a0 0($sp)
         """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0 0($sp)')
+        return dummy_node
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        """
-        li $a0 node.content
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoad, vinfo, node.content)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {node.content}')
+        return dummy_node
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String):
         """
         If the String is already in the .DATA section, we won't register it
-        again. We just return the name we gave to it which includes its offset.
+        again. We just return the name we gave it, which includes its offset.
         We have to load the starting address of .DATA plus the offset of this
         string. But most of this is MIPS.
-        li $a0 string_address
+        la $a0 string_address
         """
         for index, data_node in enumerate(self.dotdata):
             if node.content == data_node.value:
@@ -270,24 +264,19 @@ class Cool2CilVisitor:
             new_node = self.register_data(node.content)
             data_name = new_node.vname
 
-        self.register_instruction(cil.CILLoad, vinfo, data_name)
-        return data_vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0 {data_name}')
+        return dummy_node
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        """
-        li $a0 (1 if node.content == True else 0)
-        """
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILLoadSelf, vinfo, 1 if node.content == True else 0)
-        return vinfo
+        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0 {1 if node.content == True else 0}')
+        return dummy_node
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
-        vinfo = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, vinfo, node.new_type)
-        self.register_instruction(cil.CILArg, "self")
-        self.register_instruction(cil.CILCall, vinfo, f'{node.new_type}_ctr')
+        self.register_instruction(cil.CILAllocate, node.new_type)
+        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILCall, f'{node.new_type}_ctr')
         return vinfo
 
     # TODO: Check this!
@@ -311,7 +300,20 @@ class Cool2CilVisitor:
         In this node we don't have to generate a LOCAL CIL node,
         because to make this kind of assignment(iii) the identifier
         should be declared from beforehand.
+        
+		First, check if the source is in `localvars`,
+		if not, check if it's in the function arguments.
+
+		Repeat with destination.        
         """
+        if source in self.globalvars[self.local_index:]:
+            offset_src = self.context.lname[source]
+            self.register_instruction(cil.CILDummy, f'lw $t0 {offset_src * -4}')
+        else:
+            offset_src = self.context.lname[source]
+            self.register_instruction(cil.CILDummy, f'lw $a0 {offset_src * 4}')
+
+
         source = self.visit(node.expr)
         self.register_instruction(cil.CILAssign, node.identifier, source)
         return node.identifier
@@ -325,42 +327,34 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.DynamicDispatch)
     def visit(self, node: ast.DynamicDispatch):
-        instance = self.visit(
-            node.instance)  # This is going to be param `self`
+		# Save current frame pointer
+        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
+        
+		# Generate code for each of the params and push them
+        args = []
+        for arg in reversed(node.arguments):
+            vinfo = self.visit(arg)
+            arg_node = self.register_instruction(cil.CILArg, vinfo)
+    
+        instance = self.visit(node.instance)  # This is going to be param `self`
         self.register_instruction(cil.CILArg, instance)
 
-        args = []  # Remaining arguments of the method
-        for arg in node.arguments:
-            vinfo = self.visit(arg)
-            self.register_instruction(cil.CILArg, vinfo)
-
         # Here we have to compute the type, which is done using TYPEOF
-        ttype = self.define_internal_local()
-        self.register_instruction(cil.CILTypeOf, ttype, instance)
-
-        # All function calls have a result
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, ttype, node.method)
-
-        return result
+        self.register_instruction(cil.CILTypeOf, instance)
+        self.register_instruction(cil.CILVCall, None, node.method)
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        instance = self.visit(
-            node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg, instance)
+		# Save current frame pointer
+        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
 
-        args = []  # Remaining arguments of the method
-        for arg in node.arguments:
+		# Generate code for each of the params and push them
+        args = []
+        for arg in reversed(node.arguments):
             vinfo = self.visit(arg)
-            self.register_instruction(cil.CILArg, vinfo)
+            arg_node = self.register_instruction(cil.CILArg, vinfo)
 
-        # All function calls have a result
-        result = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, result, node.dispatch_type,
-                                  node.method)
-
-        return result
+        self.register_instruction(cil.CILVCall, node.dispatch_type, node.method)
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
