@@ -159,6 +159,19 @@ class TypeBuilderVisitor:
         for feature in node.features:
             unique &= self.visit(feature)
 
+        # Get Methods and vars
+        current = node.parent
+        while current is not None:
+            current_type = self.__scope.get_type(current)
+            for feat in current_type.features:
+                if type(feat) == 'ClassAttribute' and current_type.get_attr(feat.name) is None:
+                    current_type.features.append(ast.ClassAttribute(
+                        feat.name, feat.attr_type, feat.init_expr))
+                if type(feat) == 'ClassMethod' and current_type.get_method(feat.name) is None:
+                    current_type.features.append(
+                        ast.ClassMethod(feat.name, feat.formal_params, feat.return_type, feat.body))
+            current = current_type.parent
+
         return unique
 
     @visitor.when(ast.ClassMethod)
