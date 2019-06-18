@@ -10,8 +10,6 @@ Main: .word 0
 .text
 
 # Type
-
-# .code:
 Main_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
