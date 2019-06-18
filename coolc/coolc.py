@@ -30,8 +30,8 @@ class Compiler:
         # Check that the program has the *.cl extension
         if not str(program).endswith(".cl"):
             error = "Cool program files must end with a `.cl` extension.\r\n"
-            print(coolutils.error_template())
-            print(error)
+            # print(coolutils.error_template())
+            # print(error)
             exit(1)
 
 
@@ -50,8 +50,8 @@ class Compiler:
         except (IOError, FileNotFoundError):
             error = f"(0,0) - CompilerError: File `{program}` was not found. Are you sure the file exists?"
             # print(f'Error! File "{program}" was not found. Are you sure the file exists?')
-            print(coolutils.error_template())
-            print(error)
+            # print(coolutils.error_template())
+            # print(error)
         except Exception:
             print("An unexpected error occurred!")
 
@@ -81,7 +81,7 @@ class Compiler:
             step()
 
         with open(self.output, 'w') as fd:
-            print(self.result)
+            # print(self.result)
             fd.write('\n'.join(self.result))
 
     def lexing(self):
@@ -90,9 +90,10 @@ class Compiler:
         self.lexer.build()
         self.lexer.input(self.cool_program_code)
         for token in self.lexer:
-            print(token)
+            pass
+            # print(token)
         if self.lexer.error_list:
-            print(coolutils.error_template())
+            # print(coolutils.error_template())
             for error in self.lexer.error_list:
                 print(error)
             exit(1)
@@ -105,7 +106,7 @@ class Compiler:
         self.parser.build()
         self.ast = self.parser.parse(self.cool_program_code)
         if self.parser.error_list:
-            print(coolutils.error_template())
+            # print(coolutils.error_template())
             for error in self.parser.error_list:
                 print(error)
             exit(1)
@@ -120,7 +121,7 @@ class Compiler:
         errors = type_collector.get_errors()
 
         if len(errors) > 0:
-            print("Something went wrong when discovering types!")
+            # print("Something went wrong when discovering types!")
             for error in errors:
                 print(error)
             exit(1)
@@ -133,7 +134,7 @@ class Compiler:
         errors = type_builder.get_errors()
 
         if len(errors) > 0:
-            print("Something went wrong when building types!")
+            # print("Something went wrong when building types!")
             for error in errors:
                 print(error)
             exit(1)

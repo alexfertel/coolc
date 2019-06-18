@@ -6,6 +6,7 @@ from . import visitor
 from .scope import VariableInfo
 from .coolutils import default
 from .context import Context
+from pprint import pprint
 
 class Cool2CilVisitor:
     def __init__(self):
@@ -67,6 +68,8 @@ class Cool2CilVisitor:
         vinfo.vmholder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
         self.globalvars.append(local_node)
+        print("global")
+        print(self.globalvars)
         return vinfo
 
     def register_instruction(self, instruction_type, *args):
@@ -75,6 +78,7 @@ class Cool2CilVisitor:
         return instruction
 
     def register_func(self, fname):
+        print("Register Function")
         func = cil.CILFunction(fname, self.instructions)
         
         # Handle localvars
@@ -83,7 +87,7 @@ class Cool2CilVisitor:
 
         # Update the context with the new names
         for index, local in enumerate(func.localvars):
-            self.context.add_var(local.value, index)
+            self.context.add_var(local.value.name, index)
         
         self.dotcode.append(func)
         return func
@@ -100,22 +104,21 @@ class Cool2CilVisitor:
         self.dotdata.append(data_node)
         return data_node
 
-    def build_ctr(self):
+    def build_ctr(self, attrs):
         # Build constructor
         ctr = []
-        for index, attr in enumerate(self.attributes):
+        for index, attr in enumerate(attrs):
             attr_node = self.visit(attr)
             self.context.add_attribute(attr_node, index)
             ctr.append(attr_node)
         ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
-        ctr_name = self.build_internal_fname()
+        ctr_name = self.build_method_name()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
 
-        mname = self.build_method_name()
-        self.methods.append(cil.CILMethod(mname, ctr_name))
+        self.methods.append(cil.CILMethod(ctr_name))
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
@@ -171,8 +174,9 @@ class Cool2CilVisitor:
                 attrs.append(feature)
         
         # Build constructor
-        self.build_ctr()
+        self.build_ctr(attrs)
 
+        # pprint(funcs)
         for index, func in enumerate(funcs):
             func_node = self.visit(func)
             self.context.add_func(func_node.fname, index)
@@ -194,17 +198,18 @@ class Cool2CilVisitor:
         fname = self.build_internal_fname()
 
         # Method addition
-        self.methods.append(cil.CILMethod(mname, fname))
+        self.methods.append(cil.CILMethod(mname))
 
         # Function addition
         # Clean instruction list
         self.instructions.clear()
 
         # Method body
-        self.visit(node.body)
+        return_val = self.visit(node.body)
+        print(return_val)
 
         # Register the function in dotcode
-        func = self.register_func(fname)
+        func = self.register_func(mname)
         func.param_count = len(node.formal_params)        
         return func
 
@@ -242,6 +247,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
+        print('Integer')
         dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
         return dummy_node
 
@@ -312,11 +318,12 @@ class Cool2CilVisitor:
 
 
         source = self.visit(node.expr)
-        self.register_instruction(cil.CILAssign, node.identifier, source)
-        return node.identifier
+        self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+        return source
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
+        print('Block')
         vinfo = 0
         for expr in node.expr_list:
             vinfo = self.visit(expr)
@@ -355,32 +362,23 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
-        """
-        <let.locals>
-
-        ...
-        <let.body>
-        """
+        print('Let')
         for declaration in node.declaration_list:
             self.visit(declaration)
 
-        let_value = self.define_internal_local()
         vinfo = self.visit(node.body)
-        self.register_instruction(cil.CILAssign, let_value, vinfo)
-        return let_value
+        print(vinfo)
+
+        return vinfo
 
     @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration):
-        """
-        LOCAL identifier
-        <expression.locals>
-
-        identifier = <expression.body>
-        """
+        print('Declaration')
         identifier = self.register_local(node.identifier)
         vinfo = self.visit(node.expression) if node.expression else default(
             node.ttype)
-        self.register_instruction(cil.CILAssign, identifier, vinfo)
+
+        self.register_instruction(cil.CILAssign, identifier.name, vinfo)
         return identifier
 
     @visitor.when(ast.If)

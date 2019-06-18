@@ -162,15 +162,15 @@ class Cil2MipsVisitor:
 
     def popa(self, excep = []):
         dic = reg.__dict__
-        keys = dic.keys()
-        keys.reverse()
+        keys = list(dic.keys())
+        keys = list(reversed(keys))
         for key in keys:
             if not str(key).startswith('_') and not excep.__contains__(key):
                 self.pop(dic[key])
 
     def emit_data_rec(self, type, data, label = None):
-        datas = ', '.join(data)
-        to_emit = f'.{type} {datas}'
+        datas = ', '.join(map(lambda x: str(x), data))
+        to_emit = f'{type} {datas}'
         if label:
             to_emit = label + ': ' + to_emit
         self.emit_data(to_emit)
@@ -234,18 +234,24 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILProgram)
     def visit(self, node: ast.CILProgram):
-
-        # Init son util funtions
+        self.emit_code("\n# Program")
+        # Init some utility functions
         self.init_utils()
 
         # Visit every data node in Program
+        self.emit_code("\n# .data:")
+        print(node.dotdata)
         for datanode in node.dotdata:
             self.visit(datanode)
 
+        self.emit_code("\n# .types:")
+        print(node.dottypes)
         # Visit every type node in Program
         for typenode in node.dottypes:
             self.visit(typenode)
 
+        self.emit_code("\n# .code:")
+        print(node.dotcode)
         # Visit every code node in Program
         for codenode in node.dotcode:
             self.visit(codenode)
@@ -256,15 +262,16 @@ class Cil2MipsVisitor:
         Object layout:
         - Class Tag
         - Object Size
+        - Parent ptr
         - Function 1
         - Function 2
         ...
         """
+        self.emit_code("\n# Type")
         self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
-
         # Generate virtual table for this type
         for method in node.methods:
-            self.emit_data_rec(datatype.word, [method.fname])
+            self.emit_data_rec(datatype.word, [method.mname])
 
     @visitor.when(ast.CILData)
     def visit(self, node: ast.CILData):
@@ -272,15 +279,17 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILFunction)
     def visit(self, node: ast.CILFunction):
+        print(node.fname + " Function")
         self.emit_label(node.fname)
         self.emit_instruction(op.move, reg.fp, reg.sp)
         self.push(reg.ra)
 
-        self.pusha(['a0'])
+        # self.pusha(['a0'])
 
-        self.visit(node.instructions)
+        for instruction in node.instructions:
+            self.visit(instruction)
 
-        self.popa(['a0'])
+        # self.popa(['a0'])
 
         computed = self.off_reg(1, reg.sp)
         self.emit_instruction(op.lw, reg.ra, computed)
@@ -294,7 +303,13 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILMethod)
     def visit(self, node: ast.CILMethod):
+        self.emit_code("\n# Method")        
         self.emit_data(f'.word {node.name}')
+
+    @visitor.when(ast.CILDummy)
+    def visit(self, node: ast.CILDummy):
+        self.emit_code("\n# Dummy")
+        self.emit_code(node.value)
 
     # @visitor.when(ast.CILParam)
     # def visit(self, node: ast.CILParam):
@@ -306,22 +321,32 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILAssign)
     def visit(self, node: ast.CILAssign):
-        self.emit(f'move {node.dest} {node.source}')
+        self.emit_code("\n# Assign")
+        # print(list(self.context.lmap.keys()))
+        dest = self.context.lmap[node.dest]
+        dest_offset = self.off_reg(-dest, reg.sp)
+        self.emit_instruction(op.sw, reg.a0, dest_offset)
+
+        # self.emit_code(f'move {dest} {node.source}')
 
     @visitor.when(ast.CILPlus)
     def visit(self, node: ast.CILPlus):
+        self.emit_code("\n# Plus")
         self.infix_func(node, op.add)
         
     @visitor.when(ast.CILMinus)
     def visit(self, node: ast.CILMinus):
+        self.emit_code("\n# Minus")
         self.infix_func(node, op.sub)
 
     @visitor.when(ast.CILStar)
     def visit(self, node: ast.CILStar):
+        self.emit_code("\n# Star")
         self.infix_func(node, op.mul)
 
     @visitor.when(ast.CILDiv)
     def visit(self, node: ast.CILDiv):
+        self.emit_code("\n# Div")
         self.infix_func(node, op.div)
 
     @visitor.when(ast.CILEqual)
@@ -362,6 +387,8 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILSetAttrib)
     def visit(self, node: ast.CILSetAttrib):
+        self.emit_code("\n# SetAttrib")
+
         # Attribute offset
         # loff = self.context.lmap[node.attribute]
         
@@ -378,14 +405,16 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILAllocate)
     def visit(self, node: ast.CILAllocate):
+        self.emit_code("\n# Allocate")
         self.emit_instruction(op.la, reg.a0, node.ttype)
-        computed = self.off_reg(0, reg.sp)
+        computed = self.off_reg(1, reg.a0)
         self.emit_instruction(op.lw, reg.a0, computed)
         self.emit_instruction(op.li, reg.v0, 9)
         self.emit_instruction(op.syscall)
 
     @visitor.when(ast.CILTypeOf)
     def visit(self, node: ast.CILTypeOf):
+        self.emit_code("\n# TypeOf")
         self.emit_instruction(op.la, reg.a0, node.var)
 
     @visitor.when(ast.CILLabel)
@@ -394,10 +423,12 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILCall)
     def visit(self, node: ast.CILCall):
+        self.emit_code("\n# Call")
         self.emit_instruction(op.jal, node.func)
 
     @visitor.when(ast.CILVCall)
     def visit(self, node: ast.CILVCall):
+        self.emit_code("\n# VCall")
         if node.ttype:
             self.emit_instruction(op.la, reg.a0, node.ttype)
 
@@ -408,11 +439,13 @@ class Cil2MipsVisitor:
         
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):
+        self.emit_code("\n# Arg")
         self.push(reg.a0)
 
     @visitor.when(ast.CILReturn)
     def visit(self, node: ast.CILReturn):
-        self.emit_instruction(op.jr, reg.ra)
+        self.emit_code("\n# Return")
+self.emit_instruction(op.jr, reg.ra)
 
     # @visitor.when(ast.CILLoad)
     # def visit(self, node: ast.CILLoad):

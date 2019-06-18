@@ -43,6 +43,7 @@ class Class(Node):
         self.name = name
         self.parent = parent
         self.features = list(features) if features else []
+        self.inherited = []
 
     def to_tuple(self):
         return tuple([

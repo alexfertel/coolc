@@ -1,21 +1,8 @@
-class Main inherits IO {
-
-    main () : Object {
-        {
-            let x:A <- new B in out_string( x.f().m() );
-            let x:A <- new A in out_string( x.f().m() );
-        }
-        
-    };
+class Silly {
+copy() : SELF_TYPE { self };
 };
-
-class A{
-    a: Int <- 2;
-    m () : String { "A" };
-    f () : SELF_TYPE { new SELF_TYPE };
-};
-
-class B inherits A{
-    m () : String { "B" };
-    c () : Int {a};
+class Sally inherits Silly { };
+class Main {
+x : Sally <- (new Sally).copy();
+main() : Sally { x };
 };

@@ -14,7 +14,7 @@ class SemanticVisitor:
         self.__current_class_name = ""
 
     def __real_type(self, var) -> str:
-        return var if var != 'SELF_TYPE' else self.__current_class_name
+        return var
 
     def __sub_type(self, klass: str, ancestor_class: str) -> bool:
         return self.__scope.get_type(klass).is_ancestor(ancestor_class, self.__scope)
