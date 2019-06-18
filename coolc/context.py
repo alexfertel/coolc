@@ -13,7 +13,8 @@ class Context:
         self.lmap[lname] = offset
 
     def add_attribute(self, aname, offset):
-        self.amap[aname] = offset
+        # Check this is (+ 1) and not (+ 4)
+        self.amap[aname] = offset + 1
 
     def add_tag(self, tname):
         self.tags[tname] = self.tag_count

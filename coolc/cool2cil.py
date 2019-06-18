@@ -105,12 +105,9 @@ class Cool2CilVisitor:
     def build_ctr(self):
         # Build constructor
         ctr = []
-        ctr.append(cil.CILParam("self"))
-        for index, attr in enumerate(attrs):
+        for index, attr in enumerate(self.attributes):
             attr_node = self.visit(attr)
-            
-            
-            attr_node.index = index
+            self.context.add_attribute(attr_node, index)
             ctr.append(attr_node)
         ctr.append(cil.CILReturn())
 
@@ -118,8 +115,9 @@ class Cool2CilVisitor:
         ctr_name = build_method_name()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
-        # Add constructor as the first element of the methods
-        self.methods.append(ctr_func)
+
+        mname = self.build_method_name()
+        self.methods.append(cil.CILMethod(mname, ctr_name))
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
@@ -302,7 +300,20 @@ class Cool2CilVisitor:
         In this node we don't have to generate a LOCAL CIL node,
         because to make this kind of assignment(iii) the identifier
         should be declared from beforehand.
+        
+		First, check if the source is in `localvars`,
+		if not, check if it's in the function arguments.
+
+		Repeat with destination.        
         """
+        if source in self.globalvars[self.local_index:]:
+            offset_src = self.context.lname[source]
+            self.register_instruction(cil.CILDummy, f'lw $t0 {offset_src * -4}')
+        else:
+            offset_src = self.context.lname[source]
+            self.register_instruction(cil.CILDummy, f'lw $a0 {offset_src * 4}')
+
+
         source = self.visit(node.expr)
         self.register_instruction(cil.CILAssign, node.identifier, source)
         return node.identifier
