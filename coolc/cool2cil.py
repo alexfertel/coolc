@@ -179,9 +179,9 @@ class Cool2CilVisitor:
         attrs, funcs = [], []
         for feature in node.features:
             if isinstance(feature, ast.ClassMethod):
-                print("!!!")
-                print(self.current_class_name)
-                print(feature)
+                # print("!!!")
+                # print(self.current_class_name)
+                # print(feature)
                 funcs.append(feature)
             else:
                 attrs.append(feature)
@@ -191,7 +191,7 @@ class Cool2CilVisitor:
 
         # pprint(funcs)
         for index, func in enumerate(funcs):
-            # print(func)
+            print(func)
             func_node = self.visit(func)
             self.context.add_func(func_node.fname, index)
 
@@ -256,7 +256,7 @@ class Cool2CilVisitor:
         the src is always the same.
         lw $a0, 0($sp)
         """
-        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0, 0($sp)')
+        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0, 4($sp)')
         return dummy_node
 
     @visitor.when(ast.Integer)
@@ -296,7 +296,6 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILCall, f'{node.new_type}_ctr')
         return vinfo
 
-    # TODO: Check this!
     @visitor.when(ast.IsVoid)
     def visit(self, node: ast.IsVoid):
         dest_vinfo = self.define_internal_local()

@@ -270,6 +270,8 @@ class Cil2MipsVisitor:
         self.emit_code("\n# Type")
         self.emit_data_rec(datatype.word, [self.context.tags[node.name]], label=node.name)
         # Generate virtual table for this type
+        print(node.name)
+        print(node.methods)
         for method in node.methods:
             self.emit_data_rec(datatype.word, [method.mname])
 
