@@ -62,6 +62,21 @@ class TypeBuilderVisitor:
                                                                     return_type="SELF_TYPE",
                                                                     body=None))
         # Abort method: halts the program.
+        self.__scope.get_type('IO').features.append(ast.ClassMethod(name="abort",
+                                                                    formal_params=[],
+                                                                    return_type="Object",
+                                                                    body=None))
+        # Copy method: copies the object.
+        self.__scope.get_type('IO').features.append(ast.ClassMethod(name="copy",
+                                                                    formal_params=[],
+                                                                    return_type="SELF_TYPE",
+                                                                    body=None))
+        # type_name method: returns a string representation of the class name.
+        self.__scope.get_type('IO').features.append(ast.ClassMethod(name="type_name",
+                                                                    formal_params=[],
+                                                                    return_type="String",
+                                                                    body=None))
+        # Abort method: halts the program.
         self.__scope.get_type('IO').inherited.append(ast.ClassMethod(name="abort",
                                                                      formal_params=[],
                                                                      return_type="Object",
@@ -86,6 +101,21 @@ class TypeBuilderVisitor:
         self.__scope.get_type('Int').features.append(ast.ClassAttribute(
             name="_val", attr_type="unboxed_int", init_expr=None))
         # Abort method: halts the program.
+        self.__scope.get_type('Int').features.append(ast.ClassMethod(name="abort",
+                                                                     formal_params=[],
+                                                                     return_type="Object",
+                                                                     body=None))
+        # Copy method: copies the object.
+        self.__scope.get_type('Int').features.append(ast.ClassMethod(name="copy",
+                                                                     formal_params=[],
+                                                                     return_type="SELF_TYPE",
+                                                                     body=None))
+        # type_name method: returns a string representation of the class name.
+        self.__scope.get_type('Int').features.append(ast.ClassMethod(name="type_name",
+                                                                     formal_params=[],
+                                                                     return_type="String",
+                                                                     body=None))
+        # Abort method: halts the program.
         self.__scope.get_type('Int').inherited.append(ast.ClassMethod(name="abort",
                                                                       formal_params=[],
                                                                       return_type="Object",
@@ -109,6 +139,21 @@ class TypeBuilderVisitor:
         # _val attribute: boolean un-boxed value
         self.__scope.get_type('Bool').features.append(ast.ClassAttribute(
             name="_val", attr_type="unboxed_boolean", init_expr=None))
+        # Abort method: halts the program.
+        self.__scope.get_type('Bool').features.append(ast.ClassMethod(name="abort",
+                                                                      formal_params=[],
+                                                                      return_type="Object",
+                                                                      body=None))
+        # Copy method: copies the object.
+        self.__scope.get_type('Bool').features.append(ast.ClassMethod(name="copy",
+                                                                      formal_params=[],
+                                                                      return_type="SELF_TYPE",
+                                                                      body=None))
+        # type_name method: returns a string representation of the class name.
+        self.__scope.get_type('Bool').features.append(ast.ClassMethod(name="type_name",
+                                                                      formal_params=[],
+                                                                      return_type="String",
+                                                                      body=None))
         # Abort method: halts the program.
         self.__scope.get_type('Bool').inherited.append(ast.ClassMethod(name="abort",
                                                                        formal_params=[],
@@ -150,6 +195,21 @@ class TypeBuilderVisitor:
                                                                         formal_params=[ast.FormalParameter(
                                                                             'arg1', 'Int'), ast.FormalParameter('arg2', 'Int')],
                                                                         return_type='String',
+                                                                        body=None))
+        # Abort method: halts the program.
+        self.__scope.get_type('String').features.append(ast.ClassMethod(name="abort",
+                                                                        formal_params=[],
+                                                                        return_type="Object",
+                                                                        body=None))
+        # Copy method: copies the object.
+        self.__scope.get_type('String').features.append(ast.ClassMethod(name="copy",
+                                                                        formal_params=[],
+                                                                        return_type="SELF_TYPE",
+                                                                        body=None))
+        # type_name method: returns a string representation of the class name.
+        self.__scope.get_type('String').features.append(ast.ClassMethod(name="type_name",
+                                                                        formal_params=[],
+                                                                        return_type="String",
                                                                         body=None))
         # Abort method: halts the program.
         self.__scope.get_type('String').inherited.append(ast.ClassMethod(name="abort",
