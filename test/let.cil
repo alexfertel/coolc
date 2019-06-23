@@ -1,0 +1,184 @@
+.TYPES
+
+type Object {
+    Object_ctr: f0
+    Object_abort: Object_abort
+    Object_copy: Object_copy
+    Object_type_name: Object_type_name
+
+}
+
+type IO {
+    IO_ctr: f1
+    IO_in_int: IO_in_int
+    IO_in_string: IO_in_string
+    IO_out_int: IO_out_int
+    IO_out_string: IO_out_string
+    IO_abort: Object_abort
+    IO_copy: Object_copy
+    IO_type_name: Object_type_name
+
+}
+
+type Int {
+    Int_ctr: f2
+    Int_abort: Object_abort
+    Int_copy: Object_copy
+    Int_type_name: Object_type_name
+
+}
+
+type Bool {
+    Bool_ctr: f3
+    Bool_abort: Object_abort
+    Bool_copy: Object_copy
+    Bool_type_name: Object_type_name
+
+}
+
+type String {
+    String_ctr: f4
+    String_length: String_length
+    String_concat: String_concat
+    String_substr: String_substr
+    String_abort: Object_abort
+    String_copy: Object_copy
+    String_type_name: Object_type_name
+
+}
+
+type Main {
+    Main_ctr: f5
+    Main_main: Main_main
+
+}
+
+.DATA
+
+.CODE
+
+function Object_ctr {
+}
+
+function IO_ctr {
+}
+
+function IO_abort {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function IO_copy {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function IO_type_name {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Int_ctr {
+self._val = void
+}
+
+function Int_abort {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Int_copy {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Int_type_name {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Bool_ctr {
+self._val = void
+}
+
+function Bool_abort {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Bool_copy {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Bool_type_name {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function String_ctr {
+self._val = void
+self._val = void
+}
+
+function String_abort {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function String_copy {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function String_type_name {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}
+
+function Main_ctr {
+}
+
+function entry {
+    ALLOCATE Main
+    ARG self
+    CALL Main_ctr
+    ARG self
+    VCALL Main Main_main
+}

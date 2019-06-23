@@ -156,11 +156,13 @@ class CILVCall(CILInstruction):
 
 
 class CILArg(CILInstruction):
-    pass
+    def __init__(self, name):
+        self.name = name
 
 
-class CILReturn(CILInstruction):
-    pass
+# class CILReturn(CILInstruction):
+#     def __init__(self, value):
+#         self.value = value
 
 
 class CILDummy(CILInstruction):

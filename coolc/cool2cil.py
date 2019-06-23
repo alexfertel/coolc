@@ -67,7 +67,7 @@ class Cool2CilVisitor:
 
     def register_local(self, vinfo):
         vinfo.name = self.build_internal_vname(vinfo.name)
-        vinfo.vmholder = len(self.globalvars)
+        vinfo.holder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
         self.globalvars.append(local_node)
         # print("global")
@@ -79,7 +79,7 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
-    def register_func(self, fname, mname):
+    def register_func(self, mname):
         # print("Register Function")
         func = cil.CILFunction(mname, self.instructions)
         
@@ -91,14 +91,11 @@ class Cool2CilVisitor:
         for index, local in enumerate(func.localvars):
             self.context.add_var(local.value.name, index)
         
-        # Update the context with the function name
-        self.context.add_mf(mname, fname)
-
         self.dotcode.append(func)
         return func
 
     def register_type(self):
-        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods)
+        ttype = cil.CILType(self.current_class_name, self.attributes, self.methods.copy())
         self.context.add_tag(self.current_class_name)
         self.dottypes.append(ttype)
         return ttype
@@ -116,7 +113,6 @@ class Cool2CilVisitor:
             attr_node = self.visit(attr)
             self.context.add_attribute(attr_node, index)
             ctr.append(attr_node)
-        ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
         fname = self.build_internal_fname()
@@ -130,14 +126,14 @@ class Cool2CilVisitor:
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
-        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILArg, 'self')
         self.register_instruction(cil.CILCall, f'Main_ctr')        
-        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILArg, 'self')
         self.register_instruction(cil.CILVCall, "Main", "Main_main")
         
         self.current_function_name = "entry"
         # entry_name = self.build_internal_fname()
-        self.register_func("main", self.current_function_name)
+        self.register_func(self.current_function_name)
 
     # ======================================================================
 
@@ -159,7 +155,7 @@ class Cool2CilVisitor:
         klasses = [klass for klass in builtins if not klass in node.classes]
         # Maybe sort the types before visiting them?
         for klass in klasses:
-            # print(klass)
+            # print(klass.parent)
             self.visit(klass)
 
         # We register the entrypoint here.
@@ -179,9 +175,6 @@ class Cool2CilVisitor:
         attrs, funcs = [], []
         for feature in node.features:
             if isinstance(feature, ast.ClassMethod):
-                # print("!!!")
-                # print(self.current_class_name)
-                # print(feature)
                 funcs.append(feature)
             else:
                 attrs.append(feature)
@@ -191,15 +184,11 @@ class Cool2CilVisitor:
 
         # pprint(funcs)
         for index, func in enumerate(funcs):
-            print(func)
-            func_node = self.visit(func)
-            self.context.add_func(func_node.fname, index)
-
-        # TODO: What if we have a constructor which calls a ctor which calls the first ctor? Python gives
-        # recurison depth exceeded, of course, does C# detect this at compile time?
+            # print(func)
+            fname = self.visit(func)
+            self.context.add_func(fname, index)
 
         ttype = self.register_type()
-        # print(ttype)
         return ttype
 
     @visitor.when(ast.ClassMethod)
@@ -209,23 +198,44 @@ class Cool2CilVisitor:
         #   * The addition of a new function to dotcode
         self.current_function_name = node.name
         mname = self.build_method_name()
-        fname = self.build_internal_fname()
+
+        # print(self.semantic_scope.get_type(self.current_class_name).name)
+        # print(node.name)
+        # print(self.semantic_scope.get_type(self.current_class_name).inherited)
+
+        if node in self.semantic_scope.get_type(self.current_class_name).inherited:
+            current = self.semantic_scope.get_type(self.current_class_name).parent
+            while current is not None:
+                current_type = self.semantic_scope.get_type(current)
+                for feat in current_type.features:
+                    if isinstance(feat, ast.ClassMethod) and current_type.is_method_in_features(feat.name):
+                        self.context.add_mf(mname, f'{current_type.name}_{node.name}')
+                        break
+                current = current_type.parent
+        else:
+            self.context.add_mf(mname, mname)
+
+
+        # fname = self.build_internal_fname()
 
         # Method addition
         self.methods.append(cil.CILMethod(mname))
+        # print("AAAA")
+        # print([x.mname for x in self.methods])
 
-        # Function addition
-        # Clean instruction list
-        self.instructions.clear()
+        # Register the function in dotcode if it's new
+        if self.context.mmap[mname] != mname:
+            # Function addition
+            # Clean instruction list
+            self.instructions.clear()
 
-        # Method body
-        self.visit(node.body)
-        # print(return_val)
+            # Method body
+            self.visit(node.body)
+            # print(return_val)
+            func_node = self.register_func(mname)
+            func_node.param_count = len(node.formal_params)
 
-        # Register the function in dotcode
-        func = self.register_func(fname, mname)
-        func.param_count = len(node.formal_params)        
-        return func
+        return mname
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
@@ -292,7 +302,7 @@ class Cool2CilVisitor:
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
         self.register_instruction(cil.CILAllocate, node.new_type)
-        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILArg, 'self')
         self.register_instruction(cil.CILCall, f'{node.new_type}_ctr')
         return vinfo
 
@@ -349,12 +359,12 @@ class Cool2CilVisitor:
         
         # Generate code for each of the params and push them
         args = []
-        for arg in reversed(node.arguments):
+        for index, arg in reversed(enumerate(node.arguments)):
             vinfo = self.visit(arg)
-            arg_node = self.register_instruction(cil.CILArg)
+            arg_node = self.register_instruction(cil.CILArg, index)
     
         instance = self.visit(node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg)
+        self.register_instruction(cil.CILArg, 'self')
 
         # Here we have to compute the type, which is done using TYPEOF
         self.register_instruction(cil.CILTypeOf, instance)
@@ -367,9 +377,9 @@ class Cool2CilVisitor:
 
         # Generate code for each of the params and push them
         args = []
-        for arg in reversed(node.arguments):
+        for index, arg in reversed(enumerate(node.arguments)):
             vinfo = self.visit(arg)
-            arg_node = self.register_instruction(cil.CILArg)
+            arg_node = self.register_instruction(cil.CILArg, index)
 
         self.register_instruction(cil.CILVCall, node.dispatch_type, node.method)
 

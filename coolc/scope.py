@@ -65,5 +65,7 @@ class Scope:
 class VariableInfo:
     def __init__(self, name, vtype=None):
         self.name = name
-        self.vmholder = None
+        self.holder = None
         self.type = vtype
+    
+    # def set_location(self, index)

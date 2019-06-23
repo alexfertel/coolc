@@ -126,6 +126,9 @@ class ClassMethod(ClassFeature):
         return "{}(name='{}', formal_params={}, return_type={}, body={})".format(
             self.clsname, self.name, self.formal_params, self.return_type, self.body)
 
+    def __eq__(self, other):
+        return self.name == other.name 
+
 
 class ClassAttribute(ClassFeature):
     def __init__(self, name, attr_type, init_expr):

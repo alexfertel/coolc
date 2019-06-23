@@ -8,6 +8,7 @@ from . import cooltypebuilder
 from . import cool2cil
 from . import cil2mips
 from . import coolsemantics
+from . import cilemitter
 
 from pprint import pprint
 
@@ -25,6 +26,7 @@ class Compiler:
         self.parser = None
         self.ast = None
         self.result = []
+        self.program = program
         self.output = output
 
         # Check that the program has the *.cl extension
@@ -170,6 +172,11 @@ class Compiler:
     def code_generation(self):
         cil_visitor = cool2cil.Cool2CilVisitor(self.scope)
         cil_visitor.visit(self.ast)
+
+        cil_emitter = cilemitter.CILWriterVisitor(cil_visitor.context)
+        cil_emitter.visit(cil_visitor.result)
+        with open(f'test/{self.program[10:-3]}.cil', 'w') as fd:
+            fd.write('\n'.join(cil_emitter.output))
 
         mips_visitor = cil2mips.Cil2MipsVisitor(cil_visitor.context)
         mips_visitor.visit(cil_visitor.result)

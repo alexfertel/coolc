@@ -1,19 +1,36 @@
 .data
 Object: .word 0
-.word Main_ctr
-.word Main_main
+.word Object_ctr
+.word Object_abort
+.word Object_copy
+.word Object_type_name
 IO: .word 1
-.word Main_ctr
-.word Main_main
+.word IO_ctr
+.word IO_in_int
+.word IO_in_string
+.word IO_out_int
+.word IO_out_string
+.word IO_abort
+.word IO_copy
+.word IO_type_name
 Int: .word 2
-.word Main_ctr
-.word Main_main
+.word Int_ctr
+.word Int_abort
+.word Int_copy
+.word Int_type_name
 Bool: .word 3
-.word Main_ctr
-.word Main_main
+.word Bool_ctr
+.word Bool_abort
+.word Bool_copy
+.word Bool_type_name
 String: .word 4
-.word Main_ctr
-.word Main_main
+.word String_ctr
+.word String_length
+.word String_concat
+.word String_substr
+.word String_abort
+.word String_copy
+.word String_type_name
 Main: .word 5
 .word Main_ctr
 .word Main_main
@@ -116,159 +133,6 @@ Object_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Return
-jr $ra
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Object_abort:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Object_copy:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Object_type_name:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -277,238 +141,14 @@ IO_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Return
-jr $ra
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-IO_in_int:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-IO_in_string:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-IO_out_int:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 12
-lw $fp, 0($sp)
-jr $ra
-IO_out_string:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 12
 lw $fp, 0($sp)
 jr $ra
 IO_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -539,27 +179,6 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
 # Allocate
 la $a0, Main
 lw $a0, 4($a0)
@@ -588,27 +207,6 @@ IO_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -642,9 +240,6 @@ addiu $sp, $sp, -4
 # SetAttrib
 lw $t0, void
 sw $a0, _val_val_val_val($a0)
-
-# Return
-jr $ra
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -653,27 +248,6 @@ Int_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -704,27 +278,6 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
 # Allocate
 la $a0, Main
 lw $a0, 4($a0)
@@ -753,27 +306,6 @@ Int_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -807,9 +339,6 @@ addiu $sp, $sp, -4
 # SetAttrib
 lw $t0, void
 sw $a0, _val_val_val_val($a0)
-
-# Return
-jr $ra
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -818,27 +347,6 @@ Bool_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -869,27 +377,6 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
 # Allocate
 la $a0, Main
 lw $a0, 4($a0)
@@ -918,27 +405,6 @@ Bool_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -976,188 +442,14 @@ sw $a0, _val_val_val_val($a0)
 # SetAttrib
 lw $t0, void
 sw $a0, _val_val_val_val($a0)
-
-# Return
-jr $ra
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-String_length:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-String_concat:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 12
-lw $fp, 0($sp)
-jr $ra
-String_substr:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
-lw $ra, 4($sp)
-addiu $sp, $sp, 16
 lw $fp, 0($sp)
 jr $ra
 String_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
@@ -1188,27 +480,6 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
 # Allocate
 la $a0, Main
 lw $a0, 4($a0)
@@ -1238,27 +509,6 @@ move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
 # Allocate
 la $a0, Main
 lw $a0, 4($a0)
@@ -1287,59 +537,6 @@ Main_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Return
-jr $ra
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Main_main:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -1348,27 +545,6 @@ entry:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Dummy
-li $a0, 1
-
-# Assign
-sw $a0, 0($sp)
-
-# Dummy
-li $a0, 2
-
-# Assign
-sw $a0, -4($sp)
-
-# Dummy
-li $a0, 3
-
-# Assign
-sw $a0, -8($sp)
-
-# Dummy
-li $a0, 4
 
 # Allocate
 la $a0, Main
