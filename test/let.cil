@@ -64,27 +64,12 @@ function IO_ctr {
 }
 
 function IO_abort {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function IO_copy {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function IO_type_name {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Int_ctr {
@@ -92,27 +77,12 @@ self._val = void
 }
 
 function Int_abort {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Int_copy {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Int_type_name {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Bool_ctr {
@@ -120,27 +90,12 @@ self._val = void
 }
 
 function Bool_abort {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Bool_copy {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Bool_type_name {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function String_ctr {
@@ -149,27 +104,12 @@ self._val = void
 }
 
 function String_abort {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function String_copy {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function String_type_name {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
 }
 
 function Main_ctr {

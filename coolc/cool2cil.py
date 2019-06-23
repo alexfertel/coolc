@@ -81,7 +81,7 @@ class Cool2CilVisitor:
 
     def register_func(self, mname):
         # print("Register Function")
-        func = cil.CILFunction(mname, self.instructions)
+        func = cil.CILFunction(mname, self.instructions.copy())
         
         # Handle localvars
         func.localvars = self.globalvars[self.local_index:]

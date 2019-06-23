@@ -149,27 +149,6 @@ IO_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -178,27 +157,6 @@ IO_copy:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -207,27 +165,6 @@ IO_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -248,27 +185,6 @@ Int_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -277,27 +193,6 @@ Int_copy:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -306,27 +201,6 @@ Int_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -347,27 +221,6 @@ Bool_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -376,27 +229,6 @@ Bool_copy:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -405,27 +237,6 @@ Bool_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -450,27 +261,6 @@ String_abort:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -479,27 +269,6 @@ String_copy:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -508,27 +277,6 @@ String_type_name:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
-
-# Allocate
-la $a0, Main
-lw $a0, 4($a0)
-li $v0, 9
-syscall 
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# Call
-jal Main_ctr
-
-# Arg
-sw $a0, 0($sp)
-addiu $sp, $sp, -4
-
-# VCall
-la $a0, Main
-jal Main_main
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
