@@ -137,6 +137,30 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
+Object_abort:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+lw $ra, 4($sp)
+addiu $sp, $sp, 8
+lw $fp, 0($sp)
+jr $ra
+Object_copy:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+lw $ra, 4($sp)
+addiu $sp, $sp, 8
+lw $fp, 0($sp)
+jr $ra
+Object_type_name:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+lw $ra, 4($sp)
+addiu $sp, $sp, 8
+lw $fp, 0($sp)
+jr $ra
 IO_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
@@ -145,7 +169,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-IO_abort:
+IO_in_int:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -153,7 +177,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-IO_copy:
+IO_in_string:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -161,12 +185,20 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-IO_type_name:
+IO_out_int:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 lw $ra, 4($sp)
-addiu $sp, $sp, 8
+addiu $sp, $sp, 12
+lw $fp, 0($sp)
+jr $ra
+IO_out_string:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+lw $ra, 4($sp)
+addiu $sp, $sp, 12
 lw $fp, 0($sp)
 jr $ra
 Int_ctr:
@@ -181,30 +213,6 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-Int_abort:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Int_copy:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Int_type_name:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
 Bool_ctr:
 move $fp, $sp
 sw $ra, 0($sp)
@@ -213,30 +221,6 @@ addiu $sp, $sp, -4
 # SetAttrib
 lw $t0, void
 sw $a0, _val_val_val_val($a0)
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Bool_abort:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Bool_copy:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
-lw $ra, 4($sp)
-addiu $sp, $sp, 8
-lw $fp, 0($sp)
-jr $ra
-Bool_type_name:
-move $fp, $sp
-sw $ra, 0($sp)
-addiu $sp, $sp, -4
 lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
@@ -257,7 +241,7 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-String_abort:
+String_length:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
@@ -265,20 +249,20 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
-String_copy:
+String_concat:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 lw $ra, 4($sp)
-addiu $sp, $sp, 8
+addiu $sp, $sp, 12
 lw $fp, 0($sp)
 jr $ra
-String_type_name:
+String_substr:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
 lw $ra, 4($sp)
-addiu $sp, $sp, 8
+addiu $sp, $sp, 16
 lw $fp, 0($sp)
 jr $ra
 Main_ctr:
@@ -289,10 +273,60 @@ lw $ra, 4($sp)
 addiu $sp, $sp, 8
 lw $fp, 0($sp)
 jr $ra
+Main_main:
+move $fp, $sp
+sw $ra, 0($sp)
+addiu $sp, $sp, -4
+
+# Dummy
+li $a0, 1
+
+# Assign
+sw $a0, 0($sp)
+
+# Dummy
+li $a0, 2
+
+# Assign
+sw $a0, -4($sp)
+
+# Dummy
+li $a0, 3
+
+# Assign
+sw $a0, -8($sp)
+
+# Dummy
+li $a0, 4
+lw $ra, 4($sp)
+addiu $sp, $sp, 8
+lw $fp, 0($sp)
+jr $ra
 entry:
 move $fp, $sp
 sw $ra, 0($sp)
 addiu $sp, $sp, -4
+
+# Dummy
+li $a0, 1
+
+# Assign
+sw $a0, 0($sp)
+
+# Dummy
+li $a0, 2
+
+# Assign
+sw $a0, -4($sp)
+
+# Dummy
+li $a0, 3
+
+# Assign
+sw $a0, -8($sp)
+
+# Dummy
+li $a0, 4
 
 # Allocate
 la $a0, Main

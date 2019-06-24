@@ -63,23 +63,26 @@ class CILWriterVisitor(object):
 
         self.emit(f'function {node.fname} {{')
 
+        for local in node.localvars:
+            self.visit(local)
+
         for x in node.instructions:
             self.visit(x)
         self.emit('}')
 
     @visitor.when(ast.CILParam)
     def visit(self, node: ast.CILParam):
-        self.emit(f'    PARAM {node.value}')
+        self.emit(f'    PARAM {node.vinfo.name}')
 
     @visitor.when(ast.CILLocal)
     def visit(self, node: ast.CILLocal):
-        self.emit(f'    LOCAL {node.value}')
+        self.emit(f'    LOCAL {node.vinfo.name}')
 
     @visitor.when(ast.CILAssign)
     def visit(self, node: ast.CILAssign):
         # dest = node.dest
         # source = self.get_value(node.source)
-        self.emit(f'    {node.dest} = {node.source}')
+        self.emit(f'    {node.dest.name} = {node.source.name}')
 
     @visitor.when(ast.CILPlus)
     def visit(self, node: ast.CILPlus):
@@ -120,11 +123,12 @@ class CILWriterVisitor(object):
         # inst = self.visit(node.instance)
         # attr = self.visit(node.attribute)
         # src = self.visit(node.src)
-        self.emit(f'{node.instance}.{node.attribute} = {node.src}')
+        # print(node.instance)
+        self.emit(f'    SETATTR {node.instance.name} {"content" if 0 else node.attribute} {node.src}')
 
     @visitor.when(ast.CILAllocate)
     def visit(self, node: ast.CILAllocate):
-        self.emit(f'    ALLOCATE {node.ttype}')
+        self.emit(f'    {node.dest.name} = ALLOCATE {node.ttype}')
 
     @visitor.when(ast.CILTypeOf)
     def visit(self, node: ast.CILTypeOf):
@@ -145,21 +149,21 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILCall)
     def visit(self, node: ast.CILCall):
-        self.emit(f'    CALL {node.func}')
+        self.emit(f'    {node.dest.name} = CALL {node.func}')
 
     @visitor.when(ast.CILVCall)
     def visit(self, node: ast.CILVCall):
-        self.emit(f'    VCALL {node.ttype} {node.func}')
+        self.emit(f'    {node.dest.name} = VCALL {node.func}')
 
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):
-        self.emit(f'    ARG {node.name}')
+        self.emit(f'    ARG {node.vinfo.name}')
 
-    # @visitor.when(ast.CILReturn)
-    # def visit(self, node: ast.CILReturn):
-    #     value = self.get_value(node.value)
-    #     value = "" if value is None else str(value)
-    #     self.emit(f'    RETURN {value}')
+    @visitor.when(ast.CILReturn)
+    def visit(self, node: ast.CILReturn):
+        value = self.get_value(node.value)
+        value = "" if value is None else str(value)
+        self.emit(f'    RETURN {value}')
 
     # @visitor.when(ast.CILLoad)
     # def visit(self, node: ast.CILLoad):

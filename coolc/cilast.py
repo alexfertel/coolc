@@ -44,13 +44,13 @@ class CILMethod(CILNode):
 
 
 class CILParam(CILNode):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, vinfo):
+        self.vinfo = vinfo
 
 
 class CILLocal(CILNode):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, vinfo):
+        self.vinfo = vinfo
 
 
 class CILInstruction(CILNode):
@@ -119,7 +119,8 @@ class CILSetAttrib(CILInstruction):
 
 
 class CILAllocate(CILInstruction):
-    def __init__(self, ttype):
+    def __init__(self, dest, ttype):
+        self.dest = dest
         self.ttype = ttype
 
 
@@ -145,24 +146,26 @@ class CILGotoIf(CILInstruction):
 
 
 class CILCall(CILInstruction):
-    def __init__(self, func):
+    def __init__(self, dest, func):
+        self.dest = dest
         self.func = func
 
 
 class CILVCall(CILInstruction):
-    def __init__(self, ttype, func):
+    def __init__(self, dest, ttype, func):
+        self.dest = dest
         self.ttype = ttype
         self.func = func
 
 
 class CILArg(CILInstruction):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, vinfo):
+        self.vinfo = vinfo
 
 
-# class CILReturn(CILInstruction):
-#     def __init__(self, value):
-#         self.value = value
+class CILReturn(CILInstruction):
+    def __init__(self, value):
+        self.value = value
 
 
 class CILDummy(CILInstruction):

@@ -60,65 +60,83 @@ type Main {
 function Object_ctr {
 }
 
+function Object_abort {
+}
+
+function Object_copy {
+}
+
+function Object_type_name {
+}
+
 function IO_ctr {
 }
 
-function IO_abort {
+function IO_in_int {
 }
 
-function IO_copy {
+function IO_in_string {
 }
 
-function IO_type_name {
+function IO_out_int {
+}
+
+function IO_out_string {
 }
 
 function Int_ctr {
-self._val = void
-}
-
-function Int_abort {
-}
-
-function Int_copy {
-}
-
-function Int_type_name {
+    SETATTR self _val void
 }
 
 function Bool_ctr {
-self._val = void
-}
-
-function Bool_abort {
-}
-
-function Bool_copy {
-}
-
-function Bool_type_name {
+    SETATTR self _val void
 }
 
 function String_ctr {
-self._val = void
-self._val = void
+    SETATTR self _val void
+    SETATTR self _val void
 }
 
-function String_abort {
+function String_length {
 }
 
-function String_copy {
+function String_concat {
 }
 
-function String_type_name {
+function String_substr {
 }
 
 function Main_ctr {
 }
 
+function Main_main {
+    LOCAL 0_main_internal
+    LOCAL 1_main_internal
+    LOCAL 2_main_internal
+    LOCAL 3_main_internal
+    LOCAL 4_main_internal
+    LOCAL 5_main_internal
+    LOCAL 6_main_internal
+    1_main_internal = ALLOCATE Integer
+    SETATTR 1_main_internal 0 1
+    0_main_internal = 1_main_internal
+    3_main_internal = ALLOCATE Integer
+    SETATTR 3_main_internal 0 2
+    2_main_internal = 3_main_internal
+    5_main_internal = ALLOCATE Integer
+    SETATTR 5_main_internal 0 3
+    4_main_internal = 5_main_internal
+    6_main_internal = ALLOCATE Integer
+    SETATTR 6_main_internal 0 4
+}
+
 function entry {
-    ALLOCATE Main
-    ARG self
-    CALL Main_ctr
-    ARG self
-    VCALL Main Main_main
+    LOCAL 7_main_instance
+    LOCAL 8_main_internal
+    7_main_instance = ALLOCATE Main
+    ARG 7_main_instance
+    7_main_instance = CALL Main_ctr
+    ARG 7_main_instance
+    8_main_internal = VCALL Main_main
+    RETURN 0
 }

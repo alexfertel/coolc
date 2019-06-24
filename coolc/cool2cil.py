@@ -89,7 +89,7 @@ class Cool2CilVisitor:
 
         # Update the context with the new names
         for index, local in enumerate(func.localvars):
-            self.context.add_var(local.value.name, index)
+            self.context.add_var(local.vinfo.name, index)
         
         self.dotcode.append(func)
         return func
@@ -125,12 +125,20 @@ class Cool2CilVisitor:
         self.context.add_mf(ctr_name, fname)
 
     def build_entry(self):
-        self.register_instruction(cil.CILAllocate, "Main")
-        self.register_instruction(cil.CILArg, 'self')
-        self.register_instruction(cil.CILCall, f'Main_ctr')        
-        self.register_instruction(cil.CILArg, 'self')
-        self.register_instruction(cil.CILVCall, "Main", "Main_main")
+        self.instructions.clear()
+
+        main_holder = self.register_local(VariableInfo('instance'))
+        self.register_instruction(cil.CILAllocate, main_holder, "Main")
         
+        self.register_instruction(cil.CILArg, main_holder)
+        self.register_instruction(cil.CILCall, main_holder, 'Main_ctr')        
+
+        self.register_instruction(cil.CILArg, main_holder)
+        temp = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, temp, "Main", "Main_main")
+        
+        self.register_instruction(cil.CILReturn, 0)
+
         self.current_function_name = "entry"
         # entry_name = self.build_internal_fname()
         self.register_func(self.current_function_name)
@@ -224,7 +232,7 @@ class Cool2CilVisitor:
         # print([x.mname for x in self.methods])
 
         # Register the function in dotcode if it's new
-        if self.context.mmap[mname] != mname:
+        if self.context.mmap[mname] == mname:
             # Function addition
             # Clean instruction list
             self.instructions.clear()
@@ -246,7 +254,7 @@ class Cool2CilVisitor:
             name = self.visit(node.init_expr)
         else:  # Init with default of the type
             name = coolutils.default(node.attr_type)
-        return cil.CILSetAttrib("self", node.name, name)
+        return cil.CILSetAttrib(VariableInfo('self'), node.name, name)
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
@@ -255,7 +263,10 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
-        return node.name
+        # vname = self.build_internal_vname(node.name)
+        # var = self.register_local(VariableInfo(vname))
+        var = self.define_internal_local()
+        return var
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
@@ -266,38 +277,41 @@ class Cool2CilVisitor:
         the src is always the same.
         lw $a0, 0($sp)
         """
-        dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0, 4($sp)')
-        return dummy_node
+        # dummy_node = self.register_instruction(cil.CILDummy, 'lw $a0, 4($sp)')
+        return 'self'
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
         # print('Integer')
-        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
-        return dummy_node
+        # dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
+        boxed = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, boxed, "Integer")
+        self.register_instruction(cil.CILSetAttrib, boxed, 0, node.content)
+        return boxed
 
     @visitor.when(ast.String)
     def visit(self, node: ast.String):
-        """
-        If the String is already in the .DATA section, we won't register it
-        again. We just return the name we gave it, which includes its offset.
-        We have to load the starting address of .DATA plus the offset of this
-        string. But most of this is MIPS.
-        la $a0, string_address
-        """
-        for index, data_node in enumerate(self.dotdata):
-            if node.content == data_node.value:
-                data_name = data_node.vname
-        else:
-            new_node = self.register_data(node.content)
-            data_name = new_node.vname
+        # for index, data_node in enumerate(self.dotdata):
+        #     if node.content == data_node.value:
+        #         data_name = data_node.vname
+        # else:
+        #     new_node = self.register_data(node.content)
+        #     data_name = new_node.vname
 
-        dummy_node = self.register_instruction(cil.CILDummy, f'la $a0, {data_name}')
-        return dummy_node
+        # dummy_node = self.register_instruction(cil.CILDummy, f'la $a0, {data_name}')
+        data_vname = self.register_data(node.content)
+        boxed = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, boxed, "String")
+        self.register_instruction(cil.CILSetAttrib, boxed, 0, data_vname)
+        return boxed
 
     @visitor.when(ast.Boolean)
     def visit(self, node: ast.Boolean):
-        dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {1 if node.content == True else 0}')
-        return dummy_node
+        # dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {1 if node.content == True else 0}')
+        boxed = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, boxed, "Bool")
+        self.register_instruction(cil.CILSetAttrib, boxed, 0, 1 if node.content else 0)
+        return boxed
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
@@ -332,16 +346,19 @@ class Cool2CilVisitor:
 
         Repeat with destination.        
         """
-        if source in self.globalvars[self.local_index:]:
-            offset_src = self.context.lname[source]
-            self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
-        else:
-            offset_src = self.context.lname[source]
-            self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
-
-
         source = self.visit(node.expr)
-        self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+        if source in self.globalvars[self.local_index:]:  # It's a local var
+            # offset_src = self.context.lname[source]
+            print(f'node.identifier =>', node.identifier)
+            print(f'self.context.lmap[node.identifier.name] =>', self.context.lmap[node.identifier.name])
+            self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+            # self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
+        else:  # It's a property of `self`
+            # offset_src = self.context.lname[source]
+            self.register_instruction(cil.CILSetAttrib, VariableInfo('self'), node.idetifier.name, source)
+            # self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
+
+        # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
         return source
 
     @visitor.when(ast.Block)
@@ -397,12 +414,19 @@ class Cool2CilVisitor:
     @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration):
         # print('Declaration')
-        identifier = self.register_local(node.identifier)
-        vinfo = self.visit(node.expression) if node.expression else default(
-            node.ttype)
+        vdest = self.visit(node.identifier)
+        # identifier = self.register_local(node.identifier)
+        
+        future_visit = None
+        if node.expression:
+            future_visit = node.expression
+        else:
+            future_visit = default(node.ttype)
+        assert future_visit != None, "`future_visit` is None inside `Declaration` visit"
+        vsrc = self.visit(future_visit)
 
-        self.register_instruction(cil.CILAssign, identifier.name, vinfo)
-        return identifier
+        self.register_instruction(cil.CILAssign, vdest, vsrc)
+        return vdest
 
     @visitor.when(ast.If)
     def visit(self, node: ast.If):

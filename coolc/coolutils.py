@@ -47,6 +47,7 @@ class void:
     def __eq__(self, other):
         return str(self) == str(other)
 
+from . import coolast as cool
 
 def default(t):
     """
@@ -55,11 +56,11 @@ def default(t):
     :return: 0 | "" | "false" | void
     """
     if t == "Integer":
-        return 0
+        return cool.Integer(0)
     elif t == "String":
-        return ""
+        return cool.String("")
     elif t == "Bool":
-        return "false"
+        return cool.Boolean(False)
     else:
         return void()
 
