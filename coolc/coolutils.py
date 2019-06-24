@@ -55,7 +55,7 @@ def default(t):
     :param t: string
     :return: 0 | "" | "false" | void
     """
-    if t == "Integer":
+    if t == "Int":
         return cool.Integer(0)
     elif t == "String":
         return cool.String("")

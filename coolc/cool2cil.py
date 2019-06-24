@@ -108,21 +108,25 @@ class Cool2CilVisitor:
 
     def build_ctr(self, attrs):
         # Build constructor
-        ctr = []
+        self.current_function_name = "ctr"
+        self.instructions.clear()
+
+        self.register_instruction(cil.CILParam, VariableInfo('self'))
         for index, attr in enumerate(attrs):
             attr_node = self.visit(attr)
             self.context.add_attribute(attr_node, index)
-            ctr.append(attr_node)
+            self.instructions.append(attr_node)
+            # ctr.append(attr_node)
 
-        self.current_function_name = "ctr"
-        fname = self.build_internal_fname()
         ctr_name = self.build_method_name()
-        ctr_func = cil.CILFunction(ctr_name, ctr)
-        self.dotcode.append(ctr_func)
+        func_node = self.register_func(ctr_name)
+        func_node.param_count = 1
+        # ctr_func = cil.CILFunction(ctr_name, self.instructions.copy())
+        # self.dotcode.append(ctr_func)
 
         self.methods.append(cil.CILMethod(ctr_name))
 
-        self.context.add_mf(ctr_name, fname)
+        self.context.add_mf(ctr_name, ctr_name)
 
     def build_entry(self):
         self.instructions.clear()
@@ -141,7 +145,8 @@ class Cool2CilVisitor:
 
         self.current_function_name = "entry"
         # entry_name = self.build_internal_fname()
-        self.register_func(self.current_function_name)
+        func_node = self.register_func(self.current_function_name)
+        func_node.param_count = 1
 
     # ======================================================================
 
@@ -161,7 +166,6 @@ class Cool2CilVisitor:
         """
         builtins = self.semantic_scope.get_types_dict().values()
         klasses = [klass for klass in builtins if not klass in node.classes]
-        # Maybe sort the types before visiting them?
         for klass in klasses:
             # print(klass.parent)
             self.visit(klass)
@@ -185,6 +189,7 @@ class Cool2CilVisitor:
             if isinstance(feature, ast.ClassMethod):
                 funcs.append(feature)
             else:
+                print(f'{self.current_class_name}_{feature.name}')
                 attrs.append(feature)
         
         # Build constructor
@@ -237,6 +242,10 @@ class Cool2CilVisitor:
             # Clean instruction list
             self.instructions.clear()
 
+            self.register_instruction(cil.CILParam, VariableInfo('self'))
+            for param in node.formal_params:
+                self.visit(param)
+
             # Method body
             self.visit(node.body)
             # print(return_val)
@@ -247,18 +256,18 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.ClassAttribute)
     def visit(self, node: ast.ClassAttribute):
-        # Check we're not cleaning and losing ctor instructions!
         self.attributes.append(node.name)
 
         if node.init_expr:
-            name = self.visit(node.init_expr)
+            vsrc = self.visit(node.init_expr)
         else:  # Init with default of the type
-            name = coolutils.default(node.attr_type)
-        return cil.CILSetAttrib(VariableInfo('self'), node.name, name)
+            default_init = coolutils.default(node.attr_type)
+            vsrc = self.visit(default_init).name if str(default_init) != "void" else "void"
+        return cil.CILSetAttrib(VariableInfo('self'), node.name, vsrc)
 
     @visitor.when(ast.FormalParameter)
     def visit(self, node: ast.FormalParameter):
-        param_node = self.register_instruction(cil.CILParam, node.name)
+        param_node = self.register_instruction(cil.CILParam, VariableInfo(node.name))
         return param_node
 
     @visitor.when(ast.Object)
@@ -285,7 +294,7 @@ class Cool2CilVisitor:
         # print('Integer')
         # dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
         boxed = self.define_internal_local()
-        self.register_instruction(cil.CILAllocate, boxed, "Integer")
+        self.register_instruction(cil.CILAllocate, boxed, "Int")
         self.register_instruction(cil.CILSetAttrib, boxed, 0, node.content)
         return boxed
 
@@ -299,7 +308,7 @@ class Cool2CilVisitor:
         #     data_name = new_node.vname
 
         # dummy_node = self.register_instruction(cil.CILDummy, f'la $a0, {data_name}')
-        data_vname = self.register_data(node.content)
+        data_vname = self.register_data(node.content).vname
         boxed = self.define_internal_local()
         self.register_instruction(cil.CILAllocate, boxed, "String")
         self.register_instruction(cil.CILSetAttrib, boxed, 0, data_vname)
@@ -417,13 +426,12 @@ class Cool2CilVisitor:
         vdest = self.visit(node.identifier)
         # identifier = self.register_local(node.identifier)
         
-        future_visit = None
         if node.expression:
-            future_visit = node.expression
+            vsrc = self.visit(node.expression)
         else:
-            future_visit = default(node.ttype)
-        assert future_visit != None, "`future_visit` is None inside `Declaration` visit"
-        vsrc = self.visit(future_visit)
+            default_init = coolutils.default(node.ttype)
+            vsrc = self.visit(default_init).name if str(default_init) != "void" else "void"
+        assert vsrc != None, "`vsrc` is None inside `Declaration` visit"
 
         self.register_instruction(cil.CILAssign, vdest, vsrc)
         return vdest

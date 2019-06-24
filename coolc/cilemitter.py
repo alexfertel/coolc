@@ -45,7 +45,7 @@ class CILWriterVisitor(object):
         for method in node.methods:
             # print(method.mname)
             self.visit(method)
-        self.black()
+        # self.black()
 
         self.emit('}')
 
@@ -55,7 +55,7 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILData)
     def visit(self, node: ast.CILData):
-        self.emit(f'{node.vname} = {node.value}')
+        self.emit(f'{node.vname} = {repr(node.value)}')
 
     @visitor.when(ast.CILFunction)
     def visit(self, node: ast.CILFunction):

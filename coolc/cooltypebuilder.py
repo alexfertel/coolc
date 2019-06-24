@@ -175,12 +175,12 @@ class TypeBuilderVisitor:
 
         # String Class
 
-        # _val attribute: string length
+        # _val attribute: an un-boxed, untyped string value
         self.__scope.get_type('String').features.append(
-            ast.ClassAttribute(name='_val', attr_type='Int', init_expr=None))
-        # _str_field attribute: an un-boxed, untyped string value
+            ast.ClassAttribute(name='_val', attr_type='String', init_expr=None))
+        # _length attribute: string length
         self.__scope.get_type('String').features.append(
-            ast.ClassAttribute(name='_val', attr_type='Int', init_expr=None))
+            ast.ClassAttribute(name='_length', attr_type='Int', init_expr=None))
         # length method: returns the string's length
         self.__scope.get_type('String').features.append(ast.ClassMethod(
             name='length', formal_params=[], return_type='Int', body=None))
