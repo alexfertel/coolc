@@ -263,7 +263,7 @@ class Cool2CilVisitor:
         self.attributes.append(node.name)
 
         if node.init_expr:
-            vsrc = self.visit(node.init_expr)
+            vsrc = self.visit(node.init_expr).name
         else:  # Init with default of the type
             default_init = coolutils.default(node.attr_type)
             vsrc = self.visit(default_init).name if str(default_init) != "void" else "void"
@@ -278,8 +278,16 @@ class Cool2CilVisitor:
     def visit(self, node: ast.Object):
         # vname = self.build_internal_vname(node.name)
         # var = self.register_local(VariableInfo(vname))
-        var = self.define_internal_local()
-        return var
+        
+        print("node.name", node.name)
+        print("localvars", list(map(lambda x: x.vinfo.name, self.globalvars[self.local_index:])))
+        if node.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
+            return self.context.lmap[node.name]
+        else:  # It's a self property
+            vattr = self.define_internal_local()
+            self.register_instruction(cil.CILGetAttrib, vattr, VariableInfo('self'), node.name)
+            return vattr
+        # var = self.define_internal_local()
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
@@ -328,9 +336,10 @@ class Cool2CilVisitor:
         
     @visitor.when(ast.NewObject)
     def visit(self, node: ast.NewObject):
-        self.register_instruction(cil.CILAllocate, node.new_type)
-        self.register_instruction(cil.CILArg, 'self')
-        self.register_instruction(cil.CILCall, f'{node.new_type}_ctr')
+        vinfo = self.define_internal_local()
+        self.register_instruction(cil.CILAllocate, vinfo, node.type)
+        self.register_instruction(cil.CILArg, VariableInfo('self'))
+        self.register_instruction(cil.CILCall, vinfo, f'{node.type}_ctr')
         return vinfo
 
     @visitor.when(ast.IsVoid)
@@ -360,19 +369,23 @@ class Cool2CilVisitor:
         Repeat with destination.        
         """
         source = self.visit(node.expr)
-        if source in self.globalvars[self.local_index:]:  # It's a local var
+        print('source', source.name)
+        print('localvars', self.globalvars[self.local_index:])
+        if source.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
             # offset_src = self.context.lname[source]
-            print(f'node.identifier =>', node.identifier)
-            print(f'self.context.lmap[node.identifier.name] =>', self.context.lmap[node.identifier.name])
-            self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+            # print(f'node.identifier =>', node.identifier)
+            # print(f'self.context.lmap[node.identifier.name] =>', self.context.lmap[node.identifier.name])
+            # vdest = self.define_internal_local()
+            # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+            self.register_instruction(cil.CILAssign, node.identifier, source)
             # self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
         else:  # It's a property of `self`
             # offset_src = self.context.lname[source]
-            self.register_instruction(cil.CILSetAttrib, VariableInfo('self'), node.idetifier.name, source)
+            self.register_instruction(cil.CILSetAttrib, VariableInfo('self'), node.identifier.name, source.name)
             # self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
 
         # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
-        return source
+        return node.identifier
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
@@ -388,17 +401,19 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
         
         # Generate code for each of the params and push them
-        args = []
-        for index, arg in reversed(enumerate(node.arguments)):
+        for index, arg in enumerate(reversed(node.arguments)):
             vinfo = self.visit(arg)
             arg_node = self.register_instruction(cil.CILArg, index)
     
         instance = self.visit(node.instance)  # This is going to be param `self`
-        self.register_instruction(cil.CILArg, 'self')
+        self.register_instruction(cil.CILArg, VariableInfo('self'))
 
         # Here we have to compute the type, which is done using TYPEOF
-        self.register_instruction(cil.CILTypeOf, instance)
-        self.register_instruction(cil.CILVCall, None, node.method)
+        vtype = self.define_internal_local()
+        self.register_instruction(cil.CILTypeOf, vtype, instance)
+        vresult = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, vresult, vtype, node.method)
+        return vresult
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
@@ -406,12 +421,13 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
 
         # Generate code for each of the params and push them
-        args = []
         for index, arg in reversed(enumerate(node.arguments)):
             vinfo = self.visit(arg)
             arg_node = self.register_instruction(cil.CILArg, index)
 
-        self.register_instruction(cil.CILVCall, node.dispatch_type, node.method)
+        vresult = self.define_internal_local()
+        self.register_instruction(cil.CILVCall, vresult, node.dispatch_type, node.method)
+        return vresult
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
@@ -434,7 +450,7 @@ class Cool2CilVisitor:
             vsrc = self.visit(node.expression)
         else:
             default_init = coolutils.default(node.ttype)
-            vsrc = self.visit(default_init).name if str(default_init) != "void" else "void"
+            vsrc = self.visit(default_init) if str(default_init) != "void" else VariableInfo("void")
         assert vsrc != None, "`vsrc` is None inside `Declaration` visit"
 
         self.register_instruction(cil.CILAssign, vdest, vsrc)
@@ -520,8 +536,8 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Addition)
     def visit(self, node: ast.Addition):
-        left_vinfo = self.visit(node.left)
-        right_vinfo = self.visit(node.right)
+        left_vinfo = self.visit(node.first)
+        right_vinfo = self.visit(node.second)
         dest_vinfo = self.define_internal_local()
         self.register_instruction(cil.CILPlus, dest_vinfo, left_vinfo,
                                   right_vinfo)
@@ -529,8 +545,8 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Subtraction)
     def visit(self, node: ast.Subtraction):
-        left_vinfo = self.visit(node.left)
-        right_vinfo = self.visit(node.right)
+        left_vinfo = self.visit(node.first)
+        right_vinfo = self.visit(node.second)
         dest_vinfo = self.define_internal_local()
         self.register_instruction(cil.CILMinus, dest_vinfo, left_vinfo,
                                   right_vinfo)
@@ -538,8 +554,8 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Multiplication)
     def visit(self, node: ast.Multiplication):
-        left_vinfo = self.visit(node.left)
-        right_vinfo = self.visit(node.right)
+        left_vinfo = self.visit(node.first)
+        right_vinfo = self.visit(node.second)
         dest_vinfo = self.define_internal_local()
         self.register_instruction(cil.CILStar, dest_vinfo, left_vinfo,
                                   right_vinfo)
@@ -547,8 +563,8 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Division)
     def visit(self, node: ast.Division):
-        left_vinfo = self.visit(node.left)
-        right_vinfo = self.visit(node.right)
+        left_vinfo = self.visit(node.first)
+        right_vinfo = self.visit(node.second)
         dest_vinfo = self.define_internal_local()
         self.register_instruction(cil.CILDiv, dest_vinfo, left_vinfo,
                                   right_vinfo)

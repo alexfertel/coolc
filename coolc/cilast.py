@@ -106,7 +106,8 @@ class CILLessThanOrEqual(CILBoolean):
 
 
 class CILGetAttrib(CILInstruction):
-    def __init__(self, instance, attribute):
+    def __init__(self, dest, instance, attribute):
+        self.dest = dest
         self.instance = instance
         self.attribute = attribute
 
@@ -125,7 +126,8 @@ class CILAllocate(CILInstruction):
 
 
 class CILTypeOf(CILInstruction):
-    def __init__(self, var):
+    def __init__(self, dest, var):
+        self.dest = dest        
         self.var = var
 
 

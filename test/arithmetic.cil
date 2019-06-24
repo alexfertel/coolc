@@ -1,0 +1,198 @@
+.TYPES
+
+type Object {
+    Object_ctr: Object_ctr
+    Object_abort: Object_abort
+    Object_copy: Object_copy
+    Object_type_name: Object_type_name
+}
+
+type IO {
+    IO_ctr: IO_ctr
+    IO_in_int: IO_in_int
+    IO_in_string: IO_in_string
+    IO_out_int: IO_out_int
+    IO_out_string: IO_out_string
+    IO_abort: Object_abort
+    IO_copy: Object_copy
+    IO_type_name: Object_type_name
+}
+
+type Int {
+    Int_ctr: Int_ctr
+    Int_abort: Object_abort
+    Int_copy: Object_copy
+    Int_type_name: Object_type_name
+}
+
+type Bool {
+    Bool_ctr: Bool_ctr
+    Bool_abort: Object_abort
+    Bool_copy: Object_copy
+    Bool_type_name: Object_type_name
+}
+
+type String {
+    String_ctr: String_ctr
+    String_length: String_length
+    String_concat: String_concat
+    String_substr: String_substr
+    String_abort: Object_abort
+    String_copy: Object_copy
+    String_type_name: Object_type_name
+}
+
+type Main {
+    Main_ctr: Main_ctr
+    Main_main: Main_main
+}
+
+type Arith {
+    Arith_ctr: Arith_ctr
+    Arith_sum: Arith_sum
+}
+
+.DATA
+data_0 = ''
+
+.CODE
+
+function Object_ctr {
+    PARAM self
+}
+
+function Object_abort {
+    PARAM self
+}
+
+function Object_copy {
+    PARAM self
+}
+
+function Object_type_name {
+    PARAM self
+}
+
+function IO_ctr {
+    PARAM self
+}
+
+function IO_in_int {
+    PARAM self
+}
+
+function IO_in_string {
+    PARAM self
+}
+
+function IO_out_int {
+    PARAM self
+    PARAM arg
+}
+
+function IO_out_string {
+    PARAM self
+    PARAM arg
+}
+
+function Int_ctr {
+    PARAM self
+    SETATTR self _val void
+}
+
+function Bool_ctr {
+    PARAM self
+    SETATTR self _val void
+}
+
+function String_ctr {
+    LOCAL 0_ctr_internal
+    LOCAL 1_ctr_internal
+    PARAM self
+    0_ctr_internal = ALLOCATE String
+    SETATTR 0_ctr_internal 0 data_0
+    SETATTR self _val 0_ctr_internal
+    1_ctr_internal = ALLOCATE Int
+    SETATTR 1_ctr_internal 0 0
+    SETATTR self _length 1_ctr_internal
+}
+
+function String_length {
+    PARAM self
+}
+
+function String_concat {
+    PARAM self
+    PARAM arg
+}
+
+function String_substr {
+    PARAM self
+    PARAM arg1
+    PARAM arg2
+}
+
+function Main_ctr {
+    PARAM self
+}
+
+function Main_main {
+    LOCAL 2_main_internal
+    LOCAL 3_main_internal
+    LOCAL 4_main_internal
+    LOCAL 5_main_internal
+    LOCAL 6_main_internal
+    LOCAL 7_main_internal
+    LOCAL 8_main_internal
+    PARAM self
+    2_main_internal = GETATTR self a
+    3_main_internal = ALLOCATE Arith
+    ARG self
+    3_main_internal = CALL Arith_ctr
+    2_main_internal = 3_main_internal
+    4_main_internal = GETATTR self x3
+    5_main_internal = ALLOCATE Int
+    SETATTR 5_main_internal 0 0
+    4_main_internal = 5_main_internal
+    DIRECT sw $fp 0($sp)
+    6_main_internal = GETATTR self a
+    ARG self
+    7_main_internal = TYPEOF 6_main_internal
+    8_main_internal = VCALL sum
+    x3 = 8_main_internal
+    RETURN x3
+}
+
+function Arith_ctr {
+    LOCAL 9_ctr_internal
+    LOCAL 10_ctr_internal
+    PARAM self
+    9_ctr_internal = ALLOCATE Int
+    SETATTR 9_ctr_internal 0 1
+    SETATTR self x1 9_ctr_internal
+    10_ctr_internal = ALLOCATE Int
+    SETATTR 10_ctr_internal 0 2
+    SETATTR self x2 10_ctr_internal
+}
+
+function Arith_sum {
+    LOCAL 11_sum_internal
+    LOCAL 12_sum_internal
+    LOCAL 13_sum_internal
+    PARAM self
+    11_sum_internal = GETATTR self x1
+    12_sum_internal = GETATTR self x2
+    13_sum_internal = 11_sum_internal + 12_sum_internal
+    RETURN 13_sum_internal
+}
+
+function entry {
+    LOCAL 14_sum_instance
+    LOCAL 15_sum_internal
+    14_sum_instance = ALLOCATE Main
+    ARG 14_sum_instance
+    14_sum_instance = CALL Main_ctr
+    ARG 14_sum_instance
+    15_sum_internal = VCALL Main_main
+    RETURN 0
+}

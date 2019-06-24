@@ -80,43 +80,43 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILAssign)
     def visit(self, node: ast.CILAssign):
-        # dest = node.dest
-        # source = self.get_value(node.source)
-        self.emit(f'    {node.dest.name} = {node.source.name}')
+        dest = node.dest
+        source = self.get_value(node.source)
+        self.emit(f'    {dest.name} = {source}')
 
     @visitor.when(ast.CILPlus)
     def visit(self, node: ast.CILPlus):
-        # dest = node.dest.name
-        # left = self.get_value(node.left)
-        # right = self.get_value(node.right)
-        self.emit(f'    {node.dest} = {node.left} + {node.right}')
+        dest = node.dest.name
+        left = self.get_value(node.left)
+        right = self.get_value(node.right)
+        self.emit(f'    {dest} = {left} + {right}')
 
     @visitor.when(ast.CILMinus)
     def visit(self, node: ast.CILMinus):
-        # dest = node.dest.name
-        # left = self.get_value(node.left)
-        # right = self.get_value(node.right)
-        self.emit(f'    {node.dest} = {node.left} - {node.right}')
+        dest = node.dest.name
+        left = self.get_value(node.left)
+        right = self.get_value(node.right)
+        self.emit(f'    {dest} = {left} - {right}')
 
     @visitor.when(ast.CILStar)
     def visit(self, node: ast.CILStar):
-        # dest = node.dest.name
-        # left = self.get_value(node.left)
-        # right = self.get_value(node.right)
-        self.emit(f'    {node.dest} = {node.left} * {node.right}')
+        dest = node.dest.name
+        left = self.get_value(node.left)
+        right = self.get_value(node.right)
+        self.emit(f'    {dest} = {left} * {right}')
 
     @visitor.when(ast.CILDiv)
     def visit(self, node: ast.CILDiv):
-        # dest = node.dest.name
-        # left = self.get_value(node.left)
-        # right = self.get_value(node.right)
-        self.emit(f'    {node.dest} = {node.left} / {node.right}')
+        dest = node.dest.name
+        left = self.get_value(node.left)
+        right = self.get_value(node.right)
+        self.emit(f'    {dest} = {left} / {right}')
 
     @visitor.when(ast.CILGetAttrib)
     def visit(self, node: ast.CILGetAttrib):
         # inst = self.visit(node.instance)
         # attr = self.visit(node.attribute)
-        self.emit(f'{node.instance}.{node.attribute}')
+        self.emit(f'    {node.dest.name} = GETATTR {node.instance.name} {node.attribute}')
 
     @visitor.when(ast.CILSetAttrib)
     def visit(self, node: ast.CILSetAttrib):
@@ -132,7 +132,7 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILTypeOf)
     def visit(self, node: ast.CILTypeOf):
-        self.emit(f'    TYPEOF {node.var}')
+        self.emit(f'    {node.dest.name} = TYPEOF {node.var.name}')
 
     @visitor.when(ast.CILLabel)
     def visit(self, node: ast.CILLabel):
@@ -161,6 +161,7 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILReturn)
     def visit(self, node: ast.CILReturn):
+        print(node)
         value = self.get_value(node.value)
         value = "" if value is None else str(value)
         self.emit(f'    RETURN {value}')
