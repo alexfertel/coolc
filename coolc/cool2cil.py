@@ -247,7 +247,11 @@ class Cool2CilVisitor:
                 self.visit(param)
 
             # Method body
-            self.visit(node.body)
+            if not self.current_class_name in ["String", "Int", "Bool", "IO", "Object"]:
+                vinfo = self.visit(node.body)
+                print(vinfo)
+                self.register_instruction(cil.CILReturn, vinfo)
+
             # print(return_val)
             func_node = self.register_func(mname)
             func_node.param_count = len(node.formal_params)

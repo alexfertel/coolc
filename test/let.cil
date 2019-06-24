@@ -151,6 +151,7 @@ function Main_main {
     6_main_internal = 7_main_internal
     8_main_internal = ALLOCATE Int
     SETATTR 8_main_internal 0 4
+    RETURN 8_main_internal
 }
 
 function entry {
