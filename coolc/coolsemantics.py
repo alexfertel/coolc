@@ -101,7 +101,8 @@ class SemanticVisitor:
         valid &= True if node.body is None else self.visit(node.body, errors)
         self.__scope = self.__scope.parent
 
-        if (node.body is not None) and (not self.__sub_type(self.__real_type(node.body.return_type), self.__real_type(node.return_type))):
+        if (node.body is not None) and (not self.__sub_type(node.body.return_type, node.return_type)) and\
+                (not (node.return_type == 'SELF_TYPE' and node.body.return_type == self.__current_class_name)):
             valid = False
             errors.append(
                 'Return type of method <%s> and return type of its body are different.' % (node.name))
