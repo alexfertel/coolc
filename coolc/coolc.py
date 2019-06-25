@@ -127,8 +127,8 @@ class Compiler:
             exit(1)
         else:
             print("Correctly visited all types, no semantic problems with this pass!")
-        scope = type_collector.get_scope()
-        type_builder = cooltypebuilder.TypeBuilderVisitor(scope)
+        self.scope = type_collector.get_scope()
+        type_builder = cooltypebuilder.TypeBuilderVisitor(self.scope)
         type_builder.visit(self.ast)
 
         errors = type_builder.get_errors()
@@ -139,7 +139,7 @@ class Compiler:
                 print(error)
             exit(1)
         else:
-            print("Correctly builder all types, no semantic problems with this pass!")
+            print("Correctly built all types, no semantic problems with this pass!")
 
         print(
             f'This program types are: {type_builder.get_scope().get_types_dict().keys()}')
@@ -157,7 +157,7 @@ class Compiler:
             print("Type Inheritance Graph is semantically correct!")
 
         errors.clear()
-        checksemantic = coolsemantics.SemanticVisitor(scope)
+        checksemantic = coolsemantics.SemanticVisitor(self.scope)
         valid = checksemantic.visit(self.ast, errors)
 
         if not valid:
@@ -168,11 +168,11 @@ class Compiler:
             print('Done!')
 
     def code_generation(self):
-        cil_visitor = cool2cil.Cool2CilVisitor()
+        cil_visitor = cool2cil.Cool2CilVisitor(self.scope)
         cil_visitor.visit(self.ast)
 
         mips_visitor = cil2mips.Cil2MipsVisitor(cil_visitor.context)
         mips_visitor.visit(cil_visitor.result)
         
         self.result = mips_visitor.dotdata + mips_visitor.dotcode
-        pprint(self.result)
+        # pprint(self.result)

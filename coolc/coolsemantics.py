@@ -120,7 +120,7 @@ class SemanticVisitor:
 
         if node.init_expr is not None and not self.__sub_type(self.__real_type(node.init_expr.return_type), self.__real_type(node.attr_type)):
             valid = False
-            errors.append('Types <%s> and <%s> are differente.' %
+            errors.append('Types <%s> and <%s> are different.' %
                           (node.init_expr.return_type, node.attr_type))
         self.__scope.define_variable(node.name, node.attr_type)
         return valid
@@ -163,7 +163,7 @@ class SemanticVisitor:
     def visit(self, node: ast.String, errors):
         node.return_value = 'String'
         if len(node.content) > 1024:
-            errors.append('String type only can have 1024 characters.')
+            errors.append('String type can only have 1024 characters.')
             return False
         return True
 
@@ -209,7 +209,7 @@ class SemanticVisitor:
         valid = True
         if len(node.expr_list) == 0:
             valid = False
-            errors.append('A block expresion most be one expresion at least.')
+            errors.append('A block expression must be one expression at least.')
 
         for expr in node.expr_list:
             valid &= self.visit(expr, errors)
@@ -268,7 +268,7 @@ class SemanticVisitor:
 
         if method is None:
             valid = False
-            errors.append('Class <%s> not contain method <%s>.' %
+            errors.append('Class <%s> does not contain method <%s>.' %
                           (node.instance.return_type, node.method))
         else:
             if len(node.arguments) != len(method.formal_params):
@@ -278,7 +278,7 @@ class SemanticVisitor:
                 for i in range(len(node.arguments)):
                     if node.arguments[i].return_type != method.formal_params[i].param_type:
                         valid = False
-                        errors.append('Params not have the same types.')
+                        errors.append("Params don't have the same types.")
 
         node.return_type = method.return_type if method.return_type != 'SELF_TYPE' else node.dispatch_type
 
@@ -366,7 +366,7 @@ class SemanticVisitor:
         valid = self.visit(node.integer_expr, errors)
         if node.integer_expr.return_type != 'Int':
             valid = False
-            errors.append('Operator \"~\" is used only on Integer expresions.')
+            errors.append('Operator \"~\" is used only in Integer expresions.')
 
         node.return_type = 'Int'
 
@@ -377,7 +377,7 @@ class SemanticVisitor:
         valid = self.visit(node.boolean_expr, errors)
         if node.boolean_expr.return_type != 'Bool':
             valid = False
-            errors.append('Operator \"~\" is used only on Boolean expresions.')
+            errors.append('Operator \"~\" is used only in Boolean expresions.')
 
         node.return_type = 'Bool'
 
@@ -393,7 +393,7 @@ class SemanticVisitor:
         valid &= self.visit(node.second, errors)
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
-            errors.append('Addition is valid only between Integer variables.')
+            errors.append('Addition is only valid between Integer variables.')
 
         node.return_type = 'Int'
 
@@ -406,7 +406,7 @@ class SemanticVisitor:
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
-                'Substraction is valid only between Integer variables.')
+                'Subtraction is only valid between Integer variables.')
 
         node.return_type = 'Int'
 
@@ -419,7 +419,7 @@ class SemanticVisitor:
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
-                'Multiplication is valid only between Integer variables.')
+                'Multiplication is onlyvalid between Integer variables.')
 
         node.return_type = 'Int'
 
@@ -431,7 +431,7 @@ class SemanticVisitor:
         valid &= self.visit(node.second, errors)
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
-            errors.append('Division is valid only between Integer variables.')
+            errors.append('Division is only valid between Integer variables.')
 
         node.return_type = 'Int'
 
@@ -457,7 +457,7 @@ class SemanticVisitor:
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
-                'LessThan operator is valid only between Integer variables.')
+                'LessThan operator is only valid between Integer variables.')
 
         node.return_type = 'Bool'
 
@@ -470,7 +470,7 @@ class SemanticVisitor:
         if node.first.return_type != 'Int' or node.second.return_type != 'Int':
             valid = False
             errors.append(
-                'LessThanOrEqual operator is valid only between Integer variables.')
+                'LessThanOrEqual operator is only valid between Integer variables.')
 
         node.return_type = 'Bool'
 

@@ -11,11 +11,148 @@ class Cil2MipsVisitor:
 
     # ======================================================================
     # =[ UTILS ]============================================================
-    #ity ======================================================================
+    # ======================================================================
     
+    def init_str_funcs(self):
+        self.init_str_length()
+        self.init_str_concat()
+        self.init_str_prefix()
+        self.init_str_substr()
+
+    def init_str_concat(self):
+        self.emit_label('str_concat_func')
+        self.emit_instruction(op.lw, reg.t0, self.off_reg(2, reg.sp))
+        self.emit_instruction(op.lw, reg.t1, self.off_reg(3, reg.sp))
+        self.push(reg.t0)
+        self.emit_instruction(op.jal, 'str_length_func')
+        self.emit_instruction(op.move, reg.t2, reg.a0)
+        self.push(reg.t1)
+        self.emit_instruction(op.jal, 'str_length_func')
+
+        self.emit_instruction(op.move, reg.t3, reg.a0)
+        self.emit_instruction(op.add, reg.a0, reg.t2, reg.t3)
+        self.emit_instruction(op.addiu, reg.a0, reg.a0, 1)
+        self.emit_instruction(op.li, reg.v0, 9)
+        self.emit_instruction(op.syscall)
+
+        self.emit_label('str_concat_fst_loop')
+        self.emit_instruction(op.lb, reg.t6, self.off_reg(0, reg.t0))
+        self.emit_instruction(op.beqz, reg.t6, 'str_concat_fst_loop_end')
+        self.emit_instruction(op.lb, reg.v0, self.off_reg(0, reg.t0))
+        self.emit_instruction(op.addiu, reg.v0, reg.v0, 1)
+        self.emit_instruction(op.addiu, reg.t0, reg.t0, 1)
+        self.emit_instruction(op.j, 'str_concat_fst_loop')
+        self.emit_label('str_concat_fst_loop_end')
+
+        self.emit_label('str_concat_snd_loop')
+        self.emit_instruction(op.lb, reg.t6, self.off_reg(0, reg.t1))
+        self.emit_instruction(op.beqz, reg.t6, 'str_concat_snd_loop_end')
+        self.emit_instruction(op.lb, reg.v0, self.off_reg(0, reg.t1))
+        self.emit_instruction(op.addiu, reg.v0, reg.v0, 1)
+        self.emit_instruction(op.addiu, reg.t1, reg.t1, 1)
+        self.emit_instruction(op.j, 'str_concat_snd_loop')
+        self.emit_label('str_concat_snd_loop_end')
+
+        self.emit_instruction(op.lb, reg.v0, reg.zero)
+        self.emit_instruction(op.move, reg.a0, reg.v0)
+
+        self.emit_instruction(op.jr, reg.ra)
+
+    #TODO
+    def init_str_prefix(self):
+        pass
+
+    #TODO
+    def init_str_substr(self):
+        pass
+
+    def init_str_length(self):
+        self.emit_label('str_length_func')
+        self.emit_instruction(op.lw, reg.a0, self.off_reg(1, reg.sp))
+        self.emit_instruction(op.li, reg.a1, 0)
+        self.emit_label('length_main_loop')
+        self.emit_instruction(op.lb, reg.t1, self.off_reg(0, reg.a0))
+        self.emit_instruction(op.beqz, reg.t1, 'legth_end')
+        self.emit_instruction(op.addiu, reg.a0, reg.a0, 1)
+        self.emit_instruction(op.addiu, reg.a1, reg.a1, 1)
+        self.emit_instruction(op.j, 'length_main_loop')
+        self.emit_label('length_end')
+        self.emit_instruction(op.move, reg.a0, reg.a1)
+        self.emit_instruction(op.jr, reg.ra)
+
+
+    def init_obj_funcs(self):
+        self.init_obj_abort()
+        self.init_obj_typename()
+        self.init_obj_copy()
+
+    def init_obj_abort(self):
+        self.emit_label('obj_abort_func')
+        self.emit_instruction(op.li, reg.v0, 10)
+        self.emit_instruction(op.syscall)
+
+    def init_obj_typename(self):
+        self.emit_instruction(op.sub, reg.sp, reg.sp, 12)
+        self.emit_instruction(op.sw, reg.ra, self.off_reg(2, reg.sp))
+        self.emit_instruction(op.li, reg.t0, 0)
+        self.emit_instruction(op.sw, reg.t0, self.off_reg(0, reg.sp))
+        self.emit_instruction(op.lw, reg.t0, self.off_reg(1, reg.sp))
+        self.emit_instruction(op.lw, reg.t0, self.off_reg(0, reg.t0))
+        self.emit_instruction(op.sw, reg.t0, self.off_reg(0, reg.sp))
+        self.emit_instruction(op.lw, reg.ra, self.off_reg(2, reg.sp))
+        self.emit_instruction(op.lw, reg.a0, self.off_reg(0, reg.sp))
+        self.emit_instruction(op.addi, reg.sp, reg.sp, 12)
+        self.emit_instruction(op.jr, reg.ra)
+
+    #TODO
+    def init_obj_copy(self):
+        pass
+
+
+    def init_io_funcs(self):
+        self.init_io_in_int()
+        self.init_io_in_str()
+        self.init_io_out_int()
+        self.init_io_out_str()
+
+    def init_io_in_int(self):
+        self.emit_label('io_in_int_func')
+        self.emit_instruction(op.li, reg.v0, 5)
+        self.emit_instruction(op.syscall)
+        self.emit_instruction(op.move, reg.a0, reg.v0)
+        self.emit_instruction(op.jr, reg.ra)
+
+    def init_io_in_str(self):
+        self.emit_label('io_in_str_func')
+        self.emit_instruction(op.li, reg.a1, 1024)
+        self.emit_instruction(op.li, reg.v0, 8)
+        self.emit_instruction(op.syscall)
+        self.emit_instruction(op.jr, reg.ra)
+
+    def init_io_out_int(self):
+        self.emit_label('io_out_int_func')
+        self.emit_instruction(op.lw, reg.a0, self.off_reg(1, reg.sp))
+        self.emit_instruction(op.li, reg.v0, 1)
+        self.emit_instruction(op.syscall)
+        self.emit_instruction(op.jr, reg.ra)
+
+    def init_io_out_str(self):
+        self.emit_label('io_out_str_func')
+        self.emit_instruction(op.lw, reg.a0, self.off_reg(1, reg.sp))
+        self.emit_instruction(op.li, reg.v0, 4)
+        self.emit_instruction(op.syscall)
+        self.emit_instruction(op.jr, reg.ra)
+
+
+    def init_def_obj_func(self):
+        self.init_obj_funcs()
+        self.init_io_funcs()
+        self.init_str_funcs()
+
     def init_utils(self):
         self.dotdata.append('.data')
         self.dotcode.append('.text')
+        self.init_def_obj_func()
 
     def pusha(self, excep = []):
         dic = reg.__dict__
@@ -102,19 +239,19 @@ class Cil2MipsVisitor:
         self.init_utils()
 
         # Visit every data node in Program
-        self.emit_code("\n# .data:")
-        print(node.dotdata)
+        # self.emit_code("\n# .data:")
+        # print(node.dotdata)
         for datanode in node.dotdata:
             self.visit(datanode)
 
-        self.emit_code("\n# .types:")
-        print(node.dottypes)
+        # self.emit_code("\n# .types:")
+        # print(node.dottypes)
         # Visit every type node in Program
         for typenode in node.dottypes:
             self.visit(typenode)
 
-        self.emit_code("\n# .code:")
-        print(node.dotcode)
+        # self.emit_code("\n# .code:")
+        # print(node.dotcode)
         # Visit every code node in Program
         for codenode in node.dotcode:
             self.visit(codenode)
@@ -142,7 +279,8 @@ class Cil2MipsVisitor:
 
     @visitor.when(ast.CILFunction)
     def visit(self, node: ast.CILFunction):
-        print(node.fname + " Function")
+        # print("Function")
+        # print(node.fname + " Function")
         self.emit_label(node.fname)
         self.emit_instruction(op.move, reg.fp, reg.sp)
         self.push(reg.ra)
@@ -243,7 +381,7 @@ class Cil2MipsVisitor:
         
         # $a0 contains the type of the instance.
         # Here we compute in $a0 the offset of the attribute
-        computed = self.off_set(node.attribute, reg.a0)
+        computed = self.off_reg(node.attribute, reg.a0)
         
         # Load into $a0 the value of the attribute
         self.emit_instruction(op.lw, reg.a0, computed)
@@ -257,10 +395,10 @@ class Cil2MipsVisitor:
         
         # $a0 contains the type of the instance.
         # Here we compute in $a0 the offset of the attribute
-        computed = self.off_set(node.attribute, reg.a0)
+        computed = self.off_reg(node.attribute, reg.a0)
         
         # Load the value of src
-        self.emit_instruction(op.lw, reg.t0, src)
+        self.emit_instruction(op.lw, reg.t0, node.src)
 
         # Store into computed the value of `src`
         self.emit_instruction(op.sw, reg.a0, computed)
@@ -295,10 +433,11 @@ class Cil2MipsVisitor:
         if node.ttype:
             self.emit_instruction(op.la, reg.a0, node.ttype)
 
-        method_offset = self.context.fmap[node.func]
-        computed = self.off_reg(method_offset, reg.a0)
-        self.emit_instruction(op.lw, reg.a0, computed)
-        self.emit_instruction(op.jal, reg.a0)
+        # method_offset = self.context.fmap[node.func]
+        # computed = self.off_reg(method_offset, reg.a0)
+        # self.emit_instruction(op.lw, reg.a0, computed)
+        # print(self.context.mmap.items())
+        self.emit_instruction(op.jal, node.func)
         
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):

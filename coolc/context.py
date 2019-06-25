@@ -1,6 +1,7 @@
 class Context:
     def __init__(self):
         self.fmap = {}
+        self.mmap = {}
         self.lmap = {}
         self.amap = {}
         self.tags = {}
@@ -19,3 +20,6 @@ class Context:
     def add_tag(self, tname):
         self.tags[tname] = self.tag_count
         self.tag_count += 1
+
+    def add_mf(self, mname, fname):
+        self.mmap[mname] = fname

@@ -4,12 +4,12 @@ from . import cilast as cil
 from . import coolast as ast
 from . import visitor
 from .scope import VariableInfo
-from .coolutils import default
+from . import coolutils
 from .context import Context
 from pprint import pprint
 
 class Cool2CilVisitor:
-    def __init__(self):
+    def __init__(self, semantic_scope):
         # Handle current program
         self.dottypes = []
         self.dotdata = []
@@ -35,6 +35,8 @@ class Cool2CilVisitor:
         self.internal_count = 0
         self.internal_f_count = 0
         self.internal_l_count = 0
+
+        self.semantic_scope = semantic_scope
 
     # ======================================================================
     # =[ UTILS ]============================================================
@@ -68,8 +70,8 @@ class Cool2CilVisitor:
         vinfo.vmholder = len(self.globalvars)
         local_node = cil.CILLocal(vinfo)
         self.globalvars.append(local_node)
-        print("global")
-        print(self.globalvars)
+        # print("global")
+        # print(self.globalvars)
         return vinfo
 
     def register_instruction(self, instruction_type, *args):
@@ -77,9 +79,9 @@ class Cool2CilVisitor:
         self.instructions.append(instruction)
         return instruction
 
-    def register_func(self, fname):
-        print("Register Function")
-        func = cil.CILFunction(fname, self.instructions)
+    def register_func(self, fname, mname):
+        # print("Register Function")
+        func = cil.CILFunction(mname, self.instructions)
         
         # Handle localvars
         func.localvars = self.globalvars[self.local_index:]
@@ -89,6 +91,9 @@ class Cool2CilVisitor:
         for index, local in enumerate(func.localvars):
             self.context.add_var(local.value.name, index)
         
+        # Update the context with the function name
+        self.context.add_mf(mname, fname)
+
         self.dotcode.append(func)
         return func
 
@@ -114,11 +119,14 @@ class Cool2CilVisitor:
         ctr.append(cil.CILReturn())
 
         self.current_function_name = "ctr"
+        fname = self.build_internal_fname()
         ctr_name = self.build_method_name()
         ctr_func = cil.CILFunction(ctr_name, ctr)
         self.dotcode.append(ctr_func)
 
         self.methods.append(cil.CILMethod(ctr_name))
+
+        self.context.add_mf(ctr_name, fname)
 
     def build_entry(self):
         self.register_instruction(cil.CILAllocate, "Main")
@@ -126,10 +134,10 @@ class Cool2CilVisitor:
         self.register_instruction(cil.CILCall, f'Main_ctr')        
         self.register_instruction(cil.CILArg)
         self.register_instruction(cil.CILVCall, "Main", "Main_main")
-        self.register_instruction(cil.CILReturn)
-
+        
         self.current_function_name = "entry"
-        self.register_func(self.current_function_name)
+        # entry_name = self.build_internal_fname()
+        self.register_func("main", self.current_function_name)
 
     # ======================================================================
 
@@ -147,9 +155,11 @@ class Cool2CilVisitor:
         Every program in cool has a `Main` class and a `main` method.
         Every program in cil should have an `entrypoint` method which is to be run to start the program.
         """
-
+        builtins = self.semantic_scope.get_types_dict().values()
+        klasses = [klass for klass in builtins if not klass in node.classes]
         # Maybe sort the types before visiting them?
-        for klass in node.classes:
+        for klass in klasses:
+            # print(klass)
             self.visit(klass)
 
         # We register the entrypoint here.
@@ -169,6 +179,9 @@ class Cool2CilVisitor:
         attrs, funcs = [], []
         for feature in node.features:
             if isinstance(feature, ast.ClassMethod):
+                print("!!!")
+                print(self.current_class_name)
+                print(feature)
                 funcs.append(feature)
             else:
                 attrs.append(feature)
@@ -178,6 +191,7 @@ class Cool2CilVisitor:
 
         # pprint(funcs)
         for index, func in enumerate(funcs):
+            # print(func)
             func_node = self.visit(func)
             self.context.add_func(func_node.fname, index)
 
@@ -205,11 +219,11 @@ class Cool2CilVisitor:
         self.instructions.clear()
 
         # Method body
-        return_val = self.visit(node.body)
-        print(return_val)
+        self.visit(node.body)
+        # print(return_val)
 
         # Register the function in dotcode
-        func = self.register_func(mname)
+        func = self.register_func(fname, mname)
         func.param_count = len(node.formal_params)        
         return func
 
@@ -247,7 +261,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Integer)
     def visit(self, node: ast.Integer):
-        print('Integer')
+        # print('Integer')
         dummy_node = self.register_instruction(cil.CILDummy, f'li $a0, {node.content}')
         return dummy_node
 
@@ -323,7 +337,7 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
-        print('Block')
+        # print('Block')
         vinfo = 0
         for expr in node.expr_list:
             vinfo = self.visit(expr)
@@ -362,18 +376,18 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Let)
     def visit(self, node: ast.Let):
-        print('Let')
+        # print('Let')
         for declaration in node.declaration_list:
             self.visit(declaration)
 
         vinfo = self.visit(node.body)
-        print(vinfo)
+        # print(vinfo)
 
         return vinfo
 
     @visitor.when(ast.Declaration)
     def visit(self, node: ast.Declaration):
-        print('Declaration')
+        # print('Declaration')
         identifier = self.register_local(node.identifier)
         vinfo = self.visit(node.expression) if node.expression else default(
             node.ttype)
