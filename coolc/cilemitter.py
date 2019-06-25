@@ -1,5 +1,6 @@
 from . import cilast as ast
 from . import visitor
+from .scope import VariableInfo
 
 class CILWriterVisitor(object):
     def __init__(self, context):
@@ -13,7 +14,12 @@ class CILWriterVisitor(object):
         self.output.append('')
 
     def get_value(self, value):
-        return value if isinstance(value, int) else value.name
+        if isinstance(value, int):
+            return value
+        elif isinstance(value, VariableInfo):
+            return value.name
+        else:
+            return value.vinfo.name
 
     @visitor.on('node')
     def visit(self, node):
@@ -153,7 +159,7 @@ class CILWriterVisitor(object):
 
     @visitor.when(ast.CILVCall)
     def visit(self, node: ast.CILVCall):
-        self.emit(f'    {node.dest.name} = VCALL {node.func}')
+        self.emit(f'    {node.dest.name} = VCALL {node.ttype} {node.func}')
 
     @visitor.when(ast.CILArg)
     def visit(self, node: ast.CILArg):

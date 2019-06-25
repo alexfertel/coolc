@@ -59,6 +59,7 @@ data_0 = ''
 
 function Object_ctr {
     PARAM self
+    RETURN self
 }
 
 function Object_abort {
@@ -75,6 +76,7 @@ function Object_type_name {
 
 function IO_ctr {
     PARAM self
+    RETURN self
 }
 
 function IO_in_int {
@@ -98,11 +100,13 @@ function IO_out_string {
 function Int_ctr {
     PARAM self
     SETATTR self _val void
+    RETURN self
 }
 
 function Bool_ctr {
     PARAM self
     SETATTR self _val void
+    RETURN self
 }
 
 function String_ctr {
@@ -115,6 +119,7 @@ function String_ctr {
     1_ctr_internal = ALLOCATE Int
     SETATTR 1_ctr_internal 0 0
     SETATTR self _length 1_ctr_internal
+    RETURN self
 }
 
 function String_length {
@@ -134,65 +139,60 @@ function String_substr {
 
 function Main_ctr {
     PARAM self
+    RETURN self
 }
 
 function Main_main {
-    LOCAL 2_main_internal
+    LOCAL 2_main_a
     LOCAL 3_main_internal
-    LOCAL 4_main_internal
+    LOCAL 4_main_x3
     LOCAL 5_main_internal
     LOCAL 6_main_internal
     LOCAL 7_main_internal
-    LOCAL 8_main_internal
     PARAM self
-    2_main_internal = GETATTR self a
     3_main_internal = ALLOCATE Arith
     ARG self
     3_main_internal = CALL Arith_ctr
-    2_main_internal = 3_main_internal
-    4_main_internal = GETATTR self x3
+    2_main_a = 3_main_internal
     5_main_internal = ALLOCATE Int
     SETATTR 5_main_internal 0 0
-    4_main_internal = 5_main_internal
-    DIRECT sw $fp 0($sp)
-    6_main_internal = GETATTR self a
+    4_main_x3 = 5_main_internal
     ARG self
-    7_main_internal = TYPEOF 6_main_internal
-    8_main_internal = VCALL sum
-    x3 = 8_main_internal
-    RETURN x3
+    6_main_internal = TYPEOF 2_main_a
+    7_main_internal = VCALL 6_main_internal sum
+    4_main_x3 = 7_main_internal
+    RETURN 4_main_x3
 }
 
 function Arith_ctr {
+    LOCAL 8_ctr_internal
     LOCAL 9_ctr_internal
-    LOCAL 10_ctr_internal
     PARAM self
+    8_ctr_internal = ALLOCATE Int
+    SETATTR 8_ctr_internal 0 1
+    SETATTR self x1 8_ctr_internal
     9_ctr_internal = ALLOCATE Int
-    SETATTR 9_ctr_internal 0 1
-    SETATTR self x1 9_ctr_internal
-    10_ctr_internal = ALLOCATE Int
-    SETATTR 10_ctr_internal 0 2
-    SETATTR self x2 10_ctr_internal
+    SETATTR 9_ctr_internal 0 2
+    SETATTR self x2 9_ctr_internal
+    RETURN self
 }
 
 function Arith_sum {
-    LOCAL 11_sum_internal
+    LOCAL 10_sum_x1
+    LOCAL 11_sum_x2
     LOCAL 12_sum_internal
-    LOCAL 13_sum_internal
     PARAM self
-    11_sum_internal = GETATTR self x1
-    12_sum_internal = GETATTR self x2
-    13_sum_internal = 11_sum_internal + 12_sum_internal
-    RETURN 13_sum_internal
+    12_sum_internal = 10_sum_x1 + 11_sum_x2
+    RETURN 12_sum_internal
 }
 
 function entry {
-    LOCAL 14_sum_instance
-    LOCAL 15_sum_internal
-    14_sum_instance = ALLOCATE Main
-    ARG 14_sum_instance
-    14_sum_instance = CALL Main_ctr
-    ARG 14_sum_instance
-    15_sum_internal = VCALL Main_main
+    LOCAL 13_sum_instance
+    LOCAL 14_sum_internal
+    13_sum_instance = ALLOCATE Main
+    ARG 13_sum_instance
+    13_sum_instance = CALL Main_ctr
+    ARG 13_sum_instance
+    14_sum_internal = VCALL Main Main_main
     RETURN 0
 }

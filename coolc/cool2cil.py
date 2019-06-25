@@ -117,6 +117,7 @@ class Cool2CilVisitor:
             self.context.add_attribute(attr_node, index)
             self.instructions.append(attr_node)
             # ctr.append(attr_node)
+        self.register_instruction(cil.CILReturn, VariableInfo('self'))
 
         ctr_name = self.build_method_name()
         func_node = self.register_func(ctr_name)
@@ -276,18 +277,23 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.Object)
     def visit(self, node: ast.Object):
-        # vname = self.build_internal_vname(node.name)
-        # var = self.register_local(VariableInfo(vname))
-        
-        print("node.name", node.name)
-        print("localvars", list(map(lambda x: x.vinfo.name, self.globalvars[self.local_index:])))
-        if node.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
-            return self.context.lmap[node.name]
-        else:  # It's a self property
-            vattr = self.define_internal_local()
-            self.register_instruction(cil.CILGetAttrib, vattr, VariableInfo('self'), node.name)
-            return vattr
+        for lvar in self.globalvars[self.local_index:]:
+            if lvar.vinfo.name.endswith(node.name):
+                return lvar.vinfo
+        else:
+            var = self.register_local(VariableInfo(node.name))
+            return var
+
+        # print("node.name", node.name)
+        # print("localvars", list(map(lambda x: x.vinfo.name, self.globalvars[self.local_index:])))
+        # if node.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
+        #     return self.context.lmap[node.name]
+        # else:  # It's a self property
+        #     vattr = self.define_internal_local()
+        #     self.register_instruction(cil.CILGetAttrib, vattr, VariableInfo('self'), node.name)
+        #     return vattr
         # var = self.define_internal_local()
+
 
     @visitor.when(ast.Self)
     def visit(self, node: ast.Self):
@@ -369,23 +375,30 @@ class Cool2CilVisitor:
         Repeat with destination.        
         """
         source = self.visit(node.expr)
-        print('source', source.name)
-        print('localvars', self.globalvars[self.local_index:])
-        if source.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
-            # offset_src = self.context.lname[source]
-            # print(f'node.identifier =>', node.identifier)
-            # print(f'self.context.lmap[node.identifier.name] =>', self.context.lmap[node.identifier.name])
-            # vdest = self.define_internal_local()
-            # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
-            self.register_instruction(cil.CILAssign, node.identifier, source)
-            # self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
-        else:  # It's a property of `self`
-            # offset_src = self.context.lname[source]
+        for lvar in self.globalvars[self.local_index:]:
+            if lvar.vinfo.name.endswith(node.identifier.name):
+                self.register_instruction(cil.CILAssign, lvar.vinfo, source)
+                return lvar
+        else:
             self.register_instruction(cil.CILSetAttrib, VariableInfo('self'), node.identifier.name, source.name)
-            # self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
+            return node.identifier
+
+
+        # if source.name in map(lambda x: x.vinfo.name, self.globalvars[self.local_index:]):  # It's a local var
+        #     # offset_src = self.context.lname[source]
+        #     # print(f'node.identifier =>', node.identifier)
+        #     # print(f'self.context.lmap[node.identifier.name] =>', self.context.lmap[node.identifier.name])
+        #     # vdest = self.define_internal_local()
+        #     # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
+        #     self.register_instruction(cil.CILAssign, node.identifier, source)
+        #     # self.register_instruction(cil.CILDummy, f'lw $t0, {offset_src * -4}')
+        # else:  # It's a property of `self`
+        #     # offset_src = self.context.lname[source]
+        #     self.register_instruction(cil.CILSetAttrib, VariableInfo('self'), node.identifier.name, source.name)
+        #     # self.register_instruction(cil.CILDummy, f'lw $a0, {offset_src * 4}')
 
         # self.register_instruction(cil.CILAssign, self.context.lmap[node.identifier.name], source)
-        return node.identifier
+        # return node.identifier
 
     @visitor.when(ast.Block)
     def visit(self, node: ast.Block):
@@ -397,28 +410,30 @@ class Cool2CilVisitor:
 
     @visitor.when(ast.DynamicDispatch)
     def visit(self, node: ast.DynamicDispatch):
-        # Save current frame pointer
-        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
+        # # Save current frame pointer
+        # self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
         
         # Generate code for each of the params and push them
         for index, arg in enumerate(reversed(node.arguments)):
             vinfo = self.visit(arg)
             arg_node = self.register_instruction(cil.CILArg, index)
     
-        instance = self.visit(node.instance)  # This is going to be param `self`
+        instance = self.visit(node.instance)  
+        
+        # This is going to be param `self`
         self.register_instruction(cil.CILArg, VariableInfo('self'))
 
         # Here we have to compute the type, which is done using TYPEOF
         vtype = self.define_internal_local()
         self.register_instruction(cil.CILTypeOf, vtype, instance)
         vresult = self.define_internal_local()
-        self.register_instruction(cil.CILVCall, vresult, vtype, node.method)
+        self.register_instruction(cil.CILVCall, vresult, vtype.name, node.method)
         return vresult
 
     @visitor.when(ast.StaticDispatch)
     def visit(self, node: ast.StaticDispatch):
-        # Save current frame pointer
-        self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
+        # # Save current frame pointer
+        # self.register_instruction(cil.CILDummy, 'sw $fp 0($sp)')
 
         # Generate code for each of the params and push them
         for index, arg in reversed(enumerate(node.arguments)):
